@@ -26,7 +26,7 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 		var sql = mysql.format(stmt, inserts);
 		Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 			if (err) {
-				console.log('Error during insertion of announcement: ', err);
+				console.error(err);
 				reject(Service.rejectResponse('Error during insertion'));
 			} else {
 				ws.sendAll("getShopAnnouncements");
@@ -54,7 +54,7 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 			var sql = mysql.format(statement, [shopAnnouncement.userId, shopAnnouncement.shopId, date]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
-					console.log('Error during deletion of announcement: ', err);
+					console.error(err);
 					reject(Service.rejectResponse('error'));
 				} else {
 					if (rows['affectedRows'] === 0){
@@ -88,7 +88,7 @@ const getOpenPayments = () => new Promise(
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
-					console.log(Service.rejectResponse('Error in getOpenPayments while fetching orders'), err);
+					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse({
@@ -124,7 +124,7 @@ const getOrdersOfDay = ({ date }) => new Promise(
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
-					console.log(Service.rejectResponse('Error in getOrdersOfDay while fetching orders'), err);
+					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse({
@@ -154,7 +154,7 @@ const getPrice = ({ shopId, meal }) => new Promise(
 			var sql = mysql.format(shopId, meal);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
-					console.log(Service.rejectResponse('Error in getPrice while fetching orders'), err);
+					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse(rows[0]));
@@ -188,7 +188,7 @@ const getShopAnnouncements = ({ date }) => new Promise(
 			var sql = mysql.format(stmt, [date]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
-					console.log(Service.rejectResponse('Error in getShopAnnouncements while fetching orders'), err);
+					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse({
@@ -225,7 +225,7 @@ const getShopOrders = ({ shopId, date }) => new Promise(
     try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
-					console.log(Service.rejectResponse('Error in getShopOrders while fetching orders'), err);
+					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse({
@@ -259,7 +259,7 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 				var sql = mysql.format(stmt, [price, shopId, meal, new Date().toISOString().slice(0,10)]);
 				Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 					if (err) {
-						console.log('Error while updating orders', err);
+						console.error(err);
 						reject(Service.rejectResponse('Error while updating orders'));
 					} else {
 						ws.sendAll("refreshOrders");
@@ -273,7 +273,7 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 			var sql = mysql.format(stmt, [price, shopId, meal]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
-					console.log('Error while updating orders', err);
+					console.error(err);
 					reject(Service.rejectResponse('Error while updating orders'));
 				} else {
 					if (rows['affectedRows'] === 0){
@@ -285,7 +285,7 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 						var sql = mysql.format(stmt, [shopId, meal, price]);
 						Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 							if (err) {
-								console.log('Error during insertion of price: ', err);
+								console.error(err);
 								reject(Service.rejectResponse('error'));
 							} else {
 								ws.sendAll("refreshPrices");
