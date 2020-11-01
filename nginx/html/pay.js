@@ -1,9 +1,19 @@
 var lunch = new SwaggerClient('/openapi.json');
 
 // ws {{{
+var loc = window.location, new_uri;
+new_uri += "//" + loc.host;
+new_uri += loc.pathname + "/to/ws";
+
 var connection;
 function renewconnection(){
-	connection = new WebSocket("ws://" +location.hostname+":"+location.port+"/ws/", "json");
+	var prot;
+	if (window.location.protocol === "https:") {
+			prot = "wss://";
+	} else {
+			prot = "ws://";
+	}
+	connection = new WebSocket(prot+location.hostname+":"+location.port+"/ws/", "json");
 	connection.onmessage = incommingMessage;
 	connection.onclose = renewconnection;
 }
