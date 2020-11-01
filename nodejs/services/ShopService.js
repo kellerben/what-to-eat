@@ -88,6 +88,7 @@ const getOpenPayments = () => new Promise(
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
+					console.log(Service.rejectResponse('Error in getOpenPayments while fetching orders'), err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse({
@@ -123,6 +124,7 @@ const getOrdersOfDay = ({ date }) => new Promise(
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
+					console.log(Service.rejectResponse('Error in getOrdersOfDay while fetching orders'), err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse({
@@ -152,6 +154,7 @@ const getPrice = ({ shopId, meal }) => new Promise(
 			var sql = mysql.format(shopId, meal);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
+					console.log(Service.rejectResponse('Error in getPrice while fetching orders'), err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse(rows[0]));
@@ -185,6 +188,7 @@ const getShopAnnouncements = ({ date }) => new Promise(
 			var sql = mysql.format(stmt, [date]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
+					console.log(Service.rejectResponse('Error in getShopAnnouncements while fetching orders'), err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse({
@@ -221,6 +225,7 @@ const getShopOrders = ({ shopId, date }) => new Promise(
     try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
+					console.log(Service.rejectResponse('Error in getShopOrders while fetching orders'), err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse({
@@ -268,7 +273,7 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 			var sql = mysql.format(stmt, [price, shopId, meal]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
-					console.log('Error while updating orders:', err);
+					console.log('Error while updating orders', err);
 					reject(Service.rejectResponse('Error while updating orders'));
 				} else {
 					if (rows['affectedRows'] === 0){
