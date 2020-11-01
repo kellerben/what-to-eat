@@ -1,0 +1,287 @@
+openapi: 3.0.1
+info:
+  title: Lunch
+  description: Just an app to organize lunch
+  license:
+    name: GNU AGPL 3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+  version: 1.0.0
+servers:
+- url: /api
+paths:
+  /order/{userId}:
+    post:
+      tags:
+      - Order
+      summary: Order lunch
+      operationId: orderLunch
+      parameters:
+      - name: userId
+        in: path
+        description: Who wants to order something?
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mealOrder'
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+    put:
+      tags:
+      - Order
+      summary: Change an order
+      operationId: updateOrder
+      parameters:
+      - name: userId
+        in: path
+        description: Who wants to order something?
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mealOrder'
+      responses:
+        400:
+          description: Invalid UserID supplied
+          content: {}
+        404:
+          description: User didn't ordered anything yet
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+    delete:
+      tags:
+      - Order
+      summary: delete an order
+      operationId: deleteOrder
+      parameters:
+      - name: userId
+        in: path
+        description: User of whom the order should be deleted.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mealOrder'
+      responses:
+        400:
+          description: Invalid UserID supplied
+          content: {}
+        404:
+          description: This order was not placed
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+  /shop:
+    post:
+      tags:
+      - Shop
+      summary: I will walk to the shop
+      operationId: announceShop
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/shopAnnouncement'
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+    delete:
+      tags:
+      - Shop
+      summary: I will not walk to the shop
+      operationId: deleteShopAnnouncement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/shopAnnouncement'
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+    get:
+      tags:
+      - Shop
+      summary: Get all shop announcements
+      operationId: getShopAnnouncements
+      parameters:
+      - name: date
+        in: query
+        description: For which day do you want to get the shop announcements?
+        schema:
+          type: string
+          format: date
+      responses:
+        404:
+          description: No Announcements done yet
+          content: {}
+        405:
+          description: Invalid input
+          content: {}
+  /getOpenPayments:
+    get:
+      tags:
+      - Shop
+      summary: Get all orders which are not payed yet
+      operationId: getOpenPayments
+      responses:
+        405:
+          description: Validation exception
+          content: {}
+  /getOrdersOfDay:
+    get:
+      tags:
+      - Shop
+      summary: Get all orders of one day
+      operationId: getOrdersOfDay
+      parameters:
+      - name: date
+        in: query
+        description: For which day do you want to get the orders?
+        schema:
+          type: string
+          format: date
+      responses:
+        404:
+          description: Nothing ordered yet
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+  /getShopOrders/{shopId}:
+    get:
+      tags:
+      - Shop
+      summary: Get all orders of one shop
+      operationId: getShopOrders
+      parameters:
+      - name: shopId
+        in: path
+        description: Which shop orders do you want to have?
+        required: true
+        schema:
+          type: string
+      - name: date
+        in: query
+        description: For which day do you want to get the orders?
+        schema:
+          type: string
+          format: date
+      responses:
+        404:
+          description: Nothing ordered yet
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+  /price/{shopId}/{meal}:
+    get:
+      tags:
+      - Shop
+      summary: Get price of a meal
+      operationId: getPrice
+      parameters:
+      - name: shopId
+        in: path
+        description: Which shop offers the meal?
+        required: true
+        schema:
+          type: string
+      - name: meal
+        in: path
+        description: Which meal-price do you want to have?
+        required: true
+        schema:
+          type: string
+      responses:
+        404:
+          description: Price not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+  /price/{shopId}/{meal}/{price}:
+    post:
+      tags:
+      - Shop
+      summary: Set price of a meal
+      operationId: setPrice
+      parameters:
+      - name: shopId
+        in: path
+        description: Which shop offers the meal?
+        required: true
+        schema:
+          type: string
+      - name: meal
+        in: path
+        description: Which meal-price do you want to set?
+        required: true
+        schema:
+          type: string
+      - name: price
+        in: path
+        description: The price of the meal
+        required: true
+        schema:
+          type: number
+      responses:
+        405:
+          description: Validation exception
+          content: {}
+components:
+  schemas:
+    mealOrder:
+      type: object
+      properties:
+        shopId:
+          type: string
+          description: Where do you want to get it from?
+        meal:
+          type: string
+          description: What do you want to have?
+        price:
+          type: number
+          description: Expected price
+        date:
+          type: string
+          description: For which day is your order?
+          format: date
+      required:
+        - shopId
+        - meal
+    shopAnnouncement:
+      type: object
+      properties:
+        userId:
+          description: Who wants to order something?
+          type: string
+        shopId:
+          description: Where do you want to get it from?
+          type: string
+        date:
+          type: string
+          description: For which day is your order?
+          format: date
+      required:
+        - userId
+        - shopId

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Lunch@DD</title>
+		<!--link rel="stylesheet" href="css/style.css"-->
+		<link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+			integrity='sha256-93wNFzm2GO3EoByj9rKZCwGjAJAwr0nujPaOgwUt8ZQ='
+			crossorigin='anonymous'>
+		<link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css"
+			integrity='sha256-7UcH1ovNtjYnCAPzyjRIxKY9TGAYU+9bHL36h9lM+4c='
+			crossorigin='anonymous'>
+		<link rel="stylesheet" href="custom.css">
+	</head>
+
+	<body>
+		<div id='root' class='row'>
+
+			<div class='col'></div>
+
+			<div class='col-lg-8'>
+				<div>
+					<ul class="nav nav-tabs tabs">
+						<li class="nav-item"><a class="nav-link" href="/">Order</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/pay.html">Pay</a></li>
+						<li class="nav-item"><a class="nav-link" href="/config.html">Config</a></li>
+					</ul>
+				</div>
+				<div>
+					<h1>
+						Pay
+					</h1>
+					<div>
+						<table class="table table-bordered table-striped table-hover table-condensed">
+							<thead>
+								<tr>
+									<th>From</th><th>To</th><th>Price</th><th>Food Store</th><th>Meal</th><th>Day</th><th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="payment in payments">
+									<td>{{payment.from_user}}</td>
+									<td>{{payment.to_user}}</td>
+									<td>{{payment.price}}<span v-if="payment.price"> ct</span></td>
+									<td>{{payment.shop}}</td>
+									<td>{{payment.meal}}</td>
+									<td>{{payment.day.substring(0,10)}}</td>
+									<td>
+										<button
+											class="btn btn-primary btn-sm"
+											v-on:click="deleteOrder"
+											v-bind:data-user="payment.from_user"
+											v-bind:data-shop="payment.shop"
+											v-bind:data-meal="payment.meal"
+											v-bind:data-price="payment.price"
+											v-bind:data-day="payment.day.substring(0,10)"
+										>✘</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div>
+					<h1>
+						Prices of Today’s Orders
+					</h1>
+				</div>
+				<table class="table table-bordered table-striped table-hover table-condensed">
+					<thead>
+						<tr>
+							<th>Shop</th><th>Meal</th><th>Price</th><th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="p in prices">
+							<td>{{p.shop}}</td>
+							<td>{{p.meal}}</td>
+							<td>
+								<input type="number" class="form-control" v-model="p.price" placeholder="Price in Cent" />
+							</td>
+							<td>
+								<button class="btn btn-primary btn-sm" v-bind:data-id="prices.indexOf(p)" v-on:click="updatePrice">update</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div>
+			<div class='col'></div>
+		</div>
+
+		<script src="https://unpkg.com/vue@3.0.2/dist/vue.global.js"
+					integrity="sha256-MwaU6OXDMndkdLPZIIJuGTIAsy81wtCHPWstt2PbjcU="
+		 crossorigin="anonymous"></script>
+		<script src="https://unpkg.com/swagger-client@3.11.1/dist/swagger-client.browser.min.js"
+					integrity="sha256-EpKgZSAFo/pdX5QNsXwYBjpwlP19KUFmpnqkl6IEMm0="
+		 crossorigin="anonymous"></script>
+		<script	src='https://unpkg.com/bootstrap-vue@2.18.1/dist/bootstrap-vue.min.js'
+	 integrity='sha256-nNKj6IdIDnMrroYTi78x1uBhX4h10Rf1Qz7s3PJ/0Kw='
+	 crossorigin='anonymous'></script>
+		<script	src='https://unpkg.com/bootstrap-vue@2.18.1/dist/bootstrap-vue-icons.min.js'
+	 integrity='sha256-HFhJXM/axz5V4P/TNu5B9XXhzME6A0TT9iPzJ6Qg1Bw='
+	 crossorigin='anonymous'></script>
+		<script src="pay.js"></script>
+	</body>
+</html>

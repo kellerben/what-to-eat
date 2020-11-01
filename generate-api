@@ -1,0 +1,4 @@
+#!/bin/sh
+
+openapi-generator-cli generate -i api/api.yaml -g openapi -o nginx/html/
+openapi-generator-cli generate -i api/api.yaml -g nodejs-express-server -o nodejs/

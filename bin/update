@@ -1,0 +1,18 @@
+#!/bin/sh
+# usage: update [dev]
+
+docker run --user "$(id -u):$(id -g)" -it --rm -v "$PWD":/l -w /l \
+	openapitools/openapi-generator-cli \
+	generate -i api/api.yaml -g openapi -o nginx/html/
+
+docker run --user "$(id -u):$(id -g)" -it --rm -v "$PWD":/l -w /l \
+	openapitools/openapi-generator-cli \
+	generate -i api/api.yaml -g nodejs-express-server -o nodejs/
+
+docker-compose build
+docker-compose push
+
+if [ "$1" = "dev" ];then
+	ADDOPTS="-c docker-compose.dev.yml"
+fi
+docker stack deploy -c docker-compose.yml $ADDOPTS --prune lunch

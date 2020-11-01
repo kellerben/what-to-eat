@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Lunch@DD</title>
+		<!--link rel="stylesheet" href="css/style.css"-->
+		<link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+			integrity='sha256-93wNFzm2GO3EoByj9rKZCwGjAJAwr0nujPaOgwUt8ZQ='
+			crossorigin='anonymous'>
+		<link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css"
+			integrity='sha256-7UcH1ovNtjYnCAPzyjRIxKY9TGAYU+9bHL36h9lM+4c='
+			crossorigin='anonymous'>
+		<link rel="stylesheet" href="custom.css">
+	</head>
+
+	<body>
+		<div id='root' class='row'>
+
+			<div class='col'></div>
+
+			<div class='col-lg-8'>
+				<div>
+					<ul class="nav nav-tabs tabs">
+						<li class="nav-item"><a class="nav-link" href="/">Order</a></li>
+						<li class="nav-item"><a class="nav-link" href="/pay.html">Pay</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/config.html">Config</a></li>
+					</ul>
+				</div>
+				<div>
+					<h1>
+						Config
+					</h1>
+					<div id="config">
+						Please enter your name:
+						<input type="text" class="form-control" v-on:change="changeUserId" v-model.trim="userId" placeholder="Peter Pan" />
+					</div>
+				</div>
+
+			</div>
+			<div class='col'></div>
+		</div>
+
+		<script src="https://unpkg.com/vue@3.0.2/dist/vue.global.js"
+					integrity="sha256-MwaU6OXDMndkdLPZIIJuGTIAsy81wtCHPWstt2PbjcU="
+		 crossorigin="anonymous"></script>
+		<script src="https://unpkg.com/swagger-client@3.11.1/dist/swagger-client.browser.min.js"
+					integrity="sha256-EpKgZSAFo/pdX5QNsXwYBjpwlP19KUFmpnqkl6IEMm0="
+		 crossorigin="anonymous"></script>
+		<script	src='https://unpkg.com/bootstrap-vue@2.18.1/dist/bootstrap-vue.min.js'
+	 integrity='sha256-nNKj6IdIDnMrroYTi78x1uBhX4h10Rf1Qz7s3PJ/0Kw='
+	 crossorigin='anonymous'></script>
+		<script	src='https://unpkg.com/bootstrap-vue@2.18.1/dist/bootstrap-vue-icons.min.js'
+	 integrity='sha256-HFhJXM/axz5V4P/TNu5B9XXhzME6A0TT9iPzJ6Qg1Bw='
+	 crossorigin='anonymous'></script>
+		<script src="config.js"></script>
+	</body>
+</html>

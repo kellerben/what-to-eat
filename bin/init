@@ -1,0 +1,28 @@
+#!/bin/sh
+
+apt-get -y update
+
+mkdir /var/log/docker
+chown syslog:adm /var/log/docker
+ln -fs -t /etc/rsyslog.d "$(pwd)/etc/rsyslog.d/99-docker.conf"
+ln -fs -t /etc/logrotate.d/ "$(pwd)/etc/logrotate.d/docker.conf"
+service rsyslog restart
+
+
+apt-get install -y docker.io docker-compose
+systemctl start docker
+systemctl enable docker
+
+PWDIR=$(dirname "$0")/../etc
+for PWFILE in db_user_pw db_root_pw; do
+	if [ ! -f "$PWDIR/$PWFILE" ]; then
+		openssl rand -base64 -out "$PWDIR/$PWFILE" 24
+		chmod go-rwx "$PWDIR/$PWFILE"
+	fi
+done
+
+docker swarm init --advertise-addr lo
+
+docker service create --name registry --publish published=5000,target=5000 registry:2
+
+docker network create lunch --attachable --driver=overlay --scope=swarm

@@ -1,0 +1,109 @@
+version: "3.5"
+
+services:
+    mariadb:
+        image: mariadb
+        command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+        networks:
+            - lunch
+        volumes:
+            - type: volume
+              source: dbdata
+              target: /var/lib/mysql
+            - type: bind
+              source: ./db/init/
+              target: /docker-entrypoint-initdb.d
+            - type: bind
+              source: ./db/etc/
+              target: /etc/mysql/conf.d
+        environment:
+            MYSQL_USER: lunch
+            MYSQL_DATABASE: lunch
+            MYSQL_PASSWORD_FILE: /run/secrets/db_user_pw
+            MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_pw
+            LANG: C.UTF-8
+        secrets:
+            - db_user_pw
+            - db_root_pw
+        healthcheck:
+            test: ["CMD-SHELL", "mysqladmin -unonexistent ping --silent"]
+            interval: 30s
+            timeout: 3s
+            retries: 10
+        deploy:
+            restart_policy:
+                condition: any #so it restarts also after reboot...
+                delay: 5s
+                max_attempts: 5
+                window: 10s
+        logging:
+            driver: "syslog"
+            options:
+                syslog-facility: local0
+                tag: "db"
+
+    nodejs:
+        image: 127.0.0.1:5000/lunch_nodejs
+        build:
+            context: nodejs
+        networks:
+            - lunch
+        secrets:
+            - db_user_pw
+        depends_on:
+            - mariadb
+        deploy:
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+                order: stop-first
+            restart_policy:
+                condition: any
+                delay: 5s
+                max_attempts: 10
+                window: 10s
+        logging:
+            driver: "syslog"
+            options:
+                syslog-facility: local0
+                tag: "nodejs"
+
+    nginx:
+        image: 127.0.0.1:5000/lunch_nginx
+        build:
+            context: nginx
+        networks:
+            - lunch
+        ports:
+            - 80:80
+            - 443:443
+        deploy:
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+                order: stop-first
+            restart_policy:
+                condition: any
+                delay: 5s
+                max_attempts: 10
+                window: 10s
+        logging:
+            driver: "syslog"
+            options:
+                syslog-facility: local0
+                tag: "nginx"
+
+volumes:
+    dbdata:
+
+networks:
+    lunch:
+        external: true
+
+secrets:
+    db_user_pw:
+        file: etc/db_user_pw
+    db_root_pw:
+        file: etc/db_root_pw
