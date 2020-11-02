@@ -38,6 +38,11 @@ const vueapp = Vue.createApp({
 			orders: []
 		}
 	},
+	computed: {
+		total(){
+			return this.orders.reduce((total, product) => product.price + total  ,0);
+		}
+	},
 	methods: {
 		deleteSuggestion: function (event) {
 			lunch.then(
