@@ -1,3 +1,8 @@
 #!/bin/sh
-P=$(realpath --relative-to="$PWD" "$(dirname $(readlink "$0"))/../etc")
-docker run -e LANG=C.UTF-8 -ti --rm --network=lunch mariadb mysql -u root -p"$(cat $P/db_root_pw)" -h mariadb lunch
+if [ -L "$0" ]; then
+	F=$(readlink "$0")
+else
+	F="$0"
+fi
+P=$(realpath --relative-to="$PWD" "$(dirname "$F")/../etc")
+docker run -e LANG=C.UTF-8 -ti --rm --network=lunch mariadb mysql -u root -p"$(cat "$P"/db_root_pw)" -h mariadb lunch
