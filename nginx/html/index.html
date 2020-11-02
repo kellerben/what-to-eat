@@ -23,7 +23,14 @@
 							</thead>
 							<tbody>
 								<tr v-for="item in suggestions">
-									<td>{{item.user}}</td><td>{{item.shop}}</td>
+									 <td class="field">
+										 <span class="field-value" v-show="!showField('user')" @click="focusField('user')">{{item.user}}</span>
+										 <input v-model="item.user" v-show="showField('user')" type="text" class="field-value form-control" @focus="focusField('user')" @blur="blurField">
+									 </td>
+									<td class="field">
+										<span class="field-value" v-show="!showField('shop')" @click="focusField('shop')">{{item.shop}}</span>
+										<input v-model="item.shop" v-show="showField('shop')" type="text" class="field-value form-control" @focus="focusField('shop')" @blur="blurField">
+									</td>
 									<td>
 										<button class="btn btn-primary btn-sm" v-on:click="deleteSuggestion" v-bind:data-shop="item.shop" v-bind:data-user="item.user">✘</button>
 									</td>

@@ -35,6 +35,7 @@ const vueapp = Vue.createApp({
 			meal: '',
 			shopId: '',
 			price: '',
+			editField: '',
 			orders: []
 		}
 	},
@@ -44,6 +45,15 @@ const vueapp = Vue.createApp({
 		}
 	},
 	methods: {
+		focusField(name){
+			this.editField = name;
+		},
+		blurField(){
+			this.editField = '';
+		},
+		showField(name){
+			return (this.editField == name);
+		},
 		deleteSuggestion: function (event) {
 			lunch.then(
 				client => client.apis.Shop.deleteShopAnnouncement({}, {
