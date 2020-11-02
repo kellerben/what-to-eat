@@ -80,6 +80,7 @@ const vueapp = Vue.createApp({
 			var order = { shopId: this.shopId, meal: this.meal};
 			if (this.price !== "") {
 				order.price = this.price;
+				lunch.then(client => client.apis.Shop.setPrice(order));
 			}
 			lunch.then(
 				client => client.apis.Order.orderLunch({
