@@ -13,7 +13,7 @@ const ws = require('../ws');
 const deleteOrder = ({ userId, mealOrder }) => new Promise(
   async (resolve, reject) => {
 		try {
-			if (typeof(date) === 'undefined') {
+			if (typeof(mealOrder.date) === 'undefined') {
 				date = new Date();
 			} else {
 				date = new Date(mealOrder.date);
