@@ -1,0 +1,4 @@
+<script	src='https://unpkg.com/vue@3.0.2/dist/vue.global.prod.js' integrity='sha256-9A0tu3fG/g3NsSSchTDl6Ady+cfh4cWf2Il+J/rhzkI=' crossorigin='anonymous'></script>
+<script src="https://unpkg.com/swagger-client@3.11.1/dist/swagger-client.browser.min.js" integrity="sha256-EpKgZSAFo/pdX5QNsXwYBjpwlP19KUFmpnqkl6IEMm0=" crossorigin="anonymous"></script>
+<script	src='https://unpkg.com/bootstrap-vue@2.18.1/dist/bootstrap-vue.min.js' integrity='sha256-nNKj6IdIDnMrroYTi78x1uBhX4h10Rf1Qz7s3PJ/0Kw=' crossorigin='anonymous'></script>
+<script	src='https://unpkg.com/bootstrap-vue@2.18.1/dist/bootstrap-vue-icons.min.js' integrity='sha256-HFhJXM/axz5V4P/TNu5B9XXhzME6A0TT9iPzJ6Qg1Bw=' crossorigin='anonymous'></script>

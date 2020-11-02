@@ -1,0 +1,7 @@
+<div>
+	<ul class="nav nav-tabs tabs">
+		<li class="nav-item"><a class="nav-link<!--# if expr="$active = order" --> active<!--# endif -->" href="/">Order</a></li>
+		<li class="nav-item"><a class="nav-link<!--# if expr="$active = pay" --> active<!--# endif -->" href="/pay.html">Pay</a></li>
+		<li class="nav-item"><a class="nav-link<!--# if expr="$active = config" --> active<!--# endif -->" href="/config.html">Config</a></li>
+	</ul>
+</div>
