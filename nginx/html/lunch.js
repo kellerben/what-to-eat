@@ -27,9 +27,8 @@ renewconnection();
 //}}}
 
 // vue {{{
-const vueapp = Vue.createApp({
-	data() {
-		return {
+const vueapp = new Vue({
+	data: {
 			userId: localStorage.userId,
 			suggestions: [],
 			meal: '',
@@ -37,7 +36,6 @@ const vueapp = Vue.createApp({
 			price: '',
 			editField: '',
 			orders: []
-		}
 	},
 	computed: {
 		total(){
@@ -105,8 +103,9 @@ const vueapp = Vue.createApp({
 				}()
 			);
 		}
-	}
-}).mount('#root')
+	},
+	el: '#root'
+});
 // }}}
 
 // current Suggestions {{{

@@ -31,13 +31,11 @@ renewconnection();
 //}}}
 
 // vue {{{
-const vueapp = Vue.createApp({
-	data() {
-		return {
+const vueapp = new Vue({
+	data: {
 			userId: localStorage.userId,
 			payments: [],
 			prices: []
-		}
 	},
 	methods: {
 		getOpenPayments: function (event) {
@@ -87,8 +85,9 @@ const vueapp = Vue.createApp({
 				client => client.apis.Shop.setPrice({ shopId: elem.shop, meal: elem.meal, price: elem.price})
 			)
 		}
-	}
-}).mount('#root')
+	},
+	el: '#root'
+});
 // }}}
 vueapp.getOpenPayments();
 

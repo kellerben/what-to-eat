@@ -1,12 +1,11 @@
-const vueapp = Vue.createApp({
-	data() {
-		return {
+const vueapp = new Vue({
+	data: {
 			userId: localStorage.userId
-		}
 	},
 	methods: {
 		changeUserId: function(event) {
 			localStorage.userId = this.userId;
 		}
-	}
-}).mount('#root')
+	},
+	el: '#root'
+});
