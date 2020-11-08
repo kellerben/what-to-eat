@@ -67,7 +67,8 @@ const vueapp = new Vue({
 		saveAddShop(name){
 			// check if we pressed backspace or tab -> the active element is not inside the class anymore
 			if (name == '' && [].indexOf.call(document.querySelectorAll('.shopInput input'), document.activeElement) == -1) {
-				if (this.shopOptions.includes(name)) {
+				if (this.shopOptions.includes(this.saveShopValue)) {
+					this.shopId = this.saveShopValue;
 					this.selectShop(this.saveShopValue);
 				} else {
 					this.addShop(this.saveShopValue);
