@@ -39,7 +39,9 @@ const vueapp = new Vue({
 		userId: localStorage.userId,
 		suggestions: [],
 		meal: null,
+		saveFoodValue: '',
 		shopId: '',
+		saveShopValue: '',
 		shopOptions: [],
 		foodOptions: [],
 		price: '',
@@ -62,6 +64,18 @@ const vueapp = new Vue({
 		focusField(name){
 			this.editField = name;
 		},
+		saveAddShop(name){
+			// check if we pressed backspace or tab -> the active element is not inside the class anymore
+			if (name == '' && [].indexOf.call(document.querySelectorAll('.shopInput input'), document.activeElement) == -1) {
+				if (this.shopOptions.includes(name)) {
+					this.selectShop(this.saveShopValue);
+				} else {
+					this.addShop(this.saveShopValue);
+				}
+			} else {
+				this.saveShopValue = name;
+			}
+		},
 		addShop(name) {
 			this.shopOptions.push(name)
 			this.shopId = name;
@@ -69,6 +83,26 @@ const vueapp = new Vue({
 		},
 		selectShop(shop) {
 			updateFoodSuggestions(shop);
+		},
+		saveAddFood(name){
+			if (name == '' && [].indexOf.call(document.querySelectorAll('.foodInput input'), document.activeElement) == -1) {
+				var food;
+				var newfood = this.saveFoodValue;
+				this.foodOptions.forEach(function(elem){
+					if (elem.meal == newfood) {
+						food = elem;
+					}
+				});
+
+				if (typeof food != 'undefined') {
+					this.meal = food;
+					this.selectFood(food);
+				} else {
+					this.addFood(newfood);
+				}
+			} else {
+				this.saveFoodValue = name;
+			}
 		},
 		addFood(foodName) {
 			var food = {meal: foodName, price: this.price};

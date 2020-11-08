@@ -45,7 +45,9 @@
 										<input type="text" class="form-control" v-model="userId" placeholder="Who suggests something?" />
 									</td>
 									<td>
+										<span class='shopInput'>
 										<multiselect
+											class='shopInput'
 											v-model="shopId"
 											:options="shopOptions"
 											placeholder="From where do you want to get Food?"
@@ -53,8 +55,10 @@
 											@select="selectShop"
 											@tag="addShop"
 											:multiple="false"
+											@search-change="saveAddShop"
 											:taggable="true"
 										></multiselect>
+										</span>
 									</td>
 									<td>
 										<button class="btn btn-primary btn-sm" v-on:click="announceShop">Suggest Shop</button>
@@ -100,18 +104,22 @@
 										<input type="text" class="form-control" v-model="userId" placeholder="Who is ordering?" />
 									</td>
 									<td>
+										<span class='shopInput'>
 										<multiselect
 											v-model="shopId"
 											:options="shopOptions"
 											placeholder="From where do you want to get Food?"
 											tag-placeholder="Press enter to select"
 											@select="selectShop"
+											@search-change="saveAddShop"
 											@tag="addShop"
 											:multiple="false"
 											:taggable="true"
 										></multiselect>
+										</span>
 									</td>
 									<td>
+										<span class='foodInput'>
 										<multiselect
 											v-model="meal"
 											:options="foodOptions"
@@ -119,10 +127,12 @@
 											tag-placeholder="Press enter to select"
 											:custom-label="foodOptionLabel"
 											@select="selectFood"
+											@search-change="saveAddFood"
 											@tag="addFood"
 											:multiple="false"
 											:taggable="true"
 										></multiselect>
+										</span>
 									</td>
 									<td>
 										<input type="number" class="form-control" v-model="price" placeholder="(optional) Price in Cent" />
