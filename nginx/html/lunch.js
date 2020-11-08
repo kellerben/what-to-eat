@@ -53,7 +53,11 @@ const vueapp = new Vue({
 	},
 	methods: {
 		foodOptionLabel(option) {
-			return option.meal;
+			if (option.price != ''){
+				return option.meal + ' (' + option.price + ' ct)';
+			} else {
+				return option.meal;
+			}
 		},
 		focusField(name){
 			this.editField = name;
