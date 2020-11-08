@@ -17,9 +17,13 @@ function incommingMessage(e) {
 	switch(e.data) {
 		case "getShopAnnouncements":
 			fetchSuggestions();
+			updateShopSuggestions();
 			break;
 		case "refreshOrders":
 			fetchTodaysOrders();
+			if (vueapp.shopId != ''){
+				updateFoodSuggestions(vueapp.shopId);
+			}
 			break;
 	}
 }
