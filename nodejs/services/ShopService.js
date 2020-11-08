@@ -277,7 +277,7 @@ const getShopOrders = ({ shopId, date }) => new Promise(
 const getShops = () => new Promise(
 	async (resolve, reject) => {
 		var sql =
-			"SELECT DISTINCT shop FROM meals";
+			"SELECT DISTINCT shop FROM meals UNION SELECT DISTINCT shop FROM walks;";
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
