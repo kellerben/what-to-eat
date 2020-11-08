@@ -3,5 +3,6 @@
 	<title>What to eat?</title>
 	<link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity='sha256-93wNFzm2GO3EoByj9rKZCwGjAJAwr0nujPaOgwUt8ZQ=' crossorigin='anonymous'>
 	<link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" integrity='sha256-7UcH1ovNtjYnCAPzyjRIxKY9TGAYU+9bHL36h9lM+4c=' crossorigin='anonymous'>
+	<link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css" integrity='sha256-3f/B+1hX1WQ8ARPmJNAT5negBTgYRhaHfbziEqu7/EE=' crossorigin='anonymous'>
 	<link rel="stylesheet" href="custom.css">
 </head>

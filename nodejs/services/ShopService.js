@@ -10,7 +10,7 @@ const ws = require('../ws');
 * no response value expected for this operation
 * */
 const announceShop = ({ shopAnnouncement }) => new Promise(
-  async (resolve, reject) => {
+	async (resolve, reject) => {
 		if (typeof(shopAnnouncement.date) === 'undefined') {
 			date = new Date();
 		} else {
@@ -33,7 +33,7 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 				resolve(Service.successResponse('success'));
 			}
 		});
-  },
+	}
 );
 /**
 * I will not walk to the shop
@@ -42,7 +42,7 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 * no response value expected for this operation
 * */
 const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
-  async (resolve, reject) => {
+	async (resolve, reject) => {
 		try {
 			if (typeof(shopAnnouncement.date) === 'undefined') {
 				date = new Date();
@@ -71,7 +71,35 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 				e.status || 405,
 			));
 		}
-  },
+	}
+);
+/**
+* Get the shop's menu
+*
+* shopId String The menu of which shop do you want to have?
+* no response value expected for this operation
+* */
+const getMenu = ({ shopId }) => new Promise(
+	async (resolve, reject) => {
+		var stmt =
+			"SELECT meal,price FROM meals WHERE shop = ?";
+		var sql = mysql.format(stmt, [shopId]);
+		try {
+			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+				if (err) {
+					console.error(err);
+					reject(Service.rejectResponse('Error while fetching meals'));
+				} else {
+					resolve(Service.successResponse(rows));
+				}
+			});
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	}
 );
 /**
 * Get all orders which are not payed yet
@@ -102,7 +130,7 @@ const getOpenPayments = () => new Promise(
 				e.status || 405,
 			));
 		}
-	},
+	}
 );
 /**
 * Get all orders of one day
@@ -138,7 +166,7 @@ const getOrdersOfDay = ({ date }) => new Promise(
 				e.status || 405,
 			));
 		}
-	},
+	}
 );
 /**
 * Get price of a meal
@@ -148,8 +176,8 @@ const getOrdersOfDay = ({ date }) => new Promise(
 * no response value expected for this operation
 * */
 const getPrice = ({ shopId, meal }) => new Promise(
-  async (resolve, reject) => {
-    try {
+	async (resolve, reject) => {
+		try {
 			var stmt = "SELECT price FROM meals WHERE shop = ? AND meal = ?";
 			var sql = mysql.format(shopId, meal);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
@@ -160,13 +188,13 @@ const getPrice = ({ shopId, meal }) => new Promise(
 					resolve(Service.successResponse(rows[0]));
 				}
 			});
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	}
 );
 /**
 * Get all shop announcements
@@ -175,8 +203,8 @@ const getPrice = ({ shopId, meal }) => new Promise(
 * no response value expected for this operation
 * */
 const getShopAnnouncements = ({ date }) => new Promise(
-  async (resolve, reject) => {
-    try {
+	async (resolve, reject) => {
+		try {
 			if (typeof(date) === 'undefined') {
 				date = new Date();
 			} else {
@@ -196,13 +224,13 @@ const getShopAnnouncements = ({ date }) => new Promise(
 					}));
 				}
 			});
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	}
 );
 /**
 * Get all orders of one shop
@@ -222,7 +250,7 @@ const getShopOrders = ({ shopId, date }) => new Promise(
 		var stmt =
 			"SELECT user,meal,price FROM orders WHERE shop = ? AND day = ?";
 		var sql = mysql.format(stmt, [shopId, date]);
-    try {
+		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
@@ -233,13 +261,41 @@ const getShopOrders = ({ shopId, date }) => new Promise(
 					}));
 				}
 			});
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	}
+);
+/**
+* Get all known shops
+*
+* no response value expected for this operation
+* */
+const getShops = () => new Promise(
+	async (resolve, reject) => {
+		var sql =
+			"SELECT DISTINCT shop FROM meals";
+		try {
+			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+				if (err) {
+					console.error(err);
+					reject(Service.rejectResponse('Error while fetching shops'));
+				} else {
+					var res = [];
+					rows.forEach(function(elem){ res.push(elem.shop) })
+					resolve(Service.successResponse(res));
+				}
+			});
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	}
 );
 /**
 * Set price of a meal
@@ -250,8 +306,8 @@ const getShopOrders = ({ shopId, date }) => new Promise(
 * no response value expected for this operation
 * */
 const setPrice = ({ shopId, meal, price }) => new Promise(
-  async (resolve, reject) => {
-    try {
+	async (resolve, reject) => {
+		try {
 
 			var updatePriceInOrders = function() {
 				var stmt =
@@ -299,22 +355,24 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 				}
 			});
 
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	}
 );
 
 module.exports = {
-  announceShop,
-  deleteShopAnnouncement,
-  getOpenPayments,
-  getOrdersOfDay,
-  getPrice,
-  getShopAnnouncements,
-  getShopOrders,
-  setPrice,
+	announceShop,
+	deleteShopAnnouncement,
+	getMenu,
+	getOpenPayments,
+	getOrdersOfDay,
+	getPrice,
+	getShopAnnouncements,
+	getShopOrders,
+	getShops,
+	setPrice,
 };

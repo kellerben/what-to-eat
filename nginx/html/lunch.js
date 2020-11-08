@@ -28,14 +28,19 @@ renewconnection();
 
 // vue {{{
 const vueapp = new Vue({
+	components: {
+		Multiselect: window.VueMultiselect.default
+	},
 	data: {
-			userId: localStorage.userId,
-			suggestions: [],
-			meal: '',
-			shopId: '',
-			price: '',
-			editField: '',
-			orders: []
+		userId: localStorage.userId,
+		suggestions: [],
+		meal: null,
+		shopId: '',
+		shopOptions: [],
+		foodOptions: [],
+		price: '',
+		editField: '',
+		orders: []
 	},
 	computed: {
 		total(){
@@ -43,8 +48,28 @@ const vueapp = new Vue({
 		}
 	},
 	methods: {
+		foodOptionLabel(option) {
+			return option.meal;
+		},
 		focusField(name){
 			this.editField = name;
+		},
+		addShop(name) {
+			this.shopOptions.push(name)
+			this.shopId = name;
+			this.selectShop(name);
+		},
+		selectShop(shop) {
+			updateFoodSuggestions(shop);
+		},
+		addFood(foodName) {
+			var food = {meal: foodName, price: this.price};
+			this.foodOptions.push(food)
+			this.meal = food;
+			this.selectFood(food);
+		},
+		selectFood(food) {
+			this.price = food.price;
 		},
 		blurField(){
 			this.editField = '';
@@ -82,10 +107,10 @@ const vueapp = new Vue({
 			);
 		},
 		orderLunch: function (event) {
-			if (this.userId === "" || this.shopId === "" || this.meal === "") {
+			if (this.userId === "" || this.shopId === '' || this.meal === null) {
 				return;
 			}
-			var order = { shopId: this.shopId, meal: this.meal};
+			var order = { shopId: this.shopId, meal: this.meal.meal};
 			if (this.price !== "") {
 				order.price = this.price;
 				lunch.then(client => client.apis.Shop.setPrice(order));
@@ -137,4 +162,32 @@ function fetchTodaysOrders() {
 	);
 }
 fetchTodaysOrders();
+// }}}
+
+// update all suggestions {{{
+function updateShopSuggestions() {
+	function updateSuggestion(shops){
+		vueapp.shopOptions = shops;
+	}
+	lunch.then(
+		client => client.apis.Shop.getShops(),
+	).then(
+		result => updateSuggestion(JSON.parse(result.text)),
+		reason => console.error('failed on api call: ' + reason)
+	);
+}
+updateShopSuggestions();
+function updateFoodSuggestions(shop) {
+	function updateSuggestion(meals){
+		vueapp.foodOptions = meals;
+	}
+	lunch.then(
+		client => client.apis.Shop.getMenu({
+					shopId: shop
+				}),
+	).then(
+		result => updateSuggestion(JSON.parse(result.text)),
+		reason => console.error('failed on api call: ' + reason)
+	);
+}
 // }}}

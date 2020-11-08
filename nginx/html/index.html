@@ -45,7 +45,16 @@
 										<input type="text" class="form-control" v-model="userId" placeholder="Who suggests something?" />
 									</td>
 									<td>
-										<input type="text" class="form-control" v-model="shopId" placeholder="From where do you want to get Food?" />
+										<multiselect
+											v-model="shopId"
+											:options="shopOptions"
+											placeholder="From where do you want to get Food?"
+											tag-placeholder="Press enter to select"
+											@select="selectShop"
+											@tag="addShop"
+											:multiple="false"
+											:taggable="true"
+										></multiselect>
 									</td>
 									<td>
 										<button class="btn btn-primary btn-sm" v-on:click="announceShop">Suggest Shop</button>
@@ -91,10 +100,29 @@
 										<input type="text" class="form-control" v-model="userId" placeholder="Who is ordering?" />
 									</td>
 									<td>
-										<input type="text" class="form-control" v-model="shopId" placeholder="From where do you want to get Food?" />
+										<multiselect
+											v-model="shopId"
+											:options="shopOptions"
+											placeholder="From where do you want to get Food?"
+											tag-placeholder="Press enter to select"
+											@select="selectShop"
+											@tag="addShop"
+											:multiple="false"
+											:taggable="true"
+										></multiselect>
 									</td>
 									<td>
-										<input type="text" class="form-control" v-model="meal" placeholder="What do you want to order?" />
+										<multiselect
+											v-model="meal"
+											:options="foodOptions"
+											placeholder="What do you want to order?"
+											tag-placeholder="Press enter to select"
+											:custom-label="foodOptionLabel"
+											@select="selectFood"
+											@tag="addFood"
+											:multiple="false"
+											:taggable="true"
+										></multiselect>
 									</td>
 									<td>
 										<input type="number" class="form-control" v-model="price" placeholder="(optional) Price in Cent" />
