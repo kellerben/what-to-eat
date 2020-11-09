@@ -1,0 +1,10 @@
+#!/bin/sh
+# should be executed periodically via cron
+
+# 0 * * * * /path/to/backup.sh
+
+PWFILE=$(dirname "$0")/../etc/db_root_pw
+docker run  -e LANG=C.UTF-8 -i --rm --network=lunch mariadb mysqldump -u root -p"$(cat "$PWFILE")" -h mariadb lunch > /var/backups/lunch_dump.sql
+
+# restore with
+# docker run -e LANG=C.UTF-8 -i --rm --network=lunch mariadb mysql -u root -p"$(cat etc/db_root_pw)" -h mariadb lunch < /var/backups/lunch_dump.sql
