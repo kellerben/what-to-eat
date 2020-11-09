@@ -6,6 +6,7 @@ mkdir /var/log/docker
 chown syslog:adm /var/log/docker
 ln -fs -t /etc/rsyslog.d "$(pwd)/etc/rsyslog.d/99-docker.conf"
 ln -fs -t /etc/logrotate.d/ "$(pwd)/etc/logrotate.d/docker.conf"
+ln -fs -t /etc/logrotate.d/ "$(pwd)/etc/logrotate.d/backup.conf"
 service rsyslog restart
 
 
