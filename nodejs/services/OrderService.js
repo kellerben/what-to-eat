@@ -50,6 +50,9 @@ const deleteOrder = ({ userId, mealOrder }) => new Promise(
 					if (rows['affectedRows'] === 0){
 						reject(Service.rejectResponse("This order was not placed", 404));
 					} else {
+						// FIXME: not the best way to log deletions
+						// would be better to make this accessible and delete it after a while
+						console.log(sql);
 						ws.sendAll("refreshOrders");
 						resolve(Service.successResponse('success'));
 					}
