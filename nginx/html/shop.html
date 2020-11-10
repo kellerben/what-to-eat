@@ -18,15 +18,15 @@
 						<table class="table table-bordered table-striped table-hover table-condensed">
 							<thead>
 								<tr>
-									<th>User</th><th>Food Store</th><th>Meal</th><th>Price</th>
+									<th>User</th><th>Food Store</th><th>Meal</th><th>Special Request</th><th>Price</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr v-for="order in orders">
-									<td>{{order.user}}</td><td>{{order.shop}}</td><td>{{order.meal}}</td><td>{{order.price}}<span v-if="order.price"> ct</span></td>
+									<td>{{order.user}}</td><td>{{order.shop}}</td><td>{{order.meal}}</td><td>{{order.specialRequest}}<td>{{order.price}}<span v-if="order.price"> ct</span></td>
 								</tr>
 								<tr>
-									<th colspan='3'>Total price</th><td>{{total}} ct</td>
+									<th colspan='4'>Total price</th><td>{{total}} ct</td>
 								</tr>
 							</tbody>
 						</table>

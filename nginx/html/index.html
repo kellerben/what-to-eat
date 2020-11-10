@@ -70,12 +70,12 @@
 						<table class="table table-bordered table-striped table-hover table-condensed">
 							<thead>
 								<tr>
-									<th>User</th><th>Food Store</th><th>Meal</th><th>Price</th><th>Action</th>
+									<th>User</th><th>Food Store</th><th>Meal</th><th>Special Request</th><th>Price</th><th>Action</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr v-for="order in orders">
-									<td>{{order.user}}</td><td>{{order.shop}}</td><td>{{order.meal}}</td><td>{{order.price}}<span v-if="order.price"> ct</span></td>
+									<td>{{order.user}}</td><td>{{order.shop}}</td><td>{{order.meal}}</td><td>{{order.specialRequest}}<td>{{order.price}}<span v-if="order.price"> ct</span></td>
 									<td>
 										<button
 											class="btn btn-primary btn-sm"
@@ -122,6 +122,20 @@
 											@select="selectFood"
 											@search-change="saveAddFood"
 											@tag="addFood"
+											:multiple="false"
+											:taggable="true"
+										></multiselect>
+										</span>
+									</td>
+									<td>
+										<span class='specialRequestInput'>
+										<multiselect
+											v-model="specialRequest"
+											:options="specialRequestOptions"
+											placeholder="Any special requests?"
+											tag-placeholder="Press enter to select"
+											@search-change="saveAddSpecialRequest"
+											@tag="addSpecialRequest"
 											:multiple="false"
 											:taggable="true"
 										></multiselect>

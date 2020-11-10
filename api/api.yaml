@@ -220,6 +220,23 @@ paths:
         405:
           description: Validation exception
           content: {}
+  /specialRequests/{shopId}:
+    get:
+      tags:
+      - Shop
+      summary: Get typical special requests of the shop
+      operationId: getSpecialRequests
+      parameters:
+      - name: shopId
+        in: path
+        description: The typical special requests of which shop do you want to have?
+        required: true
+        schema:
+          type: string
+      responses:
+        405:
+          description: Validation exception
+          content: {}
   /price/{shopId}/{meal}:
     get:
       tags:
@@ -293,6 +310,9 @@ components:
           type: string
           description: For which day is your order?
           format: date
+        specialRequest:
+          type: string
+          description: Any specialties?
       required:
         - shopId
         - meal

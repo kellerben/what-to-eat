@@ -82,11 +82,20 @@ const orderLunch = ({ userId, mealOrder }) => new Promise(
 				date = new Date(mealOrder.date);
 			}
 			date = date.toISOString().slice(0,10);
-			var inserts = [userId, mealOrder.shopId, mealOrder.meal, mealOrder.price, date];
+
+			var stmt =
+				"INSERT INTO specialRequests" +
+				" (shop, specialRequest)" +
+				" VALUES (?, ?)";
+
+			var sql = mysql.format(stmt, [mealOrder.shopId, mealOrder.specialRequest]);
+			Service.mysql_connection_pool.query(sql);
+
+			var inserts = [userId, mealOrder.shopId, mealOrder.meal, mealOrder.specialRequest, mealOrder.price, date];
 			var stmt =
 				"INSERT INTO orders" +
-				" (user, shop, meal, price, day)" +
-				" VALUES (?, ?, ?, ?, ?)";
+				" (user, shop, meal, specialRequest, price, day)" +
+				" VALUES (?, ?, ?, ?, ?, ?)";
 
 			var sql = mysql.format(stmt, inserts);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {

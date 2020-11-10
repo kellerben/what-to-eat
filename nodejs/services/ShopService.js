@@ -147,7 +147,7 @@ const getOrdersOfDay = ({ date }) => new Promise(
 		}
 		date = date.toISOString().slice(0,10);
 		var stmt =
-			"SELECT shop,user,meal,price FROM orders WHERE day = ?";
+			"SELECT shop,user,meal,specialRequest,price FROM orders WHERE day = ?";
 		var sql = mysql.format(stmt, [date]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
@@ -298,6 +298,36 @@ const getShops = () => new Promise(
 	}
 );
 /**
+* Get typical special requests of the shop
+*
+* shopId String The typical special requests of which shop do you want to have?
+* no response value expected for this operation
+* */
+const getSpecialRequests = ({ shopId }) => new Promise(
+	async (resolve, reject) => {
+		var stmt =
+			"SELECT specialRequest FROM specialRequests WHERE shop = ?";
+		var sql = mysql.format(stmt, [shopId]);
+		try {
+			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+				if (err) {
+					console.error(err);
+					reject(Service.rejectResponse('Error while fetching special requests'));
+				} else {
+					var res = [];
+					rows.forEach(function(elem){ res.push(elem.specialRequest) })
+					resolve(Service.successResponse(res));
+				}
+			});
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	}
+);
+/**
 * Set price of a meal
 *
 * shopId String Which shop offers the meal?
@@ -365,14 +395,15 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 );
 
 module.exports = {
-	announceShop,
-	deleteShopAnnouncement,
-	getMenu,
-	getOpenPayments,
-	getOrdersOfDay,
-	getPrice,
-	getShopAnnouncements,
-	getShopOrders,
-	getShops,
-	setPrice,
+  announceShop,
+  deleteShopAnnouncement,
+  getMenu,
+  getOpenPayments,
+  getOrdersOfDay,
+  getPrice,
+  getShopAnnouncements,
+  getShopOrders,
+  getShops,
+  getSpecialRequests,
+  setPrice,
 };

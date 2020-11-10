@@ -39,6 +39,9 @@ const vueapp = new Vue({
 		userId: localStorage.userId,
 		suggestions: [],
 		meal: null,
+		specialRequest: '',
+		specialRequestOptions: [],
+		saveSpecialRequestValue: '',
 		saveFoodValue: '',
 		shopId: '',
 		saveShopValue: '',
@@ -53,14 +56,7 @@ const vueapp = new Vue({
 		}
 	},
 	methods: {
-		foodOptionLabel(option) {
-			if (option.price != ''){
-				return option.meal + ' (' + option.price + ' ct)';
-			} else {
-				return option.meal;
-			}
-		},
-		saveAddShop(name){
+		saveAddShop(name){// shop multiselect methods {{{
 			// check if we pressed backspace or tab -> the active element is not inside the class anymore
 			if (name == '' && [].indexOf.call(document.querySelectorAll('.shopInput input'), document.activeElement) == -1) {
 				if (this.shopOptions.includes(this.saveShopValue)) {
@@ -80,6 +76,14 @@ const vueapp = new Vue({
 		},
 		selectShop(shop) {
 			updateFoodSuggestions(shop);
+		},// }}}
+
+		foodOptionLabel(option) {// food multiselect methods {{{
+			if (option.price != ''){
+				return option.meal + ' (' + option.price + ' ct)';
+			} else {
+				return option.meal;
+			}
 		},
 		saveAddFood(name){
 			if (name == '' && [].indexOf.call(document.querySelectorAll('.foodInput input'), document.activeElement) == -1) {
@@ -109,7 +113,25 @@ const vueapp = new Vue({
 		},
 		selectFood(food) {
 			this.price = food.price;
+		}, // }}}
+
+		saveAddSpecialRequest(name){// specialRequest multiselect methods {{{
+			// check if we pressed backspace or tab -> the active element is not inside the class anymore
+			if (name == '' && [].indexOf.call(document.querySelectorAll('.specialRequestInput input'), document.activeElement) == -1) {
+				if (this.specialRequestOptions.includes(this.saveSpecialRequestValue)) {
+					this.specialRequest = this.saveSpecialRequestValue;
+				} else {
+					this.addSpecialRequest(this.saveSpecialRequestValue);
+				}
+			} else {
+				this.saveSpecialRequestValue = name;
+			}
 		},
+		addSpecialRequest(name) {
+			this.specialRequestOptions.push(name)
+			this.specialRequest = name;
+		},// }}}
+
 		deleteSuggestion: function (event) {
 			lunch.then(
 				client => client.apis.Shop.deleteShopAnnouncement({}, {
@@ -143,7 +165,7 @@ const vueapp = new Vue({
 			if (this.userId === "" || this.shopId === '' || this.meal === null) {
 				return;
 			}
-			var order = { shopId: this.shopId, meal: this.meal.meal};
+			var order = { shopId: this.shopId, meal: this.meal.meal, specialRequest: this.specialRequest};
 			if (this.price !== "") {
 				order.price = this.price;
 				lunch.then(client => client.apis.Shop.setPrice(order));
@@ -158,6 +180,7 @@ const vueapp = new Vue({
 				result => function(){
 					vueapp.price = "";
 					vueapp.meal = "";
+					vueapp.specialRequest = "";
 				}()
 			);
 		}
@@ -214,12 +237,19 @@ function updateFoodSuggestions(shop) {
 	function updateSuggestion(meals){
 		vueapp.foodOptions = meals;
 	}
+	function updateSpecialRequestSuggestion(specialRequests){
+		vueapp.specialRequestOptions = specialRequests;
+	}
 	lunch.then(
-		client => client.apis.Shop.getMenu({
-					shopId: shop
-				}),
+		client => client.apis.Shop.getMenu({ shopId: shop }),
 	).then(
 		result => updateSuggestion(JSON.parse(result.text)),
+		reason => console.error('failed on api call: ' + reason)
+	);
+	lunch.then(
+		client => client.apis.Shop.getSpecialRequests({ shopId: shop }),
+	).then(
+		result => updateSpecialRequestSuggestion(JSON.parse(result.text)),
 		reason => console.error('failed on api call: ' + reason)
 	);
 }
