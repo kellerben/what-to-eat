@@ -45,7 +45,6 @@ const vueapp = new Vue({
 		shopOptions: [],
 		foodOptions: [],
 		price: '',
-		editField: '',
 		orders: []
 	},
 	computed: {
@@ -60,9 +59,6 @@ const vueapp = new Vue({
 			} else {
 				return option.meal;
 			}
-		},
-		focusField(name){
-			this.editField = name;
 		},
 		saveAddShop(name){
 			// check if we pressed backspace or tab -> the active element is not inside the class anymore
@@ -113,12 +109,6 @@ const vueapp = new Vue({
 		},
 		selectFood(food) {
 			this.price = food.price;
-		},
-		blurField(){
-			this.editField = '';
-		},
-		showField(name){
-			return (this.editField == name);
 		},
 		deleteSuggestion: function (event) {
 			lunch.then(
