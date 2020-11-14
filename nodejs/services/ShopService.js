@@ -109,10 +109,10 @@ const getMenu = ({ shopId }) => new Promise(
 const getOpenPayments = () => new Promise(
 	async (resolve, reject) => {
 		var sql =
-			"SELECT orders.shop,walks.user AS to_user,orders.user AS from_user,price,orders.shop,orders.meal,orders.day " +
+			"SELECT orders.user AS from_user,walks.user AS to_user,price,orders.shop,orders.shop,orders.meal,orders.day " +
 			"FROM orders,walks " +
 			"WHERE walks.day = orders.day AND walks.shop = orders.shop AND walks.user != orders.user " +
-			"ORDER BY walks.day";
+			"ORDER BY to_user,from_user";
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
@@ -147,7 +147,7 @@ const getOrdersOfDay = ({ date }) => new Promise(
 		}
 		date = date.toISOString().slice(0,10);
 		var stmt =
-			"SELECT shop,user,meal,specialRequest,price FROM orders WHERE day = ?";
+			"SELECT shop,user,meal,specialRequest,price FROM orders WHERE day = ? ORDER BY shop,meal,specialRequest";
 		var sql = mysql.format(stmt, [date]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
