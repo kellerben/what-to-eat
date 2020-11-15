@@ -83,6 +83,10 @@ const orderLunch = ({ userId, mealOrder }) => new Promise(
 			}
 			date = date.toISOString().slice(0,10);
 
+			Service.trimStrings(mealOrder);
+			userId = userId.trim();
+
+
 			var stmt =
 				"INSERT INTO specialRequests" +
 				" (shop, specialRequest)" +
@@ -131,6 +135,9 @@ const updateOrder = ({ userId, mealOrder }) => new Promise(
 				date = new Date(mealOrder.date);
 			}
 			date = date.toISOString().slice(0,10);
+
+			Service.trimStrings(mealOrder);
+			userId = userId.trim();
 
 			var stmt, sql;
 			if (typeof(price) === 'undefined') {

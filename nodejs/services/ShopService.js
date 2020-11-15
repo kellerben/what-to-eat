@@ -17,6 +17,8 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 			date = new Date(shopAnnouncement.date);
 		}
 		date = date.toISOString().slice(0,10);
+		Service.trimStrings(shopAnnouncement);
+
 		var inserts = [shopAnnouncement.userId, shopAnnouncement.shopId, date];
 		var stmt =
 			"INSERT INTO walks " +
@@ -50,6 +52,8 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 				date = new Date(shopAnnouncement.date);
 			}
 			date = date.toISOString().slice(0,10);
+			Service.trimStrings(shopAnnouncement);
+
 			var statement = "DELETE FROM walks WHERE user = ? AND shop = ? AND day = ?";
 			var sql = mysql.format(statement, [shopAnnouncement.userId, shopAnnouncement.shopId, date]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
@@ -81,6 +85,8 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 * */
 const getMenu = ({ shopId }) => new Promise(
 	async (resolve, reject) => {
+		shopId = shopId.trim();
+
 		var stmt =
 			"SELECT meal,price FROM meals WHERE shop = ?";
 		var sql = mysql.format(stmt, [shopId]);
@@ -178,6 +184,9 @@ const getOrdersOfDay = ({ date }) => new Promise(
 const getPrice = ({ shopId, meal }) => new Promise(
 	async (resolve, reject) => {
 		try {
+			shopId = shopId.trim();
+			meal = meal.trim();
+
 			var stmt = "SELECT price FROM meals WHERE shop = ? AND meal = ?";
 			var sql = mysql.format(shopId, meal);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
@@ -247,6 +256,8 @@ const getShopOrders = ({ shopId, date }) => new Promise(
 			date = new Date(date);
 		}
 		date = date.toISOString().slice(0,10);
+		shopId = shopId.trim();
+
 		var stmt =
 			"SELECT user,meal,price FROM orders WHERE shop = ? AND day = ?";
 		var sql = mysql.format(stmt, [shopId, date]);
@@ -307,6 +318,8 @@ const getSpecialRequests = ({ shopId }) => new Promise(
 	async (resolve, reject) => {
 		var stmt =
 			"SELECT specialRequest FROM specialRequests WHERE shop = ?";
+		shopId = shopId.trim();
+
 		var sql = mysql.format(stmt, [shopId]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
@@ -338,6 +351,8 @@ const getSpecialRequests = ({ shopId }) => new Promise(
 const setPrice = ({ shopId, meal, price }) => new Promise(
 	async (resolve, reject) => {
 		try {
+			shopId = shopId.trim();
+			meal = meal.trim();
 
 			var updatePriceInOrders = function() {
 				var stmt =

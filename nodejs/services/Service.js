@@ -23,6 +23,14 @@ class Service {
 		"password": db_user_passwd,
 		"charset": "utf8mb4"
 	});
+
+	static trimStrings(object) {
+		for (const key in object) {
+			if (typeof(object[key]) == 'string') {
+				object[key] = object[key].trim();
+			}
+		}
+	}
 }
 
 module.exports = Service;
