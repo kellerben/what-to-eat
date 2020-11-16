@@ -11,6 +11,7 @@ rules:
   indent:
   - error
   - tab
+  - SwitchCase: 1
   global-require:
   - error
   handle-callback-err:
