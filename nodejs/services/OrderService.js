@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const Service = require('./Service');
 const mysql = require('mysql');
 const ws = require('../ws');
@@ -11,8 +10,9 @@ const ws = require('../ws');
 * no response value expected for this operation
 * */
 const deleteOrder = ({ userId, mealOrder }) => new Promise(
-  async (resolve, reject) => {
+	async (resolve, reject) => {
 		try {
+			var date;
 			if (typeof(mealOrder.date) === 'undefined') {
 				date = new Date();
 			} else {
@@ -59,12 +59,12 @@ const deleteOrder = ({ userId, mealOrder }) => new Promise(
 				}
 			});
 		} catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	},
 );
 /**
 * Order lunch

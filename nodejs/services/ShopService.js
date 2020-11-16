@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const Service = require('./Service');
 const mysql = require('mysql');
 const ws = require('../ws');
@@ -11,6 +10,7 @@ const ws = require('../ws');
 * */
 const announceShop = ({ shopAnnouncement }) => new Promise(
 	async (resolve, reject) => {
+		var date;
 		if (typeof(shopAnnouncement.date) === 'undefined') {
 			date = new Date();
 		} else {
@@ -46,6 +46,7 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 	async (resolve, reject) => {
 		try {
+			var date;
 			if (typeof(shopAnnouncement.date) === 'undefined') {
 				date = new Date();
 			} else {
@@ -146,6 +147,7 @@ const getOpenPayments = () => new Promise(
 * */
 const getOrdersOfDay = ({ date }) => new Promise(
 	async (resolve, reject) => {
+		var date;
 		if (typeof(date) === 'undefined') {
 			date = new Date();
 		} else {
@@ -188,7 +190,7 @@ const getPrice = ({ shopId, meal }) => new Promise(
 			meal = meal.trim();
 
 			var stmt = "SELECT price FROM meals WHERE shop = ? AND meal = ?";
-			var sql = mysql.format(shopId, meal);
+			var sql = mysql.format(stmt, [shopId, meal]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
@@ -410,15 +412,15 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 );
 
 module.exports = {
-  announceShop,
-  deleteShopAnnouncement,
-  getMenu,
-  getOpenPayments,
-  getOrdersOfDay,
-  getPrice,
-  getShopAnnouncements,
-  getShopOrders,
-  getShops,
-  getSpecialRequests,
-  setPrice,
+	announceShop,
+	deleteShopAnnouncement,
+	getMenu,
+	getOpenPayments,
+	getOrdersOfDay,
+	getPrice,
+	getShopAnnouncements,
+	getShopOrders,
+	getShops,
+	getSpecialRequests,
+	setPrice,
 };
