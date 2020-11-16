@@ -1,0 +1,19 @@
+extends: eslint:recommended
+parserOptions:
+  ecmaVersion: 6
+  sourceType: script
+  ecmaFeatures:
+    jsx: false
+    experimentalObjectRestSpread: false
+env:
+  browser: true
+globals:
+  Vue: readonly
+  SwaggerClient: readonly
+rules:
+  indent:
+  - error
+  - tab
+  no-unused-vars:
+  - error
+  - args: none

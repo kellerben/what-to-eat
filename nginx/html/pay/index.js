@@ -1,17 +1,13 @@
 var lunch = new SwaggerClient('/openapi.json');
 
 // ws {{{
-var loc = window.location, new_uri;
-new_uri += "//" + loc.host;
-new_uri += loc.pathname + "/to/ws";
-
 var connection;
 function renewconnection(){
 	var prot;
 	if (window.location.protocol === "https:") {
-			prot = "wss://";
+		prot = "wss://";
 	} else {
-			prot = "ws://";
+		prot = "ws://";
 	}
 	connection = new WebSocket(prot+location.hostname+":"+location.port+"/ws/", "json");
 	connection.onmessage = incommingMessage;
@@ -33,9 +29,9 @@ renewconnection();
 // vue {{{
 const vueapp = new Vue({
 	data: {
-			userId: localStorage.userId,
-			payments: [],
-			prices: []
+		userId: localStorage.userId,
+		payments: [],
+		prices: []
 	},
 	methods: {
 		getOpenPayments: function (event) {
@@ -90,17 +86,3 @@ const vueapp = new Vue({
 });
 // }}}
 vueapp.getOpenPayments();
-
-// get open payments {{{
-function fetchOpenPayments() {
-	function updateOrders(orders){
-		vueapp.orders = orders;
-	}
-	lunch.then(
-		client => client.apis.Shop.getOpenPayments(),
-	).then(
-		result => updateOrders(JSON.parse(result.text).rows),
-		reason => console.error('failed on api call: ' + reason)
-	);
-}
-// }}}

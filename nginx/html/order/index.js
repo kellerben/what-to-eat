@@ -5,9 +5,9 @@ var connection;
 function renewconnection(){
 	var prot;
 	if (window.location.protocol === "https:") {
-			prot = "wss://";
+		prot = "wss://";
 	} else {
-			prot = "ws://";
+		prot = "ws://";
 	}
 	connection = new WebSocket(prot+location.hostname+":"+location.port+"/ws/", "json");
 	connection.onmessage = incommingMessage;
@@ -196,7 +196,7 @@ function fetchSuggestions() {
 	}
 
 	lunch.then(
-		client => client.apis.Shop.getShopAnnouncements(),
+		client => client.apis.Shop.getShopAnnouncements()
 	).then(
 		result => updateSuggestions(JSON.parse(result.text).rows),
 		reason => console.error('failed on api call: ' + reason)
@@ -211,7 +211,7 @@ function fetchTodaysOrders() {
 		vueapp.orders = orders;
 	}
 	lunch.then(
-		client => client.apis.Shop.getOrdersOfDay(),
+		client => client.apis.Shop.getOrdersOfDay()
 	).then(
 		result => updateOrders(JSON.parse(result.text).rows),
 		reason => console.error('failed on api call: ' + reason)
@@ -226,7 +226,7 @@ function updateShopSuggestions() {
 		vueapp.shopOptions = shops;
 	}
 	lunch.then(
-		client => client.apis.Shop.getShops(),
+		client => client.apis.Shop.getShops()
 	).then(
 		result => updateSuggestion(JSON.parse(result.text)),
 		reason => console.error('failed on api call: ' + reason)
@@ -241,13 +241,13 @@ function updateFoodSuggestions(shop) {
 		vueapp.specialRequestOptions = specialRequests;
 	}
 	lunch.then(
-		client => client.apis.Shop.getMenu({ shopId: shop }),
+		client => client.apis.Shop.getMenu({ shopId: shop })
 	).then(
 		result => updateSuggestion(JSON.parse(result.text)),
 		reason => console.error('failed on api call: ' + reason)
 	);
 	lunch.then(
-		client => client.apis.Shop.getSpecialRequests({ shopId: shop }),
+		client => client.apis.Shop.getSpecialRequests({ shopId: shop })
 	).then(
 		result => updateSpecialRequestSuggestion(JSON.parse(result.text)),
 		reason => console.error('failed on api call: ' + reason)

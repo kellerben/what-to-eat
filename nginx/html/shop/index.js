@@ -5,9 +5,9 @@ var connection;
 function renewconnection(){
 	var prot;
 	if (window.location.protocol === "https:") {
-			prot = "wss://";
+		prot = "wss://";
 	} else {
-			prot = "ws://";
+		prot = "ws://";
 	}
 	connection = new WebSocket(prot+location.hostname+":"+location.port+"/ws/", "json");
 	connection.onmessage = incommingMessage;
@@ -48,7 +48,7 @@ function fetchTodaysOrders() {
 		vueapp.orders = orders;
 	}
 	lunch.then(
-		client => client.apis.Shop.getOrdersOfDay(),
+		client => client.apis.Shop.getOrdersOfDay()
 	).then(
 		result => updateOrders(JSON.parse(result.text).rows),
 		reason => console.error('failed on api call: ' + reason)

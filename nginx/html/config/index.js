@@ -1,6 +1,6 @@
-const vueapp = new Vue({
+new Vue({
 	data: {
-			userId: localStorage.userId
+		userId: localStorage.userId
 	},
 	methods: {
 		changeUserId: function(event) {
