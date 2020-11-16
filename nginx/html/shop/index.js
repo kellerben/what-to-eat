@@ -24,14 +24,43 @@ renewconnection();
 //}}}
 
 // vue {{{
+Vue.use(window['vue-good-table'].default);
 const vueapp = new Vue({
-	components: {
-		Multiselect: window.VueMultiselect.default
-	},
 	data: {
 		meal: null,
 		specialRequest: '',
-		orders: []
+		orders: [],
+		header: [
+			{
+				label: 'Name',
+				field: 'user',
+			},
+			{
+				label: 'Shop',
+				field: 'shop',
+				hidden: true,
+			},
+			{
+				label: 'Meal',
+				field: 'meal',
+			},
+			{
+				label: 'Special Request',
+				field: 'specialRequest'
+			},
+			{
+				label: 'Price',
+				field: 'price',
+				type: 'number',
+				formatFn: (value) => value == null ? '' : value+" ct"
+			}
+		],
+		sortOpts: {
+			initialSortBy: [
+				{field: 'shop'},
+				{field: 'meal'}
+			]
+		}
 	},
 	computed: {
 		total(){
@@ -45,7 +74,23 @@ const vueapp = new Vue({
 // current orders {{{
 function fetchTodaysOrders() {
 	function updateOrders(orders){
-		vueapp.orders = orders;
+		var o = {};
+		orders.forEach(function(elem){
+			if (typeof(o[elem.shop]) == 'undefined') {
+				o[elem.shop] = {
+					mode: 'span',
+					label: elem.shop,
+					html: false,
+					children: [ elem ]
+				}
+			} else {
+				o[elem.shop].children.push(elem);
+			}
+		});
+		vueapp.orders = [];
+		for (const key in o) {
+			vueapp.orders.push(o[key]);
+		}
 	}
 	lunch.then(
 		client => client.apis.Shop.getOrdersOfDay()

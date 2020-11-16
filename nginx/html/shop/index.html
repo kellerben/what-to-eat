@@ -15,21 +15,14 @@
 						Orders of today
 					</h1>
 					<div id="orders">
-						<table class="table table-bordered table-striped table-hover table-condensed">
-							<thead>
-								<tr>
-									<th>User</th><th>Food Store</th><th>Meal</th><th>Special Request</th><th>Price</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr v-for="order in orders">
-									<td>{{order.user}}</td><td>{{order.shop}}</td><td>{{order.meal}}</td><td>{{order.specialRequest}}<td>{{order.price}}<span v-if="order.price"> ct</span></td>
-								</tr>
-								<tr>
-									<th colspan='4'>Total price</th><td>{{total}} ct</td>
-								</tr>
-							</tbody>
-						</table>
+						<vue-good-table
+							:rows="orders"
+							:columns="header"
+							:sort-options="sortOpts"
+							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
+							:group-options="{ enabled: true }"
+							>
+						</vue-good-table>
 					</div>
 				</div>
 
