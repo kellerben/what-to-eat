@@ -31,6 +31,48 @@ const vueapp = new Vue({
 	data: {
 		userId: localStorage.userId,
 		payments: [],
+		header: [
+			{
+				label: 'From',
+				field: 'from_user',
+			},
+			{
+				label: 'To',
+				field: 'to_user',
+			},
+			{
+				label: 'Price',
+				field: 'price',
+				type: 'number',
+				formatFn: (value) => value == null ? '' : value+" ct"
+			},
+			{
+				label: 'Food Store',
+				field: 'shop',
+			},
+			{
+				label: 'Meal',
+				field: 'meal',
+			},
+			{
+				label: 'Day',
+				field: 'day',
+				type: 'date',
+				dateInputFormat: 'yyyy-MM-dd',
+				dateOutputFormat: 'do MMM',
+			},
+			{
+				label: 'Action',
+				field: 'button'
+			}
+		],
+		sortOpts: {
+			initialSortBy: [
+				{field: 'to_user'},
+				{field: 'from_user'},
+				{field: 'meal'}
+			]
+		},
 		prices: []
 	},
 	methods: {
@@ -39,13 +81,14 @@ const vueapp = new Vue({
 				client => client.apis.Shop.getOpenPayments()
 			).then(
 				result => function(){
-					vueapp.payments = JSON.parse(result.text).rows;
+					var p = JSON.parse(result.text).rows;
 					var today = new Date().toISOString().substring(0,10);
 					var prices = [];
 					var seen = {};
-					vueapp.payments.forEach(function(elem){
+					p.forEach(function(elem){
+						elem.day = elem.day.substring(0,10);
 						var n = {
-							day: elem.day.substring(0,10),
+							day: elem.day,
 							shop: elem.shop,
 							meal: elem.meal,
 							price: elem.price
@@ -56,6 +99,7 @@ const vueapp = new Vue({
 							prices.push(n);
 						}
 					});
+					vueapp.payments = p;
 					vueapp.prices = prices;
 				}()
 			)
