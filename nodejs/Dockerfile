@@ -1,4 +1,4 @@
-FROM node
+FROM node:15.0-alpine
 
 WORKDIR /usr/local/share/lunch-api
 
