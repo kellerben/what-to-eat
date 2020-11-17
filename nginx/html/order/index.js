@@ -193,6 +193,10 @@ const vueapp = new Vue({
 function fetchSuggestions() {
 	function updateSuggestions(suggestions){
 		vueapp.suggestions = suggestions;
+		if (suggestions.length == 1 && vueapp.shopId == '') {
+			vueapp.shopId = suggestions[0].shop;
+			updateFoodSuggestions(vueapp.shopId);
+		}
 	}
 
 	lunch.then(
