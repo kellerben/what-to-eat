@@ -95,8 +95,7 @@ function fetchTodaysOrders() {
 	lunch.then(
 		client => client.apis.Shop.getOrdersOfDay()
 	).then(
-		result => updateOrders(JSON.parse(result.text).rows),
-		reason => console.error('failed on api call: ' + reason)
+		result => updateOrders(JSON.parse(result.text).rows)
 	);
 }
 fetchTodaysOrders();

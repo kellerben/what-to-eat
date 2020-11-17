@@ -36,6 +36,10 @@ const vueapp = new Vue({
 		Multiselect: window.VueMultiselect.default
 	},
 	data: {
+		alertMsg: '',
+		alertClass: '',
+		alertType: '',
+		showAlertTime: 0,
 		userId: localStorage.userId,
 		suggestions: [],
 		meal: null,
@@ -56,6 +60,18 @@ const vueapp = new Vue({
 		}
 	},
 	methods: {
+		warning(string) {
+			this.showAlert(string, 'warning');
+		},
+		error(string) {
+			this.showAlert(string, 'error');
+		},
+		showAlert(string, type) {
+			this.alertClass = type == 'error' ? 'danger' : type;
+			this.alertType = type[0].toUpperCase() + type.slice(1);
+			this.alertMsg = string;
+			this.showAlertTime = 10;
+		},
 		saveAddShop(name){// shop multiselect methods {{{
 			// check if we pressed backspace or tab -> the active element is not inside the class anymore
 			if (name == '' && [].indexOf.call(document.querySelectorAll('.shopInput input'), document.activeElement) == -1) {
@@ -140,7 +156,10 @@ const vueapp = new Vue({
 						shopId: event.target.dataset["shop"]
 					}
 				})
-			)
+			).then(
+				result => null,
+				reason => this.error('Could not delete the suggestion. (' + reason + ')')
+			);
 		},
 		deleteOrder: function (event) {
 			lunch.then(
@@ -151,7 +170,10 @@ const vueapp = new Vue({
 						price: event.target.dataset["price"]
 					}
 				})
-			)
+			).then(
+				result => null,
+				reason => this.error('Could not delete the order. (' + reason + ')')
+			);
 		},
 		announceShop: function (event) {
 			if (this.userId === "" || this.shopId === "") {
@@ -159,6 +181,9 @@ const vueapp = new Vue({
 			}
 			lunch.then(
 				client => client.apis.Shop.announceShop({}, { requestBody: { userId: this.userId, shopId: this.shopId } })
+			).then(
+				result => null,
+				reason => this.error('Could not send the suggestion. (' + reason + ')')
 			);
 		},
 		orderLunch: function (event) {
@@ -178,10 +203,11 @@ const vueapp = new Vue({
 				})
 			).then(
 				result => function(){
-					vueapp.price = "";
-					vueapp.meal = "";
-					vueapp.specialRequest = "";
-				}()
+					this.price = "";
+					this.meal = "";
+					this.specialRequest = "";
+				}(),
+				reason => this.error('Could not place the order. (' + reason + ')')
 			);
 		}
 	},
@@ -203,7 +229,7 @@ function fetchSuggestions() {
 		client => client.apis.Shop.getShopAnnouncements()
 	).then(
 		result => updateSuggestions(JSON.parse(result.text).rows),
-		reason => console.error('failed on api call: ' + reason)
+		reason => vueapp.warning('Could not fetch today\'s suggestions. ('+reason+')')
 	);
 }
 fetchSuggestions();
@@ -218,7 +244,7 @@ function fetchTodaysOrders() {
 		client => client.apis.Shop.getOrdersOfDay()
 	).then(
 		result => updateOrders(JSON.parse(result.text).rows),
-		reason => console.error('failed on api call: ' + reason)
+		reason => vueapp.warning('Could not fetch today\'s orders. ('+reason+')')
 	);
 }
 fetchTodaysOrders();
@@ -233,7 +259,7 @@ function updateShopSuggestions() {
 		client => client.apis.Shop.getShops()
 	).then(
 		result => updateSuggestion(JSON.parse(result.text)),
-		reason => console.error('failed on api call: ' + reason)
+		reason => vueapp.warning('Could not fetch Shop suggestions. (' + reason + ')')
 	);
 }
 updateShopSuggestions();
@@ -248,13 +274,13 @@ function updateFoodSuggestions(shop) {
 		client => client.apis.Shop.getMenu({ shopId: shop })
 	).then(
 		result => updateSuggestion(JSON.parse(result.text)),
-		reason => console.error('failed on api call: ' + reason)
+		reason => vueapp.warning('Could not fetch the shop\'s menu. (' + reason + ')')
 	);
 	lunch.then(
 		client => client.apis.Shop.getSpecialRequests({ shopId: shop })
 	).then(
 		result => updateSpecialRequestSuggestion(JSON.parse(result.text)),
-		reason => console.error('failed on api call: ' + reason)
+		reason => vueapp.warning('Could not fetch special request suggestions. (' + reason + ')')
 	);
 }
 // }}}

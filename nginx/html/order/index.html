@@ -11,6 +11,9 @@
 				<!--#include virtual="/nav.shtml"-->
 
 				<div>
+					<b-alert v-model="showAlertTime" :variant="alertClass" fade dismissible>
+						<strong>{{alertType}}!</strong> {{alertMsg}}
+					</b-alert>
 					<h1>
 						Suggestions
 					</h1>
