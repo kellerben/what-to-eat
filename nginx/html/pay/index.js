@@ -78,7 +78,7 @@ const vueapp = new Vue({
 	methods: {
 		getOpenPayments: function (event) {
 			lunch.then(
-				client => client.apis.Shop.getOpenPayments()
+				client => client.apis.Payments.getOpenPayments()
 			).then(
 				result => function(){
 					var p = JSON.parse(result.text).rows;

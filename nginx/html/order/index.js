@@ -150,7 +150,7 @@ const vueapp = new Vue({
 
 		deleteSuggestion: function (event) {
 			lunch.then(
-				client => client.apis.Shop.deleteShopAnnouncement({}, {
+				client => client.apis.Fetch.deleteShopAnnouncement({}, {
 					requestBody: {
 						userId: event.target.dataset["user"],
 						shopId: event.target.dataset["shop"]
@@ -180,7 +180,7 @@ const vueapp = new Vue({
 				return;
 			}
 			lunch.then(
-				client => client.apis.Shop.announceShop({}, { requestBody: { userId: this.userId, shopId: this.shopId } })
+				client => client.apis.Fetch.announceShop({}, { requestBody: { userId: this.userId, shopId: this.shopId } })
 			).then(
 				result => null,
 				reason => this.error('Could not send the suggestion. (' + reason + ')')
@@ -226,7 +226,7 @@ function fetchSuggestions() {
 	}
 
 	lunch.then(
-		client => client.apis.Shop.getShopAnnouncements()
+		client => client.apis.Fetch.getShopAnnouncements()
 	).then(
 		result => updateSuggestions(JSON.parse(result.text).rows),
 		reason => vueapp.warning('Could not fetch today\'s suggestions. ('+reason+')')

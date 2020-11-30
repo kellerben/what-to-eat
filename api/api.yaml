@@ -87,10 +87,10 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /shop:
+  /fetchFood:
     post:
       tags:
-      - Shop
+      - Fetch
       summary: I will walk to the shop
       operationId: announceShop
       requestBody:
@@ -105,7 +105,7 @@ paths:
           content: {}
     delete:
       tags:
-      - Shop
+      - Fetch
       summary: I will not walk to the shop
       operationId: deleteShopAnnouncement
       requestBody:
@@ -120,7 +120,7 @@ paths:
           content: {}
     get:
       tags:
-      - Shop
+      - Fetch
       summary: Get all shop announcements
       operationId: getShopAnnouncements
       parameters:
@@ -136,16 +136,6 @@ paths:
           content: {}
         405:
           description: Invalid input
-          content: {}
-  /getOpenPayments:
-    get:
-      tags:
-      - Shop
-      summary: Get all orders which are not payed yet
-      operationId: getOpenPayments
-      responses:
-        405:
-          description: Validation exception
           content: {}
   /getOrdersOfDay:
     get:
@@ -288,6 +278,16 @@ paths:
         required: true
         schema:
           type: number
+      responses:
+        405:
+          description: Validation exception
+          content: {}
+  /getOpenPayments:
+    get:
+      tags:
+      - Payments
+      summary: Get all orders which are not payed yet
+      operationId: getOpenPayments
       responses:
         405:
           description: Validation exception

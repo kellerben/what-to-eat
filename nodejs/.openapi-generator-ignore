@@ -6,3 +6,5 @@ index.js
 services/Service.js
 services/OrderService.js
 services/ShopService.js
+services/PaymentsService.js
+services/FetchService.js
