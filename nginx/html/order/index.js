@@ -241,7 +241,7 @@ function fetchTodaysOrders() {
 		vueapp.orders = orders;
 	}
 	lunch.then(
-		client => client.apis.Shop.getOrdersOfDay()
+		client => client.apis.Order.getOrdersOfDay()
 	).then(
 		result => updateOrders(JSON.parse(result.text).rows),
 		reason => vueapp.warning('Could not fetch today\'s orders. ('+reason+')')

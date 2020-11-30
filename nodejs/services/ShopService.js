@@ -33,43 +33,6 @@ const getMenu = ({ shopId }) => new Promise(
 	}
 );
 /**
-* Get all orders of one day
-*
-* date date For which day do you want to get the orders? (optional)
-* no response value expected for this operation
-* */
-const getOrdersOfDay = ({ date }) => new Promise(
-	async (resolve, reject) => {
-		var date;
-		if (typeof(date) === 'undefined') {
-			date = new Date();
-		} else {
-			date = new Date(date);
-		}
-		date = date.toISOString().slice(0,10);
-		var stmt =
-			"SELECT shop,user,meal,specialRequest,price FROM orders WHERE day = ? ORDER BY shop,meal,specialRequest";
-		var sql = mysql.format(stmt, [date]);
-		try {
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
-				if (err) {
-					console.error(err);
-					reject(Service.rejectResponse('Error while fetching orders'));
-				} else {
-					resolve(Service.successResponse({
-						rows
-					}));
-				}
-			});
-		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
-		}
-	}
-);
-/**
 * Get price of a meal
 *
 * shopId String Which shop offers the meal?
@@ -90,45 +53,6 @@ const getPrice = ({ shopId, meal }) => new Promise(
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse(rows[0]));
-				}
-			});
-		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
-		}
-	}
-);
-/**
-* Get all orders of one shop
-*
-* shopId String Which shop orders do you want to have?
-* date date For which day do you want to get the orders? (optional)
-* no response value expected for this operation
-* */
-const getShopOrders = ({ shopId, date }) => new Promise(
-	async (resolve, reject) => {
-		if (typeof(date) === 'undefined') {
-			date = new Date();
-		} else {
-			date = new Date(date);
-		}
-		date = date.toISOString().slice(0,10);
-		shopId = shopId.trim();
-
-		var stmt =
-			"SELECT user,meal,price FROM orders WHERE shop = ? AND day = ?";
-		var sql = mysql.format(stmt, [shopId, date]);
-		try {
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
-				if (err) {
-					console.error(err);
-					reject(Service.rejectResponse('Error while fetching orders'));
-				} else {
-					resolve(Service.successResponse({
-						rows
-					}));
 				}
 			});
 		} catch (e) {
@@ -270,9 +194,7 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 
 module.exports = {
 	getMenu,
-	getOrdersOfDay,
 	getPrice,
-	getShopOrders,
 	getShops,
 	getSpecialRequests,
 	setPrice,

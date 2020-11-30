@@ -140,7 +140,7 @@ paths:
   /getOrdersOfDay:
     get:
       tags:
-      - Shop
+      - Order
       summary: Get all orders of one day
       operationId: getOrdersOfDay
       parameters:
@@ -160,7 +160,7 @@ paths:
   /getShopOrders/{shopId}:
     get:
       tags:
-      - Shop
+      - Order
       summary: Get all orders of one shop
       operationId: getShopOrders
       parameters:

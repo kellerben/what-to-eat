@@ -93,7 +93,7 @@ function fetchTodaysOrders() {
 		}
 	}
 	lunch.then(
-		client => client.apis.Shop.getOrdersOfDay()
+		client => client.apis.Order.getOrdersOfDay()
 	).then(
 		result => updateOrders(JSON.parse(result.text).rows)
 	);

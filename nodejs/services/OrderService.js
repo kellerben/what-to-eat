@@ -67,6 +67,82 @@ const deleteOrder = ({ userId, mealOrder }) => new Promise(
 	},
 );
 /**
+* Get all orders of one day
+*
+* date date For which day do you want to get the orders? (optional)
+* no response value expected for this operation
+* */
+const getOrdersOfDay = ({ date }) => new Promise(
+	async (resolve, reject) => {
+		var date;
+		if (typeof(date) === 'undefined') {
+			date = new Date();
+		} else {
+			date = new Date(date);
+		}
+		date = date.toISOString().slice(0,10);
+		var stmt =
+			"SELECT shop,user,meal,specialRequest,price FROM orders WHERE day = ? ORDER BY shop,meal,specialRequest";
+		var sql = mysql.format(stmt, [date]);
+		try {
+			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+				if (err) {
+					console.error(err);
+					reject(Service.rejectResponse('Error while fetching orders'));
+				} else {
+					resolve(Service.successResponse({
+						rows
+					}));
+				}
+			});
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	}
+);
+/**
+* Get all orders of one shop
+*
+* shopId String Which shop orders do you want to have?
+* date date For which day do you want to get the orders? (optional)
+* no response value expected for this operation
+* */
+const getShopOrders = ({ shopId, date }) => new Promise(
+	async (resolve, reject) => {
+		if (typeof(date) === 'undefined') {
+			date = new Date();
+		} else {
+			date = new Date(date);
+		}
+		date = date.toISOString().slice(0,10);
+		shopId = shopId.trim();
+
+		var stmt =
+			"SELECT user,meal,price FROM orders WHERE shop = ? AND day = ?";
+		var sql = mysql.format(stmt, [shopId, date]);
+		try {
+			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+				if (err) {
+					console.error(err);
+					reject(Service.rejectResponse('Error while fetching orders'));
+				} else {
+					resolve(Service.successResponse({
+						rows
+					}));
+				}
+			});
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	}
+);
+/**
 * Order lunch
 *
 * userId String Who wants to order something?
@@ -127,8 +203,8 @@ const orderLunch = ({ userId, mealOrder }) => new Promise(
 * no response value expected for this operation
 * */
 const updateOrder = ({ userId, mealOrder }) => new Promise(
-  async (resolve, reject) => {
-    try {
+	async (resolve, reject) => {
+		try {
 			if (typeof(mealOrder.date) === 'undefined') {
 				date = new Date();
 			} else {
@@ -154,30 +230,32 @@ const updateOrder = ({ userId, mealOrder }) => new Promise(
 				sql = mysql.format(stmt, [shopId, meal, price, userId, date]);
 			}
 
-				Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
-					if (err) {
-						console.log('Error during insertion of order: ', err);
-						reject(Service.rejectResponse('Error during insertion of order'));
+			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+				if (err) {
+					console.log('Error during insertion of order: ', err);
+					reject(Service.rejectResponse('Error during insertion of order'));
+				} else {
+					if (rows['affectedRows'] === 0){
+						reject(Service.rejectResponse("User didn't ordered anything yet"));
 					} else {
-						if (rows['affectedRows'] === 0){
-							reject(Service.rejectResponse("User didn't ordered anything yet"));
-						} else {
-							ws.sendAll("refreshOrders");
-							resolve(Service.successResponse('success'));
-						}
+						ws.sendAll("refreshOrders");
+						resolve(Service.successResponse('success'));
 					}
-				});
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
+				}
+			});
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	},
 );
 
 module.exports = {
-  deleteOrder,
-  orderLunch,
-  updateOrder,
+	deleteOrder,
+	getOrdersOfDay,
+	getShopOrders,
+	orderLunch,
+	updateOrder,
 };
