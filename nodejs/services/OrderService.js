@@ -152,6 +152,7 @@ const getShopOrders = ({ shopId, date }) => new Promise(
 const orderLunch = ({ userId, mealOrder }) => new Promise(
 	async (resolve, reject) => {
 		try {
+			var date;
 			if (typeof(mealOrder.date) === 'undefined') {
 				date = new Date();
 			} else {
@@ -172,12 +173,12 @@ const orderLunch = ({ userId, mealOrder }) => new Promise(
 			Service.mysql_connection_pool.query(sql);
 
 			var inserts = [userId, mealOrder.shopId, mealOrder.meal, mealOrder.specialRequest, mealOrder.price, date];
-			var stmt =
+			stmt =
 				"INSERT INTO orders" +
 				" (user, shop, meal, specialRequest, price, day)" +
 				" VALUES (?, ?, ?, ?, ?, ?)";
 
-			var sql = mysql.format(stmt, inserts);
+			sql = mysql.format(stmt, inserts);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
 					console.log('Error during insertion of order: ', err);
@@ -205,6 +206,7 @@ const orderLunch = ({ userId, mealOrder }) => new Promise(
 const updateOrder = ({ userId, mealOrder }) => new Promise(
 	async (resolve, reject) => {
 		try {
+			var date;
 			if (typeof(mealOrder.date) === 'undefined') {
 				date = new Date();
 			} else {
@@ -216,7 +218,7 @@ const updateOrder = ({ userId, mealOrder }) => new Promise(
 			userId = userId.trim();
 
 			var stmt, sql;
-			if (typeof(price) === 'undefined') {
+			if (typeof(mealOrder.price) === 'undefined') {
 				stmt =
 					"UPDATE orders " +
 					"SET shop = ?, meal = ? " +
@@ -227,7 +229,7 @@ const updateOrder = ({ userId, mealOrder }) => new Promise(
 					"UPDATE orders " +
 					"SET shop = ?, meal = ?, price = ? " +
 					"WHERE user = ? AND day = ?";
-				sql = mysql.format(stmt, [shopId, meal, price, userId, date]);
+				sql = mysql.format(stmt, [mealOrder.shopId, mealOrder.meal, mealOrder.price, userId, date]);
 			}
 
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
