@@ -183,7 +183,7 @@ const vueapp = new Vue({
 				client => client.apis.Fetch.announceShop({}, { requestBody: { userId: this.userId, shopId: this.shopId } })
 			).then(
 				result => null,
-				reason => this.error('Could not send the suggestion. (' + reaso.response.body.error + ')')
+				reason => this.error('Could not send the suggestion. (' + reason.response.body.error + ')')
 			);
 		},
 		orderLunch: function (event) {

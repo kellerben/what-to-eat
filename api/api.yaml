@@ -103,6 +103,9 @@ paths:
             schema:
               $ref: '#/components/schemas/shopAnnouncement'
       responses:
+        400:
+          description: Duplicate Announcement
+          content: {}
         405:
           description: Invalid input
           content: {}

@@ -11,11 +11,10 @@ CREATE TABLE IF NOT EXISTS lunch.orders (
 );
 
 CREATE TABLE IF NOT EXISTS lunch.walks (
-	`walkid` int(5) NOT NULL AUTO_INCREMENT,
 	`user` varchar(255) NOT NULL,
 	`shop` varchar(255) NOT NULL,
 	`day` DATE NOT NULL,
-	PRIMARY KEY (`walkid`)
+	PRIMARY KEY (`user`,`shop`,`day`)
 );
 
 CREATE TABLE IF NOT EXISTS lunch.meals (
