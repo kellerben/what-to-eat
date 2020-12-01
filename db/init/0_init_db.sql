@@ -1,14 +1,13 @@
 ALTER DATABASE lunch CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS lunch.orders (
-	`orderid` int(5) NOT NULL AUTO_INCREMENT,
 	`user` varchar(255) NOT NULL,
 	`shop` varchar(255) NOT NULL,
 	`meal` varchar(255) NOT NULL,
 	`specialRequest` varchar(255),
 	`day` DATE NOT NULL,
 	`price` int(5),
-	PRIMARY KEY (`orderid`)
+	PRIMARY KEY (`user`,`shop`,`meal`,`day`)
 );
 
 CREATE TABLE IF NOT EXISTS lunch.walks (

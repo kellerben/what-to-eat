@@ -184,8 +184,12 @@ const orderLunch = ({ userId, mealOrder }) => new Promise(
 			sql = mysql.format(stmt, inserts);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
-					console.log('Error during insertion of order: ', err);
-					reject(Service.rejectResponse(mealOrder));
+					if (err.errno == 1062) { // duplicate primary key
+						resolve(Service.rejectResponse('This order was already placed.', 400));
+					} else {
+						console.log('Error during insertion of order: ', err);
+						reject(Service.rejectResponse('Error during insertion of order'));
+					}
 				} else {
 					ws.sendAll("refreshOrders");
 					resolve(Service.successResponse('success'));

@@ -158,7 +158,7 @@ const vueapp = new Vue({
 				})
 			).then(
 				result => null,
-				reason => this.error('Could not delete the suggestion. (' + reason + ')')
+				reason => this.error('Could not delete the suggestion. (' + reason.response.body.error + ')')
 			);
 		},
 		deleteOrder: function (event) {
@@ -172,7 +172,7 @@ const vueapp = new Vue({
 				})
 			).then(
 				result => null,
-				reason => this.error('Could not delete the order. (' + reason + ')')
+				reason => this.error('Could not delete the order. (' + reason.response.body.error + ')')
 			);
 		},
 		announceShop: function (event) {
@@ -183,7 +183,7 @@ const vueapp = new Vue({
 				client => client.apis.Fetch.announceShop({}, { requestBody: { userId: this.userId, shopId: this.shopId } })
 			).then(
 				result => null,
-				reason => this.error('Could not send the suggestion. (' + reason + ')')
+				reason => this.error('Could not send the suggestion. (' + reaso.response.body.error + ')')
 			);
 		},
 		orderLunch: function (event) {
@@ -207,7 +207,7 @@ const vueapp = new Vue({
 					this.meal = "";
 					this.specialRequest = "";
 				}(),
-				reason => this.error('Could not place the order. (' + reason + ')')
+				reason => this.error('Could not place the order. (' + reason.response.body.error + ')')
 			);
 		}
 	},

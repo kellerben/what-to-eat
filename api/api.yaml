@@ -29,6 +29,9 @@ paths:
             schema:
               $ref: '#/components/schemas/mealOrder'
       responses:
+        400:
+          description: Duplicate Order
+          content: {}
         405:
           description: Invalid input
           content: {}
