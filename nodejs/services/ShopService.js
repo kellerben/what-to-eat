@@ -64,6 +64,40 @@ const getPrice = ({ shopId, meal }) => new Promise(
 	}
 );
 /**
+* Get the shop's metadata
+*
+* shopId String The Metadata of which shop do you want to have?
+* no response value expected for this operation
+* */
+const getShopData = ({ shopId }) => new Promise(
+	async (resolve, reject) => {
+		var stmt =
+			"SELECT * FROM shops WHERE shop = ?";
+		shopId = shopId.trim();
+
+		var sql = mysql.format(stmt, [shopId]);
+		try {
+			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+				if (err) {
+					console.error(err);
+					reject(Service.rejectResponse('Error while fetching shop details'));
+				} else {
+					if (rows.length == 0) {
+						resolve({});
+					} else {
+						resolve(rows[0]);
+					}
+				}
+			});
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	}
+);
+/**
 * Get all known shops
 *
 * no response value expected for this operation
@@ -191,11 +225,63 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 		}
 	}
 );
+/**
+* Set the shop's metadata
+*
+* shopId String The Metadata of the shop you want to set
+* shopMetaData ShopMetaData
+* no response value expected for this operation
+* */
+const setShopData = ({ shopId, shopMetaData }) => new Promise(
+	async (resolve, reject) => {
+		try {
+			shopId = shopId.trim();
+			var values = [shopMetaData.distance, shopMetaData.phone, shopMetaData.comment, shopId];
+			var stmt =
+				"UPDATE shops SET distance = ?, phone = ?, comment = ? WHERE shop = ?";
+			var sql = mysql.format(stmt, values);
+			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+				if (err) {
+					console.error(err);
+					reject(Service.rejectResponse('Error while updating orders'));
+				} else {
+					if (rows['affectedRows'] === 0){
+						var stmt =
+							"INSERT INTO shops " +
+							"(distance, phone, comment, shop) " +
+							"VALUES (?, ?, ?, ?)";
+
+						var sql = mysql.format(stmt, values);
+						Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+							if (err) {
+								console.error(err);
+								reject(Service.rejectResponse('error'));
+							} else {
+								ws.sendAll("getShopSuggestions");
+								resolve(Service.successResponse('success'));
+							}
+						});
+					} else {
+						ws.sendAll("getShopSuggestions");
+						resolve(Service.successResponse('success'));
+					}
+				}
+			});
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	},
+);
 
 module.exports = {
 	getMenu,
 	getPrice,
+	getShopData,
 	getShops,
 	getSpecialRequests,
 	setPrice,
+	setShopData,
 };

@@ -29,3 +29,11 @@ CREATE TABLE IF NOT EXISTS lunch.specialRequests (
 	`specialRequest` varchar(255) NOT NULL,
 	PRIMARY KEY (`shop`, `specialRequest`)
 );
+
+CREATE TABLE IF NOT EXISTS lunch.shops (
+	`shop` varchar(255) NOT NULL,
+	`distance` int(5),
+	`phone` varchar(50),
+	`comment` varchar(5000),
+	PRIMARY KEY (`shop`)
+);

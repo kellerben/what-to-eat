@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+	<!--#include virtual="/head.shtml"-->
+	<body>
+		<div id='root' class='row'>
+
+			<div class='col'></div>
+
+			<div class='col-lg-8'>
+				<!--#set var="active" value="shops"-->
+				<!--#include virtual="/nav.shtml"-->
+
+				<div>
+					<b-alert v-model="showAlertTime" :variant="alertClass" fade dismissible>
+						<strong>{{alertType}}!</strong> {{alertMsg}}
+					</b-alert>
+					<h1>
+						Available Shops
+					</h1>
+					<div id="suggestions">
+						<vue-good-table
+							:rows="shopAry"
+							:columns="shopHeader"
+							:sort-options="{ initialSortBy: [ {field: 'distance'} ] }"
+							:search-options="{ enabled: true }"
+							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
+							>
+							<template slot="table-row" slot-scope="shop">
+								<span v-if="shop.column.field == 'distance'">
+									<span v-if="shop.row.shop != edit.shop">
+										<span v-if="typeof shop.row.distance != 'undefined' && shop.row.distance != null">
+											{{shop.row.distance}} m
+										</span>
+									</span>
+									<span v-else>
+										<input type="text" class="form-control" v-model="edit.distance" placeholder="number in meter" />
+									</span>
+								</span>
+								<span v-else-if="shop.column.field == 'phone'">
+									<span v-if="shop.row.shop != edit.shop">
+										<a v-if="typeof shop.row.phone != 'undefined'" v-bind:href="'tel:'+shop.row.phone">{{shop.row.phone}}</a>
+									</span>
+									<span v-else>
+										<input type="text" class="form-control" v-model="edit.phone" placeholder="Phone" />
+									</span>
+								</span>
+								<span v-else-if="shop.column.field == 'comment'">
+									<span v-if="shop.row.shop != edit.shop">{{shop.row.comment}}</span>
+									<span v-else>
+										<textarea class="form-control" v-model="edit.comment" placeholder="Comment" rows='1'></textarea>
+									</span>
+								</span>
+								<span v-else-if="shop.column.field == 'action'">
+									<span v-if="shop.row.shop != edit.shop">
+										<button
+											class="btn btn-primary btn-sm"
+											v-on:click="editShop"
+											v-bind:data-shop="shop.row.shop"
+										>✍</button>
+										<!--button
+											class="btn btn-primary btn-sm"
+											v-on:click="proposeShop"
+											v-bind:data-shop="shop.row.shop"
+										>👉</button-->
+									</span>
+									<span v-else>
+										<button
+											class="btn btn-primary btn-sm"
+											v-on:click="cancelEdit"
+											v-bind:data-shop="shop.row.shop"
+										>✗</button>
+										<button
+											class="btn btn-primary btn-sm"
+											v-on:click="confirmEdit"
+											v-bind:data-shop="shop.row.shop"
+										>✓</button>
+									</span>
+								</span>
+							</template>
+						</vue-good-table>
+					</div>
+				</div>
+
+			</div>
+			<div class='col'></div>
+		</div>
+
+		<!--#include virtual="/foot.shtml"-->
+	</body>
+</html>

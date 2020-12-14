@@ -1,5 +1,6 @@
 <div>
 	<ul class="nav nav-tabs tabs">
+		<li class="nav-item"><a class="nav-link<!--# if expr="$active = shops" --> active<!--# endif -->" href="/shops/">Shops</a></li>
 		<li class="nav-item"><a class="nav-link<!--# if expr="$active = order" --> active<!--# endif -->" href="/order/">Order</a></li>
 		<li class="nav-item"><a class="nav-link<!--# if expr="$active = fetch" --> active<!--# endif -->" href="/fetch/">Fetch</a></li>
 		<li class="nav-item"><a class="nav-link<!--# if expr="$active = pay" --> active<!--# endif -->" href="/pay/">Pay</a></li>
