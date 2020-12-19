@@ -45,9 +45,9 @@
 									</span>
 								</span>
 								<span v-else-if="shop.column.field == 'comment'">
-									<span v-if="shop.row.shop != edit.shop">{{shop.row.comment}}</span>
+									<span v-if="shop.row.shop != edit.shop"><vue-markdown :anchor-attributes="anchorAttrs">{{shop.row.comment}}</vue-markdown></span>
 									<span v-else>
-										<textarea class="form-control" v-model="edit.comment" placeholder="Comment" rows='1'></textarea>
+										<textarea class="form-control" v-model="edit.comment" placeholder="Comment (with markdown support)" rows='1'></textarea>
 									</span>
 								</span>
 								<span v-else-if="shop.column.field == 'action'">

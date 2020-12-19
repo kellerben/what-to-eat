@@ -30,6 +30,7 @@ renewconnection();
 //}}}
 
 // vue {{{
+Vue.use(VueMarkdown);
 const vueapp = new Vue({
 	components: {
 		Multiselect: window.VueMultiselect.default
@@ -65,6 +66,10 @@ const vueapp = new Vue({
 				field: 'action'
 			}
 		],
+		anchorAttrs: {
+			target: '_blank',
+			rel: 'noopener noreferrer nofollow'
+		}
 	},
 	watch: {
 		shops: function(){
