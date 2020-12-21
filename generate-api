@@ -1,4 +1,8 @@
 #!/bin/sh
 
-openapi-generator-cli generate -i api/api.yaml -g openapi -o nginx/html/
-openapi-generator-cli generate -i api/api.yaml -g nodejs-express-server -o nodejs/
+if [ "$1" = "test" ];then
+	rm -rf test
+	openapi-generator-cli generate -i api/api.yaml -g nodejs-express-server -o test || exit 1
+fi
+openapi-generator-cli generate -i api/api.yaml -g openapi -o nginx/html/ || exit 1
+openapi-generator-cli generate -i api/api.yaml -g nodejs-express-server -o nodejs/ || exit 1
