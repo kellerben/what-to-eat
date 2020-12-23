@@ -19,6 +19,11 @@ new Vue({
 			}
 		}
 	},
+	computed: {
+		communityState() {
+			return (typeof(this.community) != "undefined" && this.community != "")
+		}
+	},
 	mounted() {
 		this.getCommunityFromHash();
 		window.addEventListener('hashchange', this.getCommunityFromHash);

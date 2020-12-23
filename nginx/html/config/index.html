@@ -14,10 +14,13 @@
 						Config
 					</h1>
 					<div id="config">
-						Please enter your name:
-						<input type="text" class="form-control" v-on:change="changeUserId" v-model.trim="userId" placeholder="Peter Pan" />
 						Please enter your community:
-						<input type="text" class="form-control" v-on:change="changeCommunity" v-model.trim="community" placeholder="my-location" />
+						<b-form-input type="text" class="form-control" v-on:change="changeCommunity" v-model.trim="community" :state="communityState" aria-describedby="communityFeedback" placeholder="my-community"></b-form-input>
+						<b-form-invalid-feedback id="communityFeedback">
+							You need to set a community string in order to use this site!
+						</b-form-invalid-feedback>
+						Please enter your name (optional):
+						<b-form-input type="text" class="form-control" v-on:change="changeUserId" v-model.trim="userId" placeholder="Peter Pan"></b-form-input>
 					</div>
 				</div>
 
