@@ -367,8 +367,15 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /getOpenPayments:
+  /getOpenPayments/{community}:
     get:
+      parameters:
+      - name: community
+        in: path
+        required: true
+        description: The community string.
+        schema:
+          type: string
       tags:
       - Payments
       summary: Get all orders which are not payed yet

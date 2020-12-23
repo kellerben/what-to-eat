@@ -1,18 +1,21 @@
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
+const mysql = require('mysql');
 
 /**
 * Get all orders which are not payed yet
 *
+* community String The community string.
 * no response value expected for this operation
 * */
-const getOpenPayments = () => new Promise(
+const getOpenPayments = ({ community }) => new Promise(
 	async (resolve, reject) => {
-		var sql =
+		var statement =
 			"SELECT orders.user AS from_user,walks.user AS to_user,price,orders.shop,orders.shop,orders.meal,orders.day " +
 			"FROM orders,walks " +
-			"WHERE walks.day = orders.day AND walks.shop = orders.shop AND walks.user != orders.user " +
+			"WHERE orders.community = ? AND orders.community = ? AND walks.day = orders.day AND walks.shop = orders.shop AND walks.user != orders.user " +
 			"ORDER BY to_user,from_user";
+		var sql = mysql.format(statement, [ community, community ]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
