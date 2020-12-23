@@ -36,6 +36,7 @@ const vueapp = new Vue({
 		Multiselect: window.VueMultiselect.default
 	},
 	data: {
+		community: localStorage.community,
 		alertMsg: '',
 		alertClass: '',
 		alertType: '',
@@ -104,7 +105,7 @@ const vueapp = new Vue({
 			if(this.edit.phone != "") { postBody.phone = this.edit.phone }
 			if(this.edit.comment != "") { postBody.comment = this.edit.comment }
 			lunch.then(
-				client => client.apis.Shop.setShopData({ shopId: this.edit.shop }, { requestBody: postBody })
+				client => client.apis.Shop.setShopData({ community: this.community, shopId: this.edit.shop }, { requestBody: postBody })
 			).then(
 				result => this.cancelEdit(),
 				reason => this.error('Could not edit the shop data. (' + reason.response.body.error + ')')
@@ -131,7 +132,7 @@ function updateShops() {
 		shops.forEach(function(elem){
 			//vueapp.shops.push({shop: elem});
 			lunch.then(
-				client => client.apis.Shop.getShopData({ shopId: elem })
+				client => client.apis.Shop.getShopData({ community: vueapp.community, shopId: elem })
 			).then(
 				result => setShopDetails(elem, JSON.parse(result.text)),
 				reason => vueapp.warning('Could not fetch available shops. ('+reason+')')
@@ -139,7 +140,7 @@ function updateShops() {
 		});
 	}
 	lunch.then(
-		client => client.apis.Shop.getShops()
+		client => client.apis.Shop.getShops({ community: vueapp.community })
 	).then(
 		result => setShops(JSON.parse(result.text)),
 		reason => vueapp.warning('Could not fetch available shops. ('+reason+')')

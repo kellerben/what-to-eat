@@ -40,6 +40,7 @@ const vueapp = new Vue({
 		alertClass: '',
 		alertType: '',
 		showAlertTime: 0,
+		community: localStorage.community,
 		userId: localStorage.userId,
 		suggestions: [],
 		meal: null,
@@ -153,6 +154,7 @@ const vueapp = new Vue({
 				client => client.apis.Fetch.deleteShopAnnouncement({}, {
 					requestBody: {
 						userId: event.target.dataset["user"],
+						community: this.community,
 						shopId: event.target.dataset["shop"]
 					}
 				})
@@ -163,9 +165,11 @@ const vueapp = new Vue({
 		},
 		deleteOrder: function (event) {
 			lunch.then(
-				client => client.apis.Order.deleteOrder({ userId: event.target.dataset["user"] }, {
+				client => client.apis.Order.deleteOrder({ }, {
 					requestBody: {
+						community: this.community,
 						shopId: event.target.dataset["shop"],
+						userId: event.target.dataset["user"],
 						meal: event.target.dataset["meal"],
 						price: event.target.dataset["price"]
 					}
@@ -180,7 +184,7 @@ const vueapp = new Vue({
 				return;
 			}
 			lunch.then(
-				client => client.apis.Fetch.announceShop({}, { requestBody: { userId: this.userId, shopId: this.shopId } })
+				client => client.apis.Fetch.announceShop({}, { requestBody: { community: this.community, userId: this.userId, shopId: this.shopId } })
 			).then(
 				result => null,
 				reason => this.error('Could not send the suggestion. (' + reason.response.body.error + ')')
@@ -190,15 +194,13 @@ const vueapp = new Vue({
 			if (this.userId === "" || this.shopId === '' || this.meal === null) {
 				return;
 			}
-			var order = { shopId: this.shopId, meal: this.meal.meal, specialRequest: this.specialRequest};
+			var order = { userId: this.userId, community: this.community, shopId: this.shopId, meal: this.meal.meal, specialRequest: this.specialRequest};
 			if (this.price !== "") {
 				order.price = this.price;
 				lunch.then(client => client.apis.Shop.setPrice(order));
 			}
 			lunch.then(
-				client => client.apis.Order.orderLunch({
-					userId: this.userId
-				}, {
+				client => client.apis.Order.orderLunch({}, {
 					requestBody: order
 				})
 			).then(
@@ -226,7 +228,7 @@ function fetchSuggestions() {
 	}
 
 	lunch.then(
-		client => client.apis.Fetch.getShopAnnouncements()
+		client => client.apis.Fetch.getShopAnnouncements({ community: vueapp.community })
 	).then(
 		result => updateSuggestions(JSON.parse(result.text).rows),
 		reason => vueapp.warning('Could not fetch today\'s suggestions. ('+reason+')')
@@ -241,7 +243,7 @@ function fetchTodaysOrders() {
 		vueapp.orders = orders;
 	}
 	lunch.then(
-		client => client.apis.Order.getOrdersOfDay()
+		client => client.apis.Order.getOrdersOfDay({ community: vueapp.community })
 	).then(
 		result => updateOrders(JSON.parse(result.text).rows),
 		reason => vueapp.warning('Could not fetch today\'s orders. ('+reason+')')
@@ -256,7 +258,7 @@ function updateShopSuggestions() {
 		vueapp.shopOptions = shops;
 	}
 	lunch.then(
-		client => client.apis.Shop.getShops()
+		client => client.apis.Shop.getShops({ community: vueapp.community })
 	).then(
 		result => updateSuggestion(JSON.parse(result.text)),
 		reason => vueapp.warning('Could not fetch Shop suggestions. (' + reason + ')')
@@ -271,13 +273,13 @@ function updateFoodSuggestions(shop) {
 		vueapp.specialRequestOptions = specialRequests;
 	}
 	lunch.then(
-		client => client.apis.Shop.getMenu({ shopId: shop })
+		client => client.apis.Shop.getMenu({ community: vueapp.community, shopId: shop })
 	).then(
 		result => updateSuggestion(JSON.parse(result.text)),
 		reason => vueapp.warning('Could not fetch the shop\'s menu. (' + reason + ')')
 	);
 	lunch.then(
-		client => client.apis.Shop.getSpecialRequests({ shopId: shop })
+		client => client.apis.Shop.getSpecialRequests({ community: vueapp.community, shopId: shop })
 	).then(
 		result => updateSpecialRequestSuggestion(JSON.parse(result.text)),
 		reason => vueapp.warning('Could not fetch special request suggestions. (' + reason + ')')

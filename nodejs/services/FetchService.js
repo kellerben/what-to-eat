@@ -20,11 +20,11 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 		date = date.toISOString().slice(0,10);
 		Service.trimStrings(shopAnnouncement);
 
-		var inserts = [shopAnnouncement.userId, shopAnnouncement.shopId, date];
+		var inserts = [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date];
 		var stmt =
 			"INSERT INTO walks " +
-			"(user, shop, day) " +
-			"VALUES (?, ?, ?)";
+			"(community, user, shop, day) " +
+			"VALUES (?, ?, ?, ?)";
 
 		var sql = mysql.format(stmt, inserts);
 		Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
@@ -60,8 +60,8 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 			date = date.toISOString().slice(0,10);
 			Service.trimStrings(shopAnnouncement);
 
-			var statement = "DELETE FROM walks WHERE user = ? AND shop = ? AND day = ?";
-			var sql = mysql.format(statement, [shopAnnouncement.userId, shopAnnouncement.shopId, date]);
+			var statement = "DELETE FROM walks WHERE community = ? AND user = ? AND shop = ? AND day = ?";
+			var sql = mysql.format(statement, [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
@@ -86,10 +86,11 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 /**
 * Get all shop announcements
 *
+* community String The community string
 * date date For which day do you want to get the shop announcements? (optional)
 * no response value expected for this operation
 * */
-const getShopAnnouncements = ({ date }) => new Promise(
+const getShopAnnouncements = ({ community, date }) => new Promise(
 	async (resolve, reject) => {
 		try {
 			if (typeof(date) === 'undefined') {
@@ -99,8 +100,8 @@ const getShopAnnouncements = ({ date }) => new Promise(
 			}
 			date = date.toISOString().slice(0,10);
 			var stmt =
-				"SELECT user,shop FROM walks WHERE day = ?";
-			var sql = mysql.format(stmt, [date]);
+				"SELECT user,shop FROM walks WHERE community = ? AND day = ?";
+			var sql = mysql.format(stmt, [community, date]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
 					console.error(err);

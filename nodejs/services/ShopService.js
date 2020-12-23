@@ -5,16 +5,17 @@ const ws = require('../ws');
 /**
 * Get the shop's menu
 *
+* community String The community string
 * shopId String The menu of which shop do you want to have?
 * no response value expected for this operation
 * */
-const getMenu = ({ shopId }) => new Promise(
+const getMenu = ({ community, shopId }) => new Promise(
 	async (resolve, reject) => {
 		shopId = shopId.trim();
 
 		var stmt =
-			"SELECT meal,price FROM meals WHERE shop = ?";
-		var sql = mysql.format(stmt, [shopId]);
+			"SELECT meal,price FROM meals WHERE community = ? AND shop = ?";
+		var sql = mysql.format(stmt, [community, shopId]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
@@ -35,18 +36,19 @@ const getMenu = ({ shopId }) => new Promise(
 /**
 * Get price of a meal
 *
+* community String The community string.
 * shopId String Which shop offers the meal?
 * meal String Which meal-price do you want to have?
 * no response value expected for this operation
 * */
-const getPrice = ({ shopId, meal }) => new Promise(
+const getPrice = ({ community, shopId, meal }) => new Promise(
 	async (resolve, reject) => {
 		try {
 			shopId = shopId.trim();
 			meal = meal.trim();
 
-			var stmt = "SELECT price FROM meals WHERE shop = ? AND meal = ?";
-			var sql = mysql.format(stmt, [shopId, meal]);
+			var stmt = "SELECT price FROM meals WHERE community = ? AND shop = ? AND meal = ?";
+			var sql = mysql.format(stmt, [community, shopId, meal]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
@@ -66,16 +68,17 @@ const getPrice = ({ shopId, meal }) => new Promise(
 /**
 * Get the shop's metadata
 *
+* community String The community string.
 * shopId String The Metadata of which shop do you want to have?
 * no response value expected for this operation
 * */
-const getShopData = ({ shopId }) => new Promise(
+const getShopData = ({ community, shopId }) => new Promise(
 	async (resolve, reject) => {
 		var stmt =
-			"SELECT * FROM shops WHERE shop = ?";
+			"SELECT * FROM shops WHERE community = ? AND shop = ?";
 		shopId = shopId.trim();
 
-		var sql = mysql.format(stmt, [shopId]);
+		var sql = mysql.format(stmt, [community, shopId]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
@@ -100,12 +103,14 @@ const getShopData = ({ shopId }) => new Promise(
 /**
 * Get all known shops
 *
+* community String The community string
 * no response value expected for this operation
 * */
-const getShops = () => new Promise(
+const getShops = ({ community }) => new Promise(
 	async (resolve, reject) => {
-		var sql =
-			"SELECT DISTINCT shop FROM meals UNION SELECT DISTINCT shop FROM walks;";
+		var stmt =
+			"SELECT DISTINCT shop FROM meals WHERE community = ? UNION SELECT DISTINCT shop FROM walks WHERE community = ?;";
+		var sql = mysql.format(stmt, [community, community]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
@@ -128,16 +133,17 @@ const getShops = () => new Promise(
 /**
 * Get typical special requests of the shop
 *
+* community String The community string.
 * shopId String The typical special requests of which shop do you want to have?
 * no response value expected for this operation
 * */
-const getSpecialRequests = ({ shopId }) => new Promise(
+const getSpecialRequests = ({ community, shopId }) => new Promise(
 	async (resolve, reject) => {
 		var stmt =
-			"SELECT specialRequest FROM specialRequests WHERE shop = ?";
+			"SELECT specialRequest FROM specialRequests WHERE community = ? AND shop = ?";
 		shopId = shopId.trim();
 
-		var sql = mysql.format(stmt, [shopId]);
+		var sql = mysql.format(stmt, [community, shopId]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
@@ -160,12 +166,13 @@ const getSpecialRequests = ({ shopId }) => new Promise(
 /**
 * Set price of a meal
 *
-* shopId String Which shop offers the meal?
+* community String The community string.
 * meal String Which meal-price do you want to set?
+* shopId String Which shop offers the meal?
 * price BigDecimal The price of the meal
 * no response value expected for this operation
 * */
-const setPrice = ({ shopId, meal, price }) => new Promise(
+const setPrice = ({ community, meal, shopId, price }) => new Promise(
 	async (resolve, reject) => {
 		try {
 			shopId = shopId.trim();
@@ -173,8 +180,8 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 
 			var updatePriceInOrders = function() {
 				var stmt =
-					"UPDATE orders SET price = ? WHERE shop = ? AND meal = ? AND day = ?";
-				var sql = mysql.format(stmt, [price, shopId, meal, new Date().toISOString().slice(0,10)]);
+					"UPDATE orders SET price = ? WHERE community = ? AND shop = ? AND meal = ? AND day = ?";
+				var sql = mysql.format(stmt, [price, community, shopId, meal, new Date().toISOString().slice(0,10)]);
 				Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 					if (err) {
 						console.error(err);
@@ -187,8 +194,8 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 			}
 
 			var stmt =
-				"UPDATE meals SET price = ? WHERE shop = ? AND meal = ?";
-			var sql = mysql.format(stmt, [price, shopId, meal]);
+				"UPDATE meals SET price = ? WHERE community = ? AND shop = ? AND meal = ?";
+			var sql = mysql.format(stmt, [price, community, shopId, meal]);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
@@ -197,10 +204,10 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 					if (rows['affectedRows'] === 0){
 						var stmt =
 							"INSERT INTO meals " +
-							"(shop, meal, price) " +
-							"VALUES (?, ?, ?)";
+							"(community, shop, meal, price) " +
+							"VALUES (?, ?, ?, ?)";
 
-						var sql = mysql.format(stmt, [shopId, meal, price]);
+						var sql = mysql.format(stmt, [community, shopId, meal, price]);
 						Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 							if (err) {
 								console.error(err);
@@ -228,17 +235,18 @@ const setPrice = ({ shopId, meal, price }) => new Promise(
 /**
 * Set the shop's metadata
 *
+* community String The community string.
 * shopId String The Metadata of the shop you want to set
 * shopMetaData ShopMetaData
 * no response value expected for this operation
 * */
-const setShopData = ({ shopId, shopMetaData }) => new Promise(
+const setShopData = ({ community, shopId, shopMetaData }) => new Promise(
 	async (resolve, reject) => {
 		try {
 			shopId = shopId.trim();
-			var values = [shopMetaData.distance, shopMetaData.phone, shopMetaData.comment, shopId];
+			var values = [shopMetaData.distance, shopMetaData.phone, shopMetaData.comment, community, shopId];
 			var stmt =
-				"UPDATE shops SET distance = ?, phone = ?, comment = ? WHERE shop = ?";
+				"UPDATE shops SET distance = ?, phone = ?, comment = ? WHERE community = ? AND shop = ?";
 			var sql = mysql.format(stmt, values);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
@@ -248,8 +256,8 @@ const setShopData = ({ shopId, shopMetaData }) => new Promise(
 					if (rows['affectedRows'] === 0){
 						var stmt =
 							"INSERT INTO shops " +
-							"(distance, phone, comment, shop) " +
-							"VALUES (?, ?, ?, ?)";
+							"(distance, phone, comment, community, shop) " +
+							"VALUES (?, ?, ?, ?, ?)";
 
 						var sql = mysql.format(stmt, values);
 						Service.mysql_connection_pool.query(sql, function (err, rows, fields) {

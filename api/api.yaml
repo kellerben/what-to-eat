@@ -9,19 +9,12 @@ info:
 servers:
 - url: /api
 paths:
-  /order/{userId}:
+  /order:
     post:
       tags:
       - Order
       summary: Order lunch
       operationId: orderLunch
-      parameters:
-      - name: userId
-        in: path
-        description: Who wants to order something?
-        required: true
-        schema:
-          type: string
       requestBody:
         required: true
         content:
@@ -40,13 +33,6 @@ paths:
       - Order
       summary: Change an order
       operationId: updateOrder
-      parameters:
-      - name: userId
-        in: path
-        description: Who wants to order something?
-        required: true
-        schema:
-          type: string
       requestBody:
         required: true
         content:
@@ -68,13 +54,6 @@ paths:
       - Order
       summary: delete an order
       operationId: deleteOrder
-      parameters:
-      - name: userId
-        in: path
-        description: User of whom the order should be deleted.
-        required: true
-        schema:
-          type: string
       requestBody:
         content:
           application/json:
@@ -130,6 +109,12 @@ paths:
       summary: Get all shop announcements
       operationId: getShopAnnouncements
       parameters:
+      - name: community
+        in: query
+        description: The community string
+        required: true
+        schema:
+          type: string
       - name: date
         in: query
         description: For which day do you want to get the shop announcements?
@@ -143,13 +128,19 @@ paths:
         405:
           description: Invalid input
           content: {}
-  /getOrdersOfDay:
+  /getOrdersOfDay/{community}:
     get:
       tags:
       - Order
       summary: Get all orders of one day
       operationId: getOrdersOfDay
       parameters:
+      - name: community
+        in: path
+        description: The community string
+        required: true
+        schema:
+          type: string
       - name: date
         in: query
         description: For which day do you want to get the orders?
@@ -163,13 +154,19 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /getShopOrders/{shopId}:
+  /getShopOrders/{community}/{shopId}:
     get:
       tags:
       - Order
       summary: Get all orders of one shop
       operationId: getShopOrders
       parameters:
+      - name: community
+        in: path
+        description: The community string
+        required: true
+        schema:
+          type: string
       - name: shopId
         in: path
         description: Which shop orders do you want to have?
@@ -189,23 +186,36 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /allShops:
+  /allShops/{community}:
     get:
       tags:
       - Shop
       summary: Get all known shops
       operationId: getShops
+      parameters:
+      - name: community
+        in: path
+        description: The community string
+        required: true
+        schema:
+          type: string
       responses:
         405:
           description: Validation exception
           content: {}
-  /menu/{shopId}:
+  /menu/{community}/{shopId}:
     get:
       tags:
       - Shop
       summary: Get the shop's menu
       operationId: getMenu
       parameters:
+      - name: community
+        in: path
+        description: The community string
+        required: true
+        schema:
+          type: string
       - name: shopId
         in: path
         description: The menu of which shop do you want to have?
@@ -216,13 +226,19 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /specialRequests/{shopId}:
+  /specialRequests/{community}/{shopId}:
     get:
       tags:
       - Shop
       summary: Get typical special requests of the shop
       operationId: getSpecialRequests
       parameters:
+      - name: community
+        in: path
+        required: true
+        description: The community string.
+        schema:
+          type: string
       - name: shopId
         in: path
         description: The typical special requests of which shop do you want to have?
@@ -233,13 +249,19 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /price/{shopId}/{meal}:
+  /price/{community}/{shopId}/{meal}:
     get:
       tags:
       - Shop
       summary: Get price of a meal
       operationId: getPrice
       parameters:
+      - name: community
+        in: path
+        required: true
+        description: The community string.
+        schema:
+          type: string
       - name: shopId
         in: path
         description: Which shop offers the meal?
@@ -259,22 +281,28 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /price/{shopId}/{meal}/{price}:
+  /price/{community}/{shopId}/{meal}/{price}:
     post:
       tags:
       - Shop
       summary: Set price of a meal
       operationId: setPrice
       parameters:
-      - name: shopId
+      - name: community
         in: path
-        description: Which shop offers the meal?
         required: true
+        description: The community string.
         schema:
           type: string
       - name: meal
         in: path
         description: Which meal-price do you want to set?
+        required: true
+        schema:
+          type: string
+      - name: shopId
+        in: path
+        description: Which shop offers the meal?
         required: true
         schema:
           type: string
@@ -288,13 +316,19 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /details/{shopId}:
+  /details/{community}/{shopId}:
     get:
       tags:
       - Shop
       summary: Get the shop's metadata
       operationId: getShopData
       parameters:
+      - name: community
+        in: path
+        required: true
+        description: The community string.
+        schema:
+          type: string
       - name: shopId
         in: path
         description: The Metadata of which shop do you want to have?
@@ -311,6 +345,12 @@ paths:
       summary: Set the shop's metadata
       operationId: setShopData
       parameters:
+      - name: community
+        in: path
+        required: true
+        description: The community string.
+        schema:
+          type: string
       - name: shopId
         in: path
         description: The Metadata of the shop you want to set
@@ -342,9 +382,15 @@ components:
     mealOrder:
       type: object
       properties:
+        community:
+          type: string
+          description: The community string.
         shopId:
           type: string
           description: Where do you want to get it from?
+        userId:
+          type: string
+          description: Who wants to order something?
         meal:
           type: string
           description: What do you want to have?
@@ -359,11 +405,16 @@ components:
           type: string
           description: Any specialties?
       required:
+        - community
         - shopId
+        - userId
         - meal
     shopAnnouncement:
       type: object
       properties:
+        community:
+          type: string
+          description: The community string.
         userId:
           description: Who wants to order something?
           type: string
@@ -375,6 +426,7 @@ components:
           description: For which day is your order?
           format: date
       required:
+        - community
         - userId
         - shopId
     shopMetaData:

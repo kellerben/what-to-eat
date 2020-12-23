@@ -29,6 +29,7 @@ const vueapp = new Vue({
 	data: {
 		meal: null,
 		specialRequest: '',
+		community: localStorage.community,
 		orders: [],
 		header: [
 			{
@@ -93,7 +94,7 @@ function fetchTodaysOrders() {
 		}
 	}
 	lunch.then(
-		client => client.apis.Order.getOrdersOfDay()
+		client => client.apis.Order.getOrdersOfDay({ community: vueapp.community })
 	).then(
 		result => updateOrders(JSON.parse(result.text).rows)
 	);

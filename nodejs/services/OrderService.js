@@ -5,11 +5,10 @@ const ws = require('../ws');
 /**
 * delete an order
 *
-* userId String User of whom the order should be deleted.
 * mealOrder MealOrder  (optional)
 * no response value expected for this operation
 * */
-const deleteOrder = ({ userId, mealOrder }) => new Promise(
+const deleteOrder = ({ mealOrder }) => new Promise(
 	async (resolve, reject) => {
 		try {
 			var date;
@@ -19,9 +18,10 @@ const deleteOrder = ({ userId, mealOrder }) => new Promise(
 				date = new Date(mealOrder.date);
 			}
 			date = date.toISOString().slice(0,10);
+			Service.trimStrings(mealOrder);
 
-			var statement = "DELETE FROM orders WHERE user = ? AND day = ?";
-			var inputs = [userId, date];
+			var statement = "DELETE FROM orders WHERE community = ? AND user = ? AND day = ?";
+			var inputs = [mealOrder.community, mealOrder.userId, date];
 			if (typeof(mealOrder.shopId) !== 'undefined') {
 				statement += " AND shop = ?";
 				inputs.push(mealOrder.shopId);
@@ -69,10 +69,11 @@ const deleteOrder = ({ userId, mealOrder }) => new Promise(
 /**
 * Get all orders of one day
 *
+* community String The community string
 * date date For which day do you want to get the orders? (optional)
 * no response value expected for this operation
 * */
-const getOrdersOfDay = ({ date }) => new Promise(
+const getOrdersOfDay = ({ community, date }) => new Promise(
 	async (resolve, reject) => {
 		var date;
 		if (typeof(date) === 'undefined') {
@@ -82,8 +83,8 @@ const getOrdersOfDay = ({ date }) => new Promise(
 		}
 		date = date.toISOString().slice(0,10);
 		var stmt =
-			"SELECT shop,user,meal,specialRequest,price FROM orders WHERE day = ? ORDER BY shop,meal,specialRequest";
-		var sql = mysql.format(stmt, [date]);
+			"SELECT shop,user,meal,specialRequest,price FROM orders WHERE community = ? AND day = ? ORDER BY shop,meal,specialRequest";
+		var sql = mysql.format(stmt, [community, date]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
@@ -106,11 +107,12 @@ const getOrdersOfDay = ({ date }) => new Promise(
 /**
 * Get all orders of one shop
 *
+* community String The community string
 * shopId String Which shop orders do you want to have?
 * date date For which day do you want to get the orders? (optional)
 * no response value expected for this operation
 * */
-const getShopOrders = ({ shopId, date }) => new Promise(
+const getShopOrders = ({ community, shopId, date }) => new Promise(
 	async (resolve, reject) => {
 		if (typeof(date) === 'undefined') {
 			date = new Date();
@@ -121,8 +123,8 @@ const getShopOrders = ({ shopId, date }) => new Promise(
 		shopId = shopId.trim();
 
 		var stmt =
-			"SELECT user,meal,price FROM orders WHERE shop = ? AND day = ?";
-		var sql = mysql.format(stmt, [shopId, date]);
+			"SELECT user,meal,price FROM orders WHERE community = ? AND shop = ? AND day = ?";
+		var sql = mysql.format(stmt, [community, shopId, date]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
@@ -145,11 +147,10 @@ const getShopOrders = ({ shopId, date }) => new Promise(
 /**
 * Order lunch
 *
-* userId String Who wants to order something?
 * mealOrder MealOrder
 * no response value expected for this operation
 * */
-const orderLunch = ({ userId, mealOrder }) => new Promise(
+const orderLunch = ({ mealOrder }) => new Promise(
 	async (resolve, reject) => {
 		try {
 			var date;
@@ -161,25 +162,23 @@ const orderLunch = ({ userId, mealOrder }) => new Promise(
 			date = date.toISOString().slice(0,10);
 
 			Service.trimStrings(mealOrder);
-			userId = userId.trim();
-
 
 			var stmt, sql;
 			if (mealOrder.specialRequest != "") {
 				stmt =
 					"INSERT INTO specialRequests" +
-					" (shop, specialRequest)" +
-					" VALUES (?, ?)";
+					" (community, shop, specialRequest)" +
+					" VALUES (?, ?, ?)";
 
-				sql = mysql.format(stmt, [mealOrder.shopId, mealOrder.specialRequest]);
+				sql = mysql.format(stmt, [mealOrder.community, mealOrder.shopId, mealOrder.specialRequest]);
 				Service.mysql_connection_pool.query(sql);
 			}
 
-			var inserts = [userId, mealOrder.shopId, mealOrder.meal, mealOrder.specialRequest, mealOrder.price, date];
+			var inserts = [mealOrder.community, mealOrder.userId, mealOrder.shopId, mealOrder.meal, mealOrder.specialRequest, mealOrder.price, date];
 			stmt =
 				"INSERT INTO orders" +
-				" (user, shop, meal, specialRequest, price, day)" +
-				" VALUES (?, ?, ?, ?, ?, ?)";
+				" (community, user, shop, meal, specialRequest, price, day)" +
+				" VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 			sql = mysql.format(stmt, inserts);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
@@ -206,11 +205,10 @@ const orderLunch = ({ userId, mealOrder }) => new Promise(
 /**
 * Change an order
 *
-* userId String Who wants to order something?
 * mealOrder MealOrder
 * no response value expected for this operation
 * */
-const updateOrder = ({ userId, mealOrder }) => new Promise(
+const updateOrder = ({ mealOrder }) => new Promise(
 	async (resolve, reject) => {
 		try {
 			var date;
@@ -222,21 +220,20 @@ const updateOrder = ({ userId, mealOrder }) => new Promise(
 			date = date.toISOString().slice(0,10);
 
 			Service.trimStrings(mealOrder);
-			userId = userId.trim();
 
 			var stmt, sql;
 			if (typeof(mealOrder.price) === 'undefined') {
 				stmt =
 					"UPDATE orders " +
 					"SET shop = ?, meal = ? " +
-					"WHERE user = ? AND day = ?";
-				sql = mysql.format(stmt, [mealOrder.shopId, mealOrder.meal, userId, date]);
+					"WHERE community = ? AND user = ? AND day = ?";
+				sql = mysql.format(stmt, [mealOrder.shopId, mealOrder.meal, mealOrder.community, mealOrder.userId, date]);
 			} else {
 				stmt =
 					"UPDATE orders " +
 					"SET shop = ?, meal = ?, price = ? " +
-					"WHERE user = ? AND day = ?";
-				sql = mysql.format(stmt, [mealOrder.shopId, mealOrder.meal, mealOrder.price, userId, date]);
+					"WHERE community = ? AND user = ? AND day = ?";
+				sql = mysql.format(stmt, [mealOrder.shopId, mealOrder.meal, mealOrder.price, mealOrder.community, mealOrder.userId, date]);
 			}
 
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {

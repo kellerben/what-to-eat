@@ -29,6 +29,7 @@ renewconnection();
 // vue {{{
 const vueapp = new Vue({
 	data: {
+		community: localStorage.community,
 		userId: localStorage.userId,
 		payments: [],
 		header: [
@@ -78,7 +79,7 @@ const vueapp = new Vue({
 	methods: {
 		getOpenPayments: function (event) {
 			lunch.then(
-				client => client.apis.Payments.getOpenPayments()
+				client => client.apis.Payments.getOpenPayments({ community: this.community })
 			).then(
 				result => function(){
 					var p = JSON.parse(result.text).rows;
@@ -106,9 +107,11 @@ const vueapp = new Vue({
 		},
 		deleteOrder: function (event) {
 			lunch.then(
-				client => client.apis.Order.deleteOrder({ userId: event.target.dataset["user"] }, {
+				client => client.apis.Order.deleteOrder({ }, {
 					requestBody: {
+						community: this.community,
 						shopId: event.target.dataset["shop"],
+						userId: event.target.dataset["user"],
 						meal: event.target.dataset["meal"],
 						price: event.target.dataset["price"],
 						date: event.target.dataset["day"]
@@ -122,7 +125,12 @@ const vueapp = new Vue({
 				return;
 			}
 			lunch.then(
-				client => client.apis.Shop.setPrice({ shopId: elem.shop, meal: elem.meal, price: elem.price})
+				client => client.apis.Shop.setPrice({
+					community: this.community,
+					shopId: elem.shop,
+					meal: elem.meal,
+					price: elem.price
+				})
 			)
 		}
 	},
