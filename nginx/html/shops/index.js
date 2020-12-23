@@ -110,15 +110,26 @@ const vueapp = new Vue({
 				result => this.cancelEdit(),
 				reason => this.error('Could not edit the shop data. (' + reason.response.body.error + ')')
 			);
+		},
+		getCommunityFromHash() {
+			var u = new URLSearchParams(document.location.hash.substr(1));
+			if (u.has("in")) {
+				this.community = u.get("in");
+			}
+		},
+		init() {
+			this.getCommunityFromHash();
+			if (typeof(this.community) == "undefined" || this.community == "") {
+				document.location = '/config/'
+			} else {
+				updateShops();
+			}
 		}
 	},
 	mounted() {
-		if (typeof(this.community) == "undefined" || this.community == "") {
-			document.location = '/config/'
-		} else {
-			updateShops();
-		}
-
+		this.init();
+		document.location.hash = "in=" + this.community;
+		window.addEventListener('hashchange', this.init);
 	},
 	el: '#root'
 });

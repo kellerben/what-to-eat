@@ -132,14 +132,26 @@ const vueapp = new Vue({
 					price: elem.price
 				})
 			)
+		},
+		getCommunityFromHash() {
+			var u = new URLSearchParams(document.location.hash.substr(1));
+			if (u.has("in")) {
+				this.community = u.get("in");
+			}
+		},
+		init() {
+			this.getCommunityFromHash();
+			if (typeof(this.community) == "undefined" || this.community == "") {
+				document.location = '/config/'
+			} else {
+				this.getOpenPayments();
+			}
 		}
 	},
 	mounted() {
-		if (typeof(this.community) == "undefined" || this.community == "") {
-			document.location = '/config/'
-		} else {
-			this.getOpenPayments();
-		}
+		this.init();
+		document.location.hash = "in=" + this.community;
+		window.addEventListener('hashchange', this.init);
 	},
 	el: '#root'
 });

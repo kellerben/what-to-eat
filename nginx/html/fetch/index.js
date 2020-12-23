@@ -68,12 +68,26 @@ const vueapp = new Vue({
 			return this.orders.reduce((total, product) => product.price + total  ,0);
 		}
 	},
-	mounted() {
-		if (typeof(this.community) == "undefined" || this.community == "") {
-			document.location = '/config/'
-		} else {
-			fetchTodaysOrders();
+	methods: {
+		getCommunityFromHash() {
+			var u = new URLSearchParams(document.location.hash.substr(1));
+			if (u.has("in")) {
+				this.community = u.get("in");
+			}
+		},
+		init() {
+			this.getCommunityFromHash();
+			if (typeof(this.community) == "undefined" || this.community == "") {
+				document.location = '/config/'
+			} else {
+				fetchTodaysOrders();
+			}
 		}
+	},
+	mounted() {
+		this.init();
+		document.location.hash = "in=" + this.community;
+		window.addEventListener('hashchange', this.init);
 	},
 	el: '#root'
 });
