@@ -68,6 +68,13 @@ const vueapp = new Vue({
 			return this.orders.reduce((total, product) => product.price + total  ,0);
 		}
 	},
+	mounted() {
+		if (typeof(this.community) == "undefined" || this.community == "") {
+			document.location = '/config/'
+		} else {
+			fetchTodaysOrders();
+		}
+	},
 	el: '#root'
 });
 // }}}
@@ -99,5 +106,4 @@ function fetchTodaysOrders() {
 		result => updateOrders(JSON.parse(result.text).rows)
 	);
 }
-fetchTodaysOrders();
 // }}}

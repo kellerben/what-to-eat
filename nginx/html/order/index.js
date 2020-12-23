@@ -213,6 +213,16 @@ const vueapp = new Vue({
 			);
 		}
 	},
+	mounted() {
+		if (typeof(this.community) == "undefined" || this.community == "") {
+			document.location = '/config/'
+		} else {
+			fetchSuggestions();
+			fetchTodaysOrders();
+			updateShopSuggestions();
+		}
+
+	},
 	el: '#root'
 });
 // }}}
@@ -234,7 +244,6 @@ function fetchSuggestions() {
 		reason => vueapp.warning('Could not fetch today\'s suggestions. ('+reason+')')
 	);
 }
-fetchSuggestions();
 //}}}
 
 // current orders {{{
@@ -249,7 +258,6 @@ function fetchTodaysOrders() {
 		reason => vueapp.warning('Could not fetch today\'s orders. ('+reason+')')
 	);
 }
-fetchTodaysOrders();
 // }}}
 
 // update all suggestions {{{
@@ -264,7 +272,6 @@ function updateShopSuggestions() {
 		reason => vueapp.warning('Could not fetch Shop suggestions. (' + reason + ')')
 	);
 }
-updateShopSuggestions();
 function updateFoodSuggestions(shop) {
 	function updateSuggestion(meals){
 		vueapp.foodOptions = meals;

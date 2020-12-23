@@ -134,7 +134,13 @@ const vueapp = new Vue({
 			)
 		}
 	},
+	mounted() {
+		if (typeof(this.community) == "undefined" || this.community == "") {
+			document.location = '/config/'
+		} else {
+			this.getOpenPayments();
+		}
+	},
 	el: '#root'
 });
 // }}}
-vueapp.getOpenPayments();

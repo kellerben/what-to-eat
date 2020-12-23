@@ -112,6 +112,14 @@ const vueapp = new Vue({
 			);
 		}
 	},
+	mounted() {
+		if (typeof(this.community) == "undefined" || this.community == "") {
+			document.location = '/config/'
+		} else {
+			updateShops();
+		}
+
+	},
 	el: '#root'
 });
 // }}}
@@ -146,6 +154,5 @@ function updateShops() {
 		reason => vueapp.warning('Could not fetch available shops. ('+reason+')')
 	);
 }
-updateShops();
 // }}}
 
