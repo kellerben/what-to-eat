@@ -73,6 +73,7 @@ const vueapp = new Vue({
 			var u = new URLSearchParams(document.location.hash.substr(1));
 			if (u.has("in")) {
 				this.community = u.get("in");
+				localStorage.community = this.community;
 			}
 		},
 		init() {
