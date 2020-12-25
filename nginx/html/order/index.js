@@ -67,6 +67,9 @@ const vueapp = new Vue({
 		error(string) {
 			this.showAlert(string, 'error');
 		},
+		info(string) {
+			this.showAlert(string, 'info');
+		},
 		showAlert(string, type) {
 			this.alertClass = type == 'error' ? 'danger' : type;
 			this.alertType = type[0].toUpperCase() + type.slice(1);
@@ -183,7 +186,6 @@ const vueapp = new Vue({
 			if (this.userId === "" || this.shopId === "") {
 				return;
 			}
-			this.userId2LocalStorage();
 			lunch.then(
 				client => client.apis.Fetch.announceShop({}, { requestBody: { community: this.community, userId: this.userId, shopId: this.shopId } })
 			).then(
@@ -195,7 +197,6 @@ const vueapp = new Vue({
 			if (this.userId === "" || this.shopId === '' || this.meal === null) {
 				return;
 			}
-			this.userId2LocalStorage();
 			var order = { userId: this.userId, community: this.community, shopId: this.shopId, meal: this.meal.meal, specialRequest: this.specialRequest};
 			if (this.price !== "") {
 				order.price = this.price;
@@ -218,6 +219,7 @@ const vueapp = new Vue({
 		userId2LocalStorage() {
 			if ((typeof localStorage.userId == "undefined" || localStorage.userId == "") && typeof this.userId != "undefined" && this.userId != "") {
 				localStorage.userId = this.userId;
+				this.info('User id (' + this.userId+ ') was stored for later usage. This can be changed in the config-tab…')
 			}
 		},
 		getCommunityFromHash() {

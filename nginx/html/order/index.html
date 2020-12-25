@@ -12,7 +12,7 @@
 
 				<div>
 					<b-alert v-model="showAlertTime" :variant="alertClass" fade dismissible>
-						<strong>{{alertType}}!</strong> {{alertMsg}}
+						<strong>{{alertType}}:</strong> {{alertMsg}}
 					</b-alert>
 					<h1>
 						Suggestions
@@ -38,7 +38,7 @@
 								</tr>
 								<tr>
 									<td>
-										<input type="text" class="form-control" v-model="userId" placeholder="Who suggests something?" />
+										<input type="text" class="form-control" v-on:change="userId2LocalStorage" v-model="userId" placeholder="Who suggests something?" />
 									</td>
 									<td>
 										<span class='shopInput'>
@@ -97,7 +97,7 @@
 								</tr>
 								<tr>
 									<td>
-										<input type="text" class="form-control" v-model="userId" placeholder="Who is ordering?" />
+										<input type="text" class="form-control" v-model="userId" v-on:change="userId2LocalStorage"  placeholder="Who is ordering?" />
 									</td>
 									<td>
 										<span class='shopInput'>
