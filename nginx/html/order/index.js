@@ -183,6 +183,7 @@ const vueapp = new Vue({
 			if (this.userId === "" || this.shopId === "") {
 				return;
 			}
+			this.userId2LocalStorage();
 			lunch.then(
 				client => client.apis.Fetch.announceShop({}, { requestBody: { community: this.community, userId: this.userId, shopId: this.shopId } })
 			).then(
@@ -194,6 +195,7 @@ const vueapp = new Vue({
 			if (this.userId === "" || this.shopId === '' || this.meal === null) {
 				return;
 			}
+			this.userId2LocalStorage();
 			var order = { userId: this.userId, community: this.community, shopId: this.shopId, meal: this.meal.meal, specialRequest: this.specialRequest};
 			if (this.price !== "") {
 				order.price = this.price;
@@ -213,6 +215,10 @@ const vueapp = new Vue({
 			);
 		},// }}}
 
+		userId2LocalStorage() {
+			if ((typeof localStorage.userId == "undefined" || localStorage.userId == "") && typeof this.userId != "undefined" && this.userId != "") {
+				localStorage.userId = this.userId;
+			}
 		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
