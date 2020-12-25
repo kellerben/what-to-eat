@@ -61,7 +61,7 @@ const vueapp = new Vue({
 		}
 	},
 	methods: {
-		warning(string) {
+		warning(string) {//{{{ alerts
 			this.showAlert(string, 'warning');
 		},
 		error(string) {
@@ -72,7 +72,7 @@ const vueapp = new Vue({
 			this.alertType = type[0].toUpperCase() + type.slice(1);
 			this.alertMsg = string;
 			this.showAlertTime = 10;
-		},
+		},//}}}
 		saveAddShop(name){// shop multiselect methods {{{
 			// check if we pressed backspace or tab -> the active element is not inside the class anymore
 			if (name == '' && [].indexOf.call(document.querySelectorAll('.shopInput input'), document.activeElement) == -1) {
@@ -149,7 +149,7 @@ const vueapp = new Vue({
 			this.specialRequest = name;
 		},// }}}
 
-		deleteSuggestion: function (event) {
+		deleteSuggestion: function (event) {//{{{ server interaction methods
 			lunch.then(
 				client => client.apis.Fetch.deleteShopAnnouncement({}, {
 					requestBody: {
@@ -211,6 +211,8 @@ const vueapp = new Vue({
 				}(),
 				reason => this.error('Could not place the order. (' + reason.response.body.error + ')')
 			);
+		},// }}}
+
 		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
