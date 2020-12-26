@@ -109,7 +109,7 @@ paths:
         405:
           description: Invalid input
           content: {}
-  /getOrdersOfDay/{community}:
+  /{community}/getOrdersOfDay:
     get:
       tags:
       - Order
@@ -136,7 +136,7 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /getShopOrders/{community}/{shopId}:
+  /{community}/{shopId}/getShopOrders:
     get:
       tags:
       - Order
@@ -170,7 +170,7 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /allShops/{community}:
+  /{community}/allShops:
     get:
       tags:
       - Shop
@@ -188,7 +188,7 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /menu/{community}/{shopId}:
+  /{community}/{shopId}/menu:
     get:
       tags:
       - Shop
@@ -213,7 +213,7 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /specialRequests/{community}/{shopId}:
+  /{community}/{shopId}/specialRequests:
     get:
       tags:
       - Shop
@@ -238,7 +238,7 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /price/{community}/{shopId}/{meal}:
+  /{community}/{shopId}/{meal}/price:
     get:
       tags:
       - Shop
@@ -273,7 +273,7 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /price/{community}/{shopId}/{meal}/{price}:
+  /{community}/{shopId}/{meal}/{price}/price:
     post:
       tags:
       - Shop
@@ -311,7 +311,7 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /details/{community}/{shopId}:
+  /{community}/{shopId}/details:
     get:
       tags:
       - Shop
@@ -366,7 +366,7 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /getOpenPayments/{community}:
+  /{community}/getOpenPayments:
     get:
       parameters:
       - name: community
