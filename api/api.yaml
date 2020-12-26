@@ -366,7 +366,7 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /{community}/getOpenPayments:
+  /{community}/getPayments:
     get:
       parameters:
       - name: community
@@ -376,10 +376,34 @@ paths:
         schema:
           type: string
           maxLength: 64
+      - name: from
+        in: query
+        required: false
+        description: Payment sender
+        schema:
+          type: string
+          maxLength: 64
+      - name: to
+        in: query
+        required: false
+        description: Payment receiver
+        schema:
+          type: string
+          maxLength: 64
+      - name: states
+        in: query
+        required: false
+        description: Show only payments of these states
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 16
+            pattern: '^(NEW|FETCHED|PAYED|DISCARDED)$'
       tags:
       - Payments
-      summary: Get all orders which are not payed yet
-      operationId: getOpenPayments
+      summary: Get open or closed payments
+      operationId: getPayments
       responses:
         405:
           description: Validation exception

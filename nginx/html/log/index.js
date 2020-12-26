@@ -34,6 +34,16 @@ const vueapp = new Vue({
 		payments: [],
 		header: [
 			{
+				label: 'State',
+				field: 'state',
+				sortFn: function (x,y) {
+					var sortary = ['NEW', 'FETCHED', 'PAYED', 'DISCARDED'];
+					var a = sortary.indexOf(x);
+					var b = sortary.indexOf(y);
+					return (a < b ? -1 : (a > b ? 1 : 0));
+				},
+			},
+			{
 				label: 'From',
 				field: 'from_user',
 			},
@@ -61,17 +71,12 @@ const vueapp = new Vue({
 				type: 'date',
 				dateInputFormat: 'yyyy-MM-dd',
 				dateOutputFormat: 'do MMM',
-			},
-			{
-				label: 'Action',
-				field: 'button'
 			}
 		],
 		sortOpts: {
 			initialSortBy: [
-				{field: 'to_user'},
-				{field: 'from_user'},
-				{field: 'meal'}
+				{field: 'state'},
+				{field: 'day'},
 			]
 		},
 		prices: []
@@ -79,7 +84,7 @@ const vueapp = new Vue({
 	methods: {
 		getOpenPayments: function (event) {
 			lunch.then(
-				client => client.apis.Payments.getPayments({ community: this.community, states: ["NEW","FETCHED"] })
+				client => client.apis.Payments.getPayments({ community: this.community, from: this.userId, to: this.userId })
 			).then(
 				result => function(){
 					var p = JSON.parse(result.text).rows;

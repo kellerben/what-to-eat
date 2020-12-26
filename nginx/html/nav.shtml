@@ -4,6 +4,7 @@
 		<li class="nav-item"><a class="nav-link<!--# if expr="$active = order" --> active<!--# endif -->" href="/order/">Order</a></li>
 		<li class="nav-item"><a class="nav-link<!--# if expr="$active = fetch" --> active<!--# endif -->" href="/fetch/">Fetch</a></li>
 		<li class="nav-item"><a class="nav-link<!--# if expr="$active = pay" --> active<!--# endif -->" href="/pay/">Pay</a></li>
+		<li class="nav-item"><a class="nav-link<!--# if expr="$active = log" --> active<!--# endif -->" href="/log/">Log</a></li>
 		<li class="nav-item"><a class="nav-link<!--# if expr="$active = config" --> active<!--# endif -->" href="/config/">Config</a></li>
 	</ul>
 </div>
