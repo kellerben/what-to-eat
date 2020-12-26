@@ -32,9 +32,6 @@ renewconnection();
 // vue {{{
 Vue.use(VueMarkdown);
 const vueapp = new Vue({
-	components: {
-		Multiselect: window.VueMultiselect.default
-	},
 	data: {
 		community: localStorage.community,
 		alertMsg: '',
