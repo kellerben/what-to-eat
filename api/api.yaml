@@ -115,6 +115,7 @@ paths:
         required: true
         schema:
           type: string
+          maxLength: 64
       - name: date
         in: query
         description: For which day do you want to get the shop announcements?
@@ -141,6 +142,7 @@ paths:
         required: true
         schema:
           type: string
+          maxLength: 64
       - name: date
         in: query
         description: For which day do you want to get the orders?
@@ -167,12 +169,14 @@ paths:
         required: true
         schema:
           type: string
+          maxLength: 64
       - name: shopId
         in: path
         description: Which shop orders do you want to have?
         required: true
         schema:
           type: string
+          maxLength: 64
       - name: date
         in: query
         description: For which day do you want to get the orders?
@@ -199,6 +203,7 @@ paths:
         required: true
         schema:
           type: string
+          maxLength: 64
       responses:
         405:
           description: Validation exception
@@ -216,12 +221,14 @@ paths:
         required: true
         schema:
           type: string
+          maxLength: 64
       - name: shopId
         in: path
         description: The menu of which shop do you want to have?
         required: true
         schema:
           type: string
+          maxLength: 64
       responses:
         405:
           description: Validation exception
@@ -239,12 +246,14 @@ paths:
         description: The community string.
         schema:
           type: string
+          maxLength: 64
       - name: shopId
         in: path
         description: The typical special requests of which shop do you want to have?
         required: true
         schema:
           type: string
+          maxLength: 64
       responses:
         405:
           description: Validation exception
@@ -262,18 +271,21 @@ paths:
         description: The community string.
         schema:
           type: string
+          maxLength: 64
       - name: shopId
         in: path
         description: Which shop offers the meal?
         required: true
         schema:
           type: string
+          maxLength: 64
       - name: meal
         in: path
         description: Which meal-price do you want to have?
         required: true
         schema:
           type: string
+          maxLength: 64
       responses:
         404:
           description: Price not found
@@ -294,18 +306,21 @@ paths:
         description: The community string.
         schema:
           type: string
+          maxLength: 64
       - name: meal
         in: path
         description: Which meal-price do you want to set?
         required: true
         schema:
           type: string
+          maxLength: 64
       - name: shopId
         in: path
         description: Which shop offers the meal?
         required: true
         schema:
           type: string
+          maxLength: 64
       - name: price
         in: path
         description: The price of the meal
@@ -329,12 +344,14 @@ paths:
         description: The community string.
         schema:
           type: string
+          maxLength: 64
       - name: shopId
         in: path
         description: The Metadata of which shop do you want to have?
         required: true
         schema:
           type: string
+          maxLength: 64
       responses:
         405:
           description: Validation exception
@@ -351,12 +368,14 @@ paths:
         description: The community string.
         schema:
           type: string
+          maxLength: 64
       - name: shopId
         in: path
         description: The Metadata of the shop you want to set
         required: true
         schema:
           type: string
+          maxLength: 64
       requestBody:
         required: true
         content:
@@ -376,6 +395,7 @@ paths:
         description: The community string.
         schema:
           type: string
+          maxLength: 64
       tags:
       - Payments
       summary: Get all orders which are not payed yet
@@ -391,15 +411,19 @@ components:
       properties:
         community:
           type: string
+          maxLength: 64
           description: The community string.
         shopId:
           type: string
+          maxLength: 64
           description: Where do you want to get it from?
         userId:
           type: string
+          maxLength: 64
           description: Who wants to order something?
         meal:
           type: string
+          maxLength: 64
           description: What do you want to have?
         price:
           type: number
@@ -410,6 +434,7 @@ components:
           format: date
         specialRequest:
           type: string
+          maxLength: 64
           description: Any specialties?
       required:
         - community
@@ -421,13 +446,16 @@ components:
       properties:
         community:
           type: string
+          maxLength: 64
           description: The community string.
         userId:
           description: Who wants to order something?
           type: string
+          maxLength: 64
         shopId:
           description: Where do you want to get it from?
           type: string
+          maxLength: 64
         date:
           type: string
           description: For which day is your order?
@@ -445,7 +473,9 @@ components:
         phone:
           description: The Phone number
           type: string
+          maxLength: 50
           pattern: '^[+0-9 ()-]*$'
         comment:
           type: string
+          maxLength: 5000
           description: a comment
