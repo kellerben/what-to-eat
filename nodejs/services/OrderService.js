@@ -3,70 +3,6 @@ const mysql = require('mysql');
 const ws = require('../ws');
 
 /**
-* delete an order
-*
-* mealOrder MealOrder  (optional)
-* no response value expected for this operation
-* */
-const deleteOrder = ({ mealOrder }) => new Promise(
-	async (resolve, reject) => {
-		try {
-			var date;
-			if (typeof(mealOrder.date) === 'undefined') {
-				date = new Date();
-			} else {
-				date = new Date(mealOrder.date);
-			}
-			date = date.toISOString().slice(0,10);
-			Service.trimStrings(mealOrder);
-
-			var statement = "DELETE FROM orders WHERE community = ? AND user = ? AND day = ?";
-			var inputs = [mealOrder.community, mealOrder.userId, date];
-			if (typeof(mealOrder.shopId) !== 'undefined') {
-				statement += " AND shop = ?";
-				inputs.push(mealOrder.shopId);
-			} else {
-				statement += " AND shop is NULL";
-			}
-			if (typeof(mealOrder.meal) !== 'undefined') {
-				statement += " AND meal = ?";
-				inputs.push(mealOrder.meal);
-			} else {
-				statement += " AND meal is NULL";
-			}
-			if (typeof(mealOrder.price) !== 'undefined') {
-				statement += " AND price = ?";
-				inputs.push(mealOrder.price);
-			} else {
-				statement += " AND price is NULL";
-			}
-
-			var sql = mysql.format(statement, inputs);
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
-				if (err) {
-					console.log('Error during deletion of order: ', err);
-					reject(Service.rejectResponse('Error during deletion of order'));
-				} else {
-					if (rows['affectedRows'] === 0){
-						reject(Service.rejectResponse("This order was not placed", 404));
-					} else {
-						// FIXME: not the best way to log deletions
-						// would be better to make this accessible and delete it after a while
-						console.log(sql);
-						ws.sendAll("refreshOrders");
-						resolve(Service.successResponse('success'));
-					}
-				}
-			});
-		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
-		}
-	},
-);
-/**
 * Get all orders of one day
 *
 * community String The community string
@@ -262,7 +198,6 @@ const updateOrder = ({ mealOrder }) => new Promise(
 );
 
 module.exports = {
-	deleteOrder,
 	getOrdersOfDay,
 	getShopOrders,
 	orderLunch,

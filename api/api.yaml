@@ -49,26 +49,6 @@ paths:
         405:
           description: Validation exception
           content: {}
-    delete:
-      tags:
-      - Order
-      summary: delete an order
-      operationId: deleteOrder
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/mealOrder'
-      responses:
-        400:
-          description: Invalid UserID supplied
-          content: {}
-        404:
-          description: This order was not placed
-          content: {}
-        405:
-          description: Validation exception
-          content: {}
   /fetchFood:
     post:
       tags:
