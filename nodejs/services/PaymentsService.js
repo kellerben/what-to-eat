@@ -13,7 +13,7 @@ const getOpenPayments = ({ community }) => new Promise(
 		var statement =
 			"SELECT orders.user AS from_user,walks.user AS to_user,price,orders.shop,orders.shop,orders.meal,orders.day " +
 			"FROM orders,walks " +
-			"WHERE orders.community = ? AND orders.community = ? AND walks.day = orders.day AND walks.shop = orders.shop AND walks.user != orders.user " +
+			"WHERE orders.community = ? AND orders.community = ? AND walks.day = orders.day AND walks.shop = orders.shop AND walks.user != orders.user AND orders.state != 'PAYED' AND orders.state != 'DISCARDED'" +
 			"ORDER BY to_user,from_user";
 		var sql = mysql.format(statement, [ community, community ]);
 		try {

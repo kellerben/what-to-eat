@@ -31,7 +31,7 @@ paths:
     put:
       tags:
       - Order
-      summary: Change an order
+      summary: Change price, special request or state of an order
       operationId: updateOrder
       requestBody:
         required: true
@@ -436,6 +436,11 @@ components:
           type: string
           maxLength: 64
           description: Any specialties?
+        state:
+          type: string
+          pattern: '^(NEW|FETCHED|PAYED|DISCARDED)$'
+          maxLength: 16
+          description: In which state is the Order? (NEW, FETCHED, PAYED, DISCARDED)
       required:
         - community
         - shopId

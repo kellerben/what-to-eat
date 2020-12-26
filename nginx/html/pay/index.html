@@ -23,15 +23,24 @@
 							>
 							<template slot="table-row" slot-scope="payment">
 								<span v-if="payment.column.field == 'button'">
-									<button
+									<!--button
 										class="btn btn-primary btn-sm"
-										v-on:click="deleteOrder"
+										title="The order was fetched!"
+										v-on:click="setOrderFetched"
 										v-bind:data-user="payment.row.from_user"
 										v-bind:data-shop="payment.row.shop"
 										v-bind:data-meal="payment.row.meal"
-										v-bind:data-price="payment.row.price"
 										v-bind:data-day="payment.row.day"
-									>✘</button>
+									>🍕</button-->
+									<button
+										class="btn btn-primary btn-sm"
+										title="The order was payed!"
+										v-on:click="setOrderPayed"
+										v-bind:data-user="payment.row.from_user"
+										v-bind:data-shop="payment.row.shop"
+										v-bind:data-meal="payment.row.meal"
+										v-bind:data-day="payment.row.day"
+									>💰</button>
 								</span>
 							</template>
 						</vue-good-table>

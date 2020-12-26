@@ -83,7 +83,7 @@ const getOrdersOfDay = ({ community, date }) => new Promise(
 		}
 		date = date.toISOString().slice(0,10);
 		var stmt =
-			"SELECT shop,user,meal,specialRequest,price FROM orders WHERE community = ? AND day = ? ORDER BY shop,meal,specialRequest";
+			"SELECT shop,user,meal,specialRequest,price FROM orders WHERE community = ? AND day = ? AND state != 'DISCARDED' ORDER BY shop,meal,specialRequest";
 		var sql = mysql.format(stmt, [community, date]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
@@ -177,8 +177,8 @@ const orderLunch = ({ mealOrder }) => new Promise(
 			var inserts = [mealOrder.community, mealOrder.userId, mealOrder.shopId, mealOrder.meal, mealOrder.specialRequest, mealOrder.price, date];
 			stmt =
 				"INSERT INTO orders" +
-				" (community, user, shop, meal, specialRequest, price, day)" +
-				" VALUES (?, ?, ?, ?, ?, ?, ?)";
+				" (community, user, shop, meal, specialRequest, price, day, state)" +
+				" VALUES (?, ?, ?, ?, ?, ?, ?, 'NEW')";
 
 			sql = mysql.format(stmt, inserts);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
@@ -221,20 +221,23 @@ const updateOrder = ({ mealOrder }) => new Promise(
 
 			Service.trimStrings(mealOrder);
 
-			var stmt, sql;
-			if (typeof(mealOrder.price) === 'undefined') {
-				stmt =
-					"UPDATE orders " +
-					"SET shop = ?, meal = ? " +
-					"WHERE community = ? AND user = ? AND day = ?";
-				sql = mysql.format(stmt, [mealOrder.shopId, mealOrder.meal, mealOrder.community, mealOrder.userId, date]);
-			} else {
-				stmt =
-					"UPDATE orders " +
-					"SET shop = ?, meal = ?, price = ? " +
-					"WHERE community = ? AND user = ? AND day = ?";
-				sql = mysql.format(stmt, [mealOrder.shopId, mealOrder.meal, mealOrder.price, mealOrder.community, mealOrder.userId, date]);
+			var stmt = "UPDATE orders SET day = ?";
+			var vars = [date];
+			if (typeof(mealOrder.price) !== 'undefined') {
+				stmt += ",price = ?";
+				vars.push(mealOrder.price);
 			}
+			if (typeof(mealOrder.specialRequest) !== 'undefined') {
+				stmt += ",specialRequest = ?";
+				vars.push(mealOrder.specialRequest);
+			}
+			if (typeof(mealOrder.state) !== 'undefined') {
+				stmt += ",state = ? ";
+				vars.push(mealOrder.state);
+			}
+			stmt += "WHERE community = ? AND shop = ? AND user = ? AND day = ? AND meal = ?";
+			vars.push(mealOrder.community, mealOrder.shopId, mealOrder.userId, date, mealOrder.meal);
+			var sql = mysql.format(stmt, vars);
 
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {

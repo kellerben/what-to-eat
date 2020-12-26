@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS lunch.orders (
 	`specialRequest` varchar(64),
 	`day` DATE NOT NULL,
 	`price` int(5),
+	`state` varchar(16),
 	PRIMARY KEY (`community`,`user`,`shop`,`meal`,`day`)
 );
 

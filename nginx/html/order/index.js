@@ -130,13 +130,13 @@ const vueapp = new Vue({
 		},
 		deleteOrder: function (event) {
 			lunch.then(
-				client => client.apis.Order.deleteOrder({ }, {
+				client => client.apis.Order.updateOrder({ }, {
 					requestBody: {
 						community: this.community,
 						shopId: event.target.dataset["shop"],
 						userId: event.target.dataset["user"],
 						meal: event.target.dataset["meal"],
-						price: event.target.dataset["price"]
+						state: 'DISCARDED'
 					}
 				})
 			).then(
