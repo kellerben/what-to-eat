@@ -170,7 +170,9 @@ const vueapp = new Vue({
 	},
 	mounted() {
 		this.init();
-		document.location.hash = "in=" + this.community;
+		if (typeof(this.community) != "undefined" && this.community != "") {
+			document.location.hash = "in=" + this.community;
+		}
 		window.addEventListener('hashchange', this.init);
 	},
 	el: '#root'
