@@ -160,7 +160,7 @@ const vueapp = new Vue({
 				return;
 			}
 			var order = { userId: this.userId, community: this.community, shopId: this.shopId, meal: this.meal, specialRequest: this.specialRequest};
-			if (this.price !== "") {
+			if (this.price !== "" && typeof this.price != "undefined") {
 				order.price = this.price;
 				lunch.then(client => client.apis.Shop.setPrice(order));
 			}
