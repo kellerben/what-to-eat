@@ -4,13 +4,13 @@ const DB_PASSWD = '/run/secrets/db_user_pw';
 const db_user_passwd = fs.readFileSync(DB_PASSWD, 'UTF-8').trim();
 
 class Service {
-  static rejectResponse(error, code = 500) {
-    return { error, code };
-  }
+	static rejectResponse(error, code = 500) {
+		return { error, code };
+	}
 
-  static successResponse(payload, code = 200) {
-    return { payload, code };
-  }
+	static successResponse(payload, code = 200) {
+		return { payload, code };
+	}
 
 	static mysql_connection_pool = mysql.createPool({
 		"connectionLimit": 100,

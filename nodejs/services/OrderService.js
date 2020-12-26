@@ -102,7 +102,7 @@ const getOrdersOfDay = ({ community, date }) => new Promise(
 				e.status || 405,
 			));
 		}
-	}
+	},
 );
 /**
 * Get all orders of one shop
@@ -142,7 +142,7 @@ const getShopOrders = ({ community, shopId, date }) => new Promise(
 				e.status || 405,
 			));
 		}
-	}
+	},
 );
 /**
 * Order lunch
