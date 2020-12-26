@@ -16,12 +16,12 @@ function renewconnection(){
 function incommingMessage(e) {
 	switch(e.data) {
 		case "getShopAnnouncements":
-			fetchSuggestions();
+			vueapp.fetchSuggestions();
 			vueapp.updateShopSuggestions();
 			vueapp.updateFoodSuggestions();
 			break;
 		case "refreshOrders":
-			fetchTodaysOrders();
+			vueapp.fetchTodaysOrders();
 			if (vueapp.shopId != ''){
 				vueapp.updateFoodSuggestions();
 			}
@@ -176,7 +176,38 @@ const vueapp = new Vue({
 				}(),
 				reason => this.error('Could not place the order. (' + reason.response.body.error + ')')
 			);
+		},
+		// current Suggestions {{{
+		updateSuggestions(suggestions){
+			this.suggestions = suggestions;
+			if (suggestions.length == 1 && this.shopId == '') {
+				this.shopId = suggestions[0].shop;
+				this.updateFoodSuggestions(this.shopId);
+			}
+		},
+		fetchSuggestions() {
+
+			lunch.then(
+				client => client.apis.Fetch.getShopAnnouncements({ community: this.community })
+			).then(
+				result => this.updateSuggestions(JSON.parse(result.text).rows),
+				reason => this.warning('Could not fetch today\'s suggestions. ('+reason+')')
+			);
+		},
+		//}}}
+
+		updateOrders(orders){
+			this.orders = orders;
+		},
+		fetchTodaysOrders() {// current orders {{{
+			lunch.then(
+				client => client.apis.Order.getOrdersOfDay({ community: this.community })
+			).then(
+				result => this.updateOrders(JSON.parse(result.text).rows),
+				reason => this.warning('Could not fetch today\'s orders. ('+reason+')')
+			);
 		},// }}}
+		// }}}
 
 		selectFood() {
 			this.price = this.meals[this.meal];
@@ -200,8 +231,8 @@ const vueapp = new Vue({
 			if (typeof(this.community) == "undefined" || this.community == "") {
 				document.location = '/config/'
 			} else {
-				fetchSuggestions();
-				fetchTodaysOrders();
+				this.fetchSuggestions();
+				this.fetchTodaysOrders();
 				this.updateShopSuggestions();
 			}
 		}
@@ -213,37 +244,4 @@ const vueapp = new Vue({
 	},
 	el: '#root'
 });
-// }}}
-
-// current Suggestions {{{
-function fetchSuggestions() {
-	function updateSuggestions(suggestions){
-		vueapp.suggestions = suggestions;
-		if (suggestions.length == 1 && vueapp.shopId == '') {
-			vueapp.shopId = suggestions[0].shop;
-			vueapp.updateFoodSuggestions(vueapp.shopId);
-		}
-	}
-
-	lunch.then(
-		client => client.apis.Fetch.getShopAnnouncements({ community: vueapp.community })
-	).then(
-		result => updateSuggestions(JSON.parse(result.text).rows),
-		reason => vueapp.warning('Could not fetch today\'s suggestions. ('+reason+')')
-	);
-}
-//}}}
-
-// current orders {{{
-function fetchTodaysOrders() {
-	function updateOrders(orders){
-		vueapp.orders = orders;
-	}
-	lunch.then(
-		client => client.apis.Order.getOrdersOfDay({ community: vueapp.community })
-	).then(
-		result => updateOrders(JSON.parse(result.text).rows),
-		reason => vueapp.warning('Could not fetch today\'s orders. ('+reason+')')
-	);
-}
 // }}}
