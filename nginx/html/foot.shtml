@@ -1,5 +1,4 @@
 <script src='https://unpkg.com/vue@2.6.12/dist/vue.min.js' integrity='sha256-KSlsysqp7TXtFo/FHjb1T9b425x3hrvzjMWaJyKbpcI=' crossorigin='anonymous'></script>
-<script src='https://unpkg.com/vue-multiselect@2.1.2/dist/vue-multiselect.min.js' integrity='sha256-qqNFfbomBDjzKLZk1op/AI13nO6rxsbjwQLggO+hAEA=' crossorigin='anonymous'></script>
 <script src='https://unpkg.com/vue-good-table@2.21.1/dist/vue-good-table.min.js' integrity='sha256-nF0RRcUFZ5DJZQV801bbXQKW7Me7pGSVQ+gNBd5K9h0=' crossorigin='anonymous'></script>
 <script src='https://unpkg.com/vue-markdown@2.2.4/dist/vue-markdown.js' integrity='sha256-HhXZDaVyo/b1Ttko4EnavB9JQEFkW24WfSrr3M4kZ3M=' crossorigin='anonymous'></script>
 <script src="https://unpkg.com/swagger-client@3.11.1/dist/swagger-client.browser.min.js" integrity="sha256-EpKgZSAFo/pdX5QNsXwYBjpwlP19KUFmpnqkl6IEMm0=" crossorigin="anonymous"></script>

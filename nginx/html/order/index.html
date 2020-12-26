@@ -42,18 +42,13 @@
 									</td>
 									<td>
 										<span class='shopInput'>
-										<multiselect
-											class='shopInput'
-											v-model="shopId"
-											:options="shopOptions"
-											placeholder="From where do you want to get Food?"
-											tag-placeholder="Press enter to select"
-											@select="selectShop"
-											@tag="addShop"
-											:multiple="false"
-											@search-change="saveAddShop"
-											:taggable="true"
-										></multiselect>
+											<b-form-input
+												list='shopOptions'
+												placeholder="From where do you want to get Food?"
+												v-model="shopId"
+												v-on:change="updateFoodSuggestions"
+												></b-form-input>
+											<b-form-datalist id='shopOptions' :options="shopOptions"></b-form-datalist>
 										</span>
 									</td>
 									<td>
@@ -101,47 +96,33 @@
 									</td>
 									<td>
 										<span class='shopInput'>
-										<multiselect
-											v-model="shopId"
-											:options="shopOptions"
-											placeholder="From where do you want to get Food?"
-											tag-placeholder="Press enter to select"
-											@select="selectShop"
-											@search-change="saveAddShop"
-											@tag="addShop"
-											:multiple="false"
-											:taggable="true"
-										></multiselect>
+											<b-form-input
+												list='shopOptions'
+												placeholder="From where do you want to get Food?"
+												v-on:change="updateFoodSuggestions"
+												v-model="shopId"
+											></b-form-input>
 										</span>
 									</td>
 									<td>
 										<span class='foodInput'>
-										<multiselect
-											v-model="meal"
-											:options="foodOptions"
-											placeholder="What do you want to order?"
-											tag-placeholder="Press enter to select"
-											:custom-label="foodOptionLabel"
-											@select="selectFood"
-											@search-change="saveAddFood"
-											@tag="addFood"
-											:multiple="false"
-											:taggable="true"
-										></multiselect>
+											<b-form-input
+												list='foodOptions'
+												placeholder="What do you want to order?"
+												v-on:change="selectFood"
+												v-model="meal"
+											></b-form-input>
+												<b-form-datalist id='foodOptions' :options="foodOptions"></b-form-datalist>
 										</span>
 									</td>
 									<td>
 										<span class='specialRequestInput'>
-										<multiselect
-											v-model="specialRequest"
-											:options="specialRequestOptions"
-											placeholder="Any special requests?"
-											tag-placeholder="Press enter to select"
-											@search-change="saveAddSpecialRequest"
-											@tag="addSpecialRequest"
-											:multiple="false"
-											:taggable="true"
-										></multiselect>
+											<b-form-input
+												list='specialRequestOptions'
+												placeholder="Any special requests (which does not influence the price)?"
+												v-model="specialRequest"
+											></b-form-input>
+												<b-form-datalist id='specialRequestOptions' :options="specialRequestOptions"></b-form-datalist>
 										</span>
 									</td>
 									<td>

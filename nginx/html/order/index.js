@@ -17,12 +17,13 @@ function incommingMessage(e) {
 	switch(e.data) {
 		case "getShopAnnouncements":
 			fetchSuggestions();
-			updateShopSuggestions();
+			vueapp.updateShopSuggestions();
+			vueapp.updateFoodSuggestions();
 			break;
 		case "refreshOrders":
 			fetchTodaysOrders();
 			if (vueapp.shopId != ''){
-				updateFoodSuggestions(vueapp.shopId);
+				vueapp.updateFoodSuggestions();
 			}
 			break;
 	}
@@ -32,9 +33,6 @@ renewconnection();
 
 // vue {{{
 const vueapp = new Vue({
-	components: {
-		Multiselect: window.VueMultiselect.default
-	},
 	data: {
 		alertMsg: '',
 		alertClass: '',
@@ -46,12 +44,10 @@ const vueapp = new Vue({
 		meal: null,
 		specialRequest: '',
 		specialRequestOptions: [],
-		saveSpecialRequestValue: '',
-		saveFoodValue: '',
 		shopId: '',
-		saveShopValue: '',
 		shopOptions: [],
 		foodOptions: [],
+		meals: {},
 		price: '',
 		orders: []
 	},
@@ -76,81 +72,47 @@ const vueapp = new Vue({
 			this.alertMsg = string;
 			this.showAlertTime = 10;
 		},//}}}
-		saveAddShop(name){// shop multiselect methods {{{
-			// check if we pressed backspace or tab -> the active element is not inside the class anymore
-			if (name == '' && [].indexOf.call(document.querySelectorAll('.shopInput input'), document.activeElement) == -1) {
-				if (this.shopOptions.includes(this.saveShopValue)) {
-					this.shopId = this.saveShopValue;
-					this.selectShop(this.saveShopValue);
-				} else {
-					this.addShop(this.saveShopValue);
-				}
-			} else {
-				this.saveShopValue = name;
-			}
-		},
-		addShop(name) {
-			this.shopOptions.push(name)
-			this.shopId = name;
-			this.selectShop(name);
-		},
-		selectShop(shop) {
-			updateFoodSuggestions(shop);
-		},// }}}
 
-		foodOptionLabel(option) {// food multiselect methods {{{
-			if (option.price != ''){
-				return option.meal + ' (' + option.price + ' ct)';
-			} else {
-				return option.meal;
+		setShopOptions(o){// {{{ auto-suggestions
+			this.shopOptions = o;
+		},
+		updateShopSuggestions() {
+			lunch.then(
+				client => client.apis.Shop.getShops({ community: this.community })
+			).then(
+				result => this.setShopOptions(JSON.parse(result.text)),
+				reason => this.warning('Could not fetch Shop suggestions. (' + reason + ')')
+			);
+		},
+		setFoodSuggestions(meals){
+			var f = [];
+			var mealobj = {};
+			meals.forEach(function(m){
+				f.push(m.meal);
+				mealobj[m.meal] = m.price;
+			});
+			this.foodOptions = f;
+			this.meals = mealobj;
+		},
+		setSpecialRequestOptions(sr){
+			this.specialRequestOptions = sr;
+		},
+		updateFoodSuggestions() {
+			if (this.shopId != "") {
+				lunch.then(
+					client => client.apis.Shop.getMenu({ community: this.community, shopId: this.shopId })
+				).then(
+					result => this.setFoodSuggestions(JSON.parse(result.text)),
+					reason => this.warning('Could not fetch the shop\'s menu. (' + reason + ')')
+				);
+				lunch.then(
+					client => client.apis.Shop.getSpecialRequests({ community: this.community, shopId: this.shopId })
+				).then(
+					result => this.setSpecialRequestOptions(JSON.parse(result.text)),
+					reason => this.warning('Could not fetch special request suggestions. (' + reason + ')')
+				);
 			}
-		},
-		saveAddFood(name){
-			if (name == '' && [].indexOf.call(document.querySelectorAll('.foodInput input'), document.activeElement) == -1) {
-				var food;
-				var newfood = this.saveFoodValue;
-				this.foodOptions.forEach(function(elem){
-					if (elem.meal == newfood) {
-						food = elem;
-					}
-				});
-
-				if (typeof food != 'undefined') {
-					this.meal = food;
-					this.selectFood(food);
-				} else {
-					this.addFood(newfood);
-				}
-			} else {
-				this.saveFoodValue = name;
-			}
-		},
-		addFood(foodName) {
-			var food = {meal: foodName, price: this.price};
-			this.foodOptions.push(food)
-			this.meal = food;
-			this.selectFood(food);
-		},
-		selectFood(food) {
-			this.price = food.price;
-		}, // }}}
-
-		saveAddSpecialRequest(name){// specialRequest multiselect methods {{{
-			// check if we pressed backspace or tab -> the active element is not inside the class anymore
-			if (name == '' && [].indexOf.call(document.querySelectorAll('.specialRequestInput input'), document.activeElement) == -1) {
-				if (this.specialRequestOptions.includes(this.saveSpecialRequestValue)) {
-					this.specialRequest = this.saveSpecialRequestValue;
-				} else {
-					this.addSpecialRequest(this.saveSpecialRequestValue);
-				}
-			} else {
-				this.saveSpecialRequestValue = name;
-			}
-		},
-		addSpecialRequest(name) {
-			this.specialRequestOptions.push(name)
-			this.specialRequest = name;
-		},// }}}
+		},//}}}
 
 		deleteSuggestion: function (event) {//{{{ server interaction methods
 			lunch.then(
@@ -197,7 +159,7 @@ const vueapp = new Vue({
 			if (this.userId === "" || this.shopId === '' || this.meal === null) {
 				return;
 			}
-			var order = { userId: this.userId, community: this.community, shopId: this.shopId, meal: this.meal.meal, specialRequest: this.specialRequest};
+			var order = { userId: this.userId, community: this.community, shopId: this.shopId, meal: this.meal, specialRequest: this.specialRequest};
 			if (this.price !== "") {
 				order.price = this.price;
 				lunch.then(client => client.apis.Shop.setPrice(order));
@@ -215,6 +177,10 @@ const vueapp = new Vue({
 				reason => this.error('Could not place the order. (' + reason.response.body.error + ')')
 			);
 		},// }}}
+
+		selectFood() {
+			this.price = this.meals[this.meal];
+		},
 
 		userId2LocalStorage() {
 			if ((typeof localStorage.userId == "undefined" || localStorage.userId == "") && typeof this.userId != "undefined" && this.userId != "") {
@@ -236,7 +202,7 @@ const vueapp = new Vue({
 			} else {
 				fetchSuggestions();
 				fetchTodaysOrders();
-				updateShopSuggestions();
+				this.updateShopSuggestions();
 			}
 		}
 	},
@@ -255,7 +221,7 @@ function fetchSuggestions() {
 		vueapp.suggestions = suggestions;
 		if (suggestions.length == 1 && vueapp.shopId == '') {
 			vueapp.shopId = suggestions[0].shop;
-			updateFoodSuggestions(vueapp.shopId);
+			vueapp.updateFoodSuggestions(vueapp.shopId);
 		}
 	}
 
@@ -278,40 +244,6 @@ function fetchTodaysOrders() {
 	).then(
 		result => updateOrders(JSON.parse(result.text).rows),
 		reason => vueapp.warning('Could not fetch today\'s orders. ('+reason+')')
-	);
-}
-// }}}
-
-// update all suggestions {{{
-function updateShopSuggestions() {
-	function updateSuggestion(shops){
-		vueapp.shopOptions = shops;
-	}
-	lunch.then(
-		client => client.apis.Shop.getShops({ community: vueapp.community })
-	).then(
-		result => updateSuggestion(JSON.parse(result.text)),
-		reason => vueapp.warning('Could not fetch Shop suggestions. (' + reason + ')')
-	);
-}
-function updateFoodSuggestions(shop) {
-	function updateSuggestion(meals){
-		vueapp.foodOptions = meals;
-	}
-	function updateSpecialRequestSuggestion(specialRequests){
-		vueapp.specialRequestOptions = specialRequests;
-	}
-	lunch.then(
-		client => client.apis.Shop.getMenu({ community: vueapp.community, shopId: shop })
-	).then(
-		result => updateSuggestion(JSON.parse(result.text)),
-		reason => vueapp.warning('Could not fetch the shop\'s menu. (' + reason + ')')
-	);
-	lunch.then(
-		client => client.apis.Shop.getSpecialRequests({ community: vueapp.community, shopId: shop })
-	).then(
-		result => updateSpecialRequestSuggestion(JSON.parse(result.text)),
-		reason => vueapp.warning('Could not fetch special request suggestions. (' + reason + ')')
 	);
 }
 // }}}
