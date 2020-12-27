@@ -42,7 +42,6 @@ const getPayments = ({ community, from, to, states }) => new Promise(
 			statement += " AND (  " +additionalQueries.join(' OR ') + ")";
 		}
 		var sql = mysql.format(statement, vars);
-		console.log(sql);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
