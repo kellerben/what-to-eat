@@ -158,6 +158,11 @@ const vueapp = new Vue({
 				reason => this.error('Could not send the suggestion. (' + reason.response.body.error + ')')
 			);
 		},
+		clearOrderEntry: function() {
+			this.price = "";
+			this.meal = "";
+			this.specialRequest = "";
+		},
 		orderLunch: function (event) {
 			if (this.userId === "" || this.shopId === '' || this.meal === null) {
 				return;
@@ -167,18 +172,33 @@ const vueapp = new Vue({
 				order.price = this.price;
 				lunch.then(client => client.apis.Shop.setPrice(order));
 			}
-			lunch.then(
-				client => client.apis.Order.orderLunch({}, {
-					requestBody: order
-				})
-			).then(
-				result => function(){
-					this.price = "";
-					this.meal = "";
-					this.specialRequest = "";
-				}(),
-				reason => this.error('Could not place the order. (' + reason.response.body.error + ')')
-			);
+			// do updateLunch(state->new) if lunch was already ordered and discarded
+			var oldOrder;
+			this.orders.forEach(function(o){
+				if (o.user === order.userId && o.shop == order.shopId && o.meal === order.meal && o.state === 'DISCARDED') {
+					oldOrder = o;
+				}
+			});
+			if (typeof oldOrder == 'undefined') {
+				lunch.then(
+					client => client.apis.Order.orderLunch({}, {
+						requestBody: order
+					})
+				).then(
+					result => this.clearOrderEntry(),
+					reason => this.error('Could not place the order. (' + reason.response.body.error + ')')
+				);
+			} else {
+				order.state = 'NEW';
+				lunch.then(
+					client => client.apis.Order.updateOrder({}, {
+						requestBody: order
+					})
+				).then(
+					result => this.clearOrderEntry(),
+					reason => this.error('Could not place the order. (' + reason.response.body.error + ')')
+				);
+			}
 		},
 		// current Suggestions {{{
 		updateSuggestions(suggestions){

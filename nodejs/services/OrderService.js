@@ -19,7 +19,7 @@ const getOrdersOfDay = ({ community, date }) => new Promise(
 		}
 		date = date.toISOString().slice(0,10);
 		var stmt =
-			"SELECT shop,user,meal,specialRequest,price FROM orders WHERE community = ? AND day = ? AND state != 'DISCARDED' ORDER BY shop,meal,specialRequest";
+			"SELECT shop,user,meal,specialRequest,price,state FROM orders WHERE community = ? AND day = ? ORDER BY shop,meal,specialRequest";
 		var sql = mysql.format(stmt, [community, date]);
 		try {
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {

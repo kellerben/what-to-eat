@@ -72,7 +72,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr v-for="order in orders">
+								<tr v-for="order in orders" v-if="order.state != 'DISCARDED'">
 									<td>{{order.user}}</td><td>{{order.shop}}</td><td>{{order.meal}}</td><td>{{order.specialRequest}}<td>{{order.price}}<span v-if="order.price"> ct</span></td>
 									<td>
 										<button
