@@ -10,6 +10,9 @@ function renewconnection(){
 		prot = "ws://";
 	}
 	connection = new WebSocket(prot+location.hostname+":"+location.port+"/ws/", "json");
+	connection.onopen = function() {
+		connection.send(JSON.stringify({'community':vueapp.community}));
+	}
 	connection.onmessage = incommingMessage;
 	connection.onclose = renewconnection;
 }

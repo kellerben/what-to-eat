@@ -36,7 +36,7 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 					reject(Service.rejectResponse('Error during insertion of the announcement'));
 				}
 			} else {
-				ws.sendAll("getShopAnnouncements");
+				ws.sendCommunity(shopAnnouncement.community, "getShopAnnouncements");
 				resolve(Service.successResponse('success'));
 			}
 		});
@@ -70,7 +70,7 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 					if (rows['affectedRows'] === 0){
 						reject(Service.rejectResponse("User didn't announced this shop yet", 404));
 					} else {
-						ws.sendAll("getShopAnnouncements");
+						ws.sendCommunity(shopAnnouncement.community, "getShopAnnouncements");
 						resolve(Service.successResponse('success'));
 					}
 				}

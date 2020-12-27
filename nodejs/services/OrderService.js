@@ -126,7 +126,7 @@ const orderLunch = ({ mealOrder }) => new Promise(
 						reject(Service.rejectResponse('Error during insertion of order'));
 					}
 				} else {
-					ws.sendAll("refreshOrders");
+					ws.sendCommunity(mealOrder.community, "refreshOrders");
 					resolve(Service.successResponse('success'));
 				}
 			});
@@ -183,7 +183,7 @@ const updateOrder = ({ mealOrder }) => new Promise(
 					if (rows['affectedRows'] === 0){
 						reject(Service.rejectResponse("User didn't ordered anything yet"));
 					} else {
-						ws.sendAll("refreshOrders");
+						ws.sendCommunity(mealOrder.community, "refreshOrders");
 						resolve(Service.successResponse('success'));
 					}
 				}

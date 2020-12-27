@@ -187,7 +187,7 @@ const setPrice = ({ community, meal, shopId, price }) => new Promise(
 						console.error(err);
 						reject(Service.rejectResponse('Error while updating orders'));
 					} else {
-						ws.sendAll("refreshOrders");
+						ws.sendCommunity(community, "refreshOrders");
 						resolve(Service.successResponse('success'));
 					}
 				});
@@ -213,12 +213,12 @@ const setPrice = ({ community, meal, shopId, price }) => new Promise(
 								console.error(err);
 								reject(Service.rejectResponse('error'));
 							} else {
-								ws.sendAll("refreshPrices");
+								ws.sendCommunity(community, "refreshPrices");
 								updatePriceInOrders();
 							}
 						});
 					} else {
-						ws.sendAll("refreshPrices");
+						ws.sendCommunity(community, "refreshPrices");
 						updatePriceInOrders();
 					}
 				}
@@ -265,12 +265,12 @@ const setShopData = ({ community, shopId, shopMetaData }) => new Promise(
 								console.error(err);
 								reject(Service.rejectResponse('error'));
 							} else {
-								ws.sendAll("getShopSuggestions");
+								ws.sendCommunity(community, "getShopSuggestions");
 								resolve(Service.successResponse('success'));
 							}
 						});
 					} else {
-						ws.sendAll("getShopSuggestions");
+						ws.sendCommunity(community, "getShopSuggestions");
 						resolve(Service.successResponse('success'));
 					}
 				}
