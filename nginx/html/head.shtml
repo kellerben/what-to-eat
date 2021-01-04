@@ -1,9 +1,9 @@
 <head>
 	<meta charset="utf-8">
 	<title>What to eat?</title>
-	<link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity='sha256-93wNFzm2GO3EoByj9rKZCwGjAJAwr0nujPaOgwUt8ZQ=' crossorigin='anonymous'>
-	<link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.19.0/dist/bootstrap-vue.min.css" integrity='sha256-J91srdt+A53QhKPC5pHSWmE4+hEd367QFMHXsVgfPS8=' crossorigin='anonymous'>
-	<link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css" integrity='sha256-3f/B+1hX1WQ8ARPmJNAT5negBTgYRhaHfbziEqu7/EE=' crossorigin='anonymous'>
-	<link rel="stylesheet" href="https://unpkg.com/vue-good-table@2.21.1/dist/vue-good-table.min.css" integrity='sha256-tCSXoU6NEM8uMX8IcvZm5W5+oD19RWlCoAnnys6TjXo=' crossorigin='anonymous'>
-	<link rel="stylesheet" href="/style.css">
+	<link rel='stylesheet' integrity='sha256-93wNFzm2GO3EoByj9rKZCwGjAJAwr0nujPaOgwUt8ZQ=' crossorigin='anonymous' href='https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css'>
+	<link rel='stylesheet' integrity='sha256-J91srdt+A53QhKPC5pHSWmE4+hEd367QFMHXsVgfPS8=' crossorigin='anonymous' href='https://unpkg.com/bootstrap-vue@2.19.0/dist/bootstrap-vue.min.css'>
+	<link rel='stylesheet' integrity='sha256-3f/B+1hX1WQ8ARPmJNAT5negBTgYRhaHfbziEqu7/EE=' crossorigin='anonymous' href='https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css'>
+	<link rel='stylesheet' integrity='sha256-tCSXoU6NEM8uMX8IcvZm5W5+oD19RWlCoAnnys6TjXo=' crossorigin='anonymous' href='https://unpkg.com/vue-good-table@2.21.1/dist/vue-good-table.min.css'>
+	<link rel='stylesheet' href='/style.css'>
 </head>
