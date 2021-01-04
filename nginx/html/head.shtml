@@ -1,6 +1,9 @@
 <head>
 	<meta charset="utf-8">
 	<title>What to eat?</title>
+	<link rel='stylesheet' integrity='sha256-o/2PCuud6w48DfZF3tfsbr7qwkwHCEciqq0s4DvfTlc=' crossorigin='anonymous' href='https://unpkg.com/dejavu-sans@1.0.0/css/dejavu-sans.css'>
+	<link rel='stylesheet' integrity='sha256-IIvadbJReZH7+PY4GCgaAVCHXin3A0afLq8blHVt+Is=' crossorigin='anonymous' href='https://unpkg.com/dejavu-sans-bold@1.0.0/css/dejavu-sans-bold.css'>
+	<link rel='stylesheet' integrity='sha256-e5Qn+s/ASfxvPwKXfnwr0R+i3uGdFM/ANICCTAJwtDE=' crossorigin='anonymous' href='https://unpkg.com/@typopro/web-linux-biolinum@3.7.5/TypoPRO-LinuxBiolinum.css'>
 	<link rel='stylesheet' integrity='sha256-93wNFzm2GO3EoByj9rKZCwGjAJAwr0nujPaOgwUt8ZQ=' crossorigin='anonymous' href='https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css'>
 	<link rel='stylesheet' integrity='sha256-J91srdt+A53QhKPC5pHSWmE4+hEd367QFMHXsVgfPS8=' crossorigin='anonymous' href='https://unpkg.com/bootstrap-vue@2.19.0/dist/bootstrap-vue.min.css'>
 	<link rel='stylesheet' integrity='sha256-3f/B+1hX1WQ8ARPmJNAT5negBTgYRhaHfbziEqu7/EE=' crossorigin='anonymous' href='https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css'>
