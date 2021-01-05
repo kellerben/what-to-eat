@@ -104,15 +104,17 @@ function fetchTodaysOrders() {
 	function updateOrders(orders){
 		var o = {};
 		orders.forEach(function(elem){
-			if (typeof(o[elem.shop]) == 'undefined') {
-				o[elem.shop] = {
-					mode: 'span',
-					label: elem.shop,
-					html: false,
-					children: [ elem ]
+			if (elem.state != 'DISCARDED') {
+				if (typeof(o[elem.shop]) == 'undefined') {
+					o[elem.shop] = {
+						mode: 'span',
+						label: elem.shop,
+						html: false,
+						children: [ elem ]
+					}
+				} else {
+					o[elem.shop].children.push(elem);
 				}
-			} else {
-				o[elem.shop].children.push(elem);
 			}
 		});
 		vueapp.orders = [];
