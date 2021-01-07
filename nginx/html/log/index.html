@@ -11,7 +11,7 @@
 				<!--#include virtual="/nav.shtml"-->
 				<div>
 					<h1>
-						Log
+						Log <span v-if="userId"> of {{userId}}</span>
 					</h1>
 					<div>
 						<vue-good-table
