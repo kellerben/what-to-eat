@@ -10,6 +10,7 @@ env:
 globals:
   Vue: readonly
   SwaggerClient: readonly
+  VueMarkdown: readonly
 rules:
   indent:
   - error
