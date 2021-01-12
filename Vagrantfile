@@ -17,13 +17,19 @@ Vagrant.configure("2") do |config|
 		./bin/init
 	SHELL
 
-	# restart rsyslog in development after /vagrant mount
-	config.vm.provision "shell", run: "always", inline: <<~SHELL
-		systemctl restart rsyslog
+	# dev only
+	config.vm.provision "shell", inline: <<~SHELL
+		apt-get install -y python-pip
+		pip install watchntouch
 	SHELL
 
 	config.vm.provision "shell", run: "always", inline: <<~SHELL
+		# restart rsyslog in development after /vagrant mount
+		systemctl restart rsyslog
+
 		cd /vagrant
 		./bin/update dev
+
+		sudo -u vagrant tmux new-session -d 'watchntouch -w /vagrant/nodejs'
 	SHELL
 end
