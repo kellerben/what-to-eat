@@ -24,6 +24,7 @@ Vagrant.configure("2") do |config|
 
 		apt-get install -y ntp
 		adduser vagrant docker
+		apt-get install -y jsbeautifier
 	SHELL
 
 	config.vm.provision "shell", run: "always", inline: <<~SHELL

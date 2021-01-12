@@ -1,0 +1,4 @@
+#!/bin/sh
+
+docker run --user "$(id -u):$(id -g)" -it --rm -v "$PWD":/l -w /l \
+	openapitools/openapi-generator-cli "$@"

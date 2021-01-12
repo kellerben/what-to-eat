@@ -1,11 +1,12 @@
 #!/bin/sh
 
-if [ "$1" = "test" ];then
+if [ "$1" = "dev" ];then
 	rm -rf test
-	openapi-generator-cli generate -i api/api.yaml -g nodejs-express-server -o test || exit 1
+	bin/openapi-generator-cli generate -i api/api.yaml -g nodejs-express-server -o test || exit 1
 	find test -name '*.js' | while read -r file; do
-		sed -i -e 's/  /\t/g' -e 's/ $//g' "$file"
+		js-beautify -t -r -f "$file"
 	done
 fi
-openapi-generator-cli generate -i api/api.yaml -g openapi -o nginx/html/ || exit 1
-openapi-generator-cli generate -i api/api.yaml -g nodejs-express-server -o nodejs/ || exit 1
+bin/openapi-generator-cli generate -i api/api.yaml -g openapi -o nginx/ || exit 1
+mv nginx/openapi.json nginx/html/
+bin/openapi-generator-cli generate -i api/api.yaml -g nodejs-express-server -o nodejs/ || exit 1
