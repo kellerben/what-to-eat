@@ -408,6 +408,64 @@ paths:
         405:
           description: Validation exception
           content: {}
+  /{community}/{userId}/paymentInstructions:
+    get:
+      tags:
+      - User
+      summary: Get the payment information of a user
+      operationId: getPaymentInstructions
+      parameters:
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
+            type: string
+            maxLength: 64
+        - name: userId
+          in: path
+          required: true
+          description: The user
+          schema:
+            type: string
+            maxLength: 64
+      responses:
+        405:
+          description: Validation exception
+          content: {}
+    post:
+      tags:
+      - User
+      summary: Set the payment information of the user
+      operationId: setPaymentInstructions
+      parameters:
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
+            type: string
+            maxLength: 64
+        - name: userId
+          in: path
+          required: true
+          description: The user
+          schema:
+            type: string
+            maxLength: 64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/paymentInstructions'
+      responses:
+        400:
+          description: Duplicate Announcement
+          content: {}
+        405:
+          description: Invalid input
+          content: {}
 components:
   schemas:
     mealOrder:
@@ -488,3 +546,10 @@ components:
           type: string
           maxLength: 5000
           description: a comment
+    paymentInstructions:
+      type: object
+      properties:
+        paymentInstructions:
+          type: string
+          maxLength: 5000
+          description: The information, how money can be payed

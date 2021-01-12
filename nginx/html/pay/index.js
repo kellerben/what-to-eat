@@ -30,11 +30,17 @@ renewconnection();
 //}}}
 
 // vue {{{
+Vue.use(VueMarkdown);
 const vueapp = new Vue({
 	data: {
 		community: localStorage.community,
 		userId: localStorage.userId,
 		payments: [],
+		paymentInstructions: { },
+		anchorAttrs: {
+			target: '_blank',
+			rel: 'noopener noreferrer nofollow'
+		},
 		header: [
 			{
 				label: 'From',
@@ -89,6 +95,7 @@ const vueapp = new Vue({
 					var today = new Date().toISOString().substring(0,10);
 					var prices = [];
 					var seen = {};
+					var payment_receivers = new Set();
 					p.forEach(function(elem){
 						elem.day = elem.day.substring(0,10);
 						var n = {
@@ -102,9 +109,13 @@ const vueapp = new Vue({
 							seen[key] = true;
 							prices.push(n);
 						}
+						payment_receivers.add(elem.to_user);
 					});
 					vueapp.payments = p;
 					vueapp.prices = prices;
+					payment_receivers.forEach(function(user){
+						vueapp.getPaymentInstructions(user);
+					});
 				}()
 			)
 		},
@@ -155,6 +166,26 @@ const vueapp = new Vue({
 			if (u.has("in")) {
 				this.community = u.get("in");
 				localStorage.community = this.community;
+			}
+		},
+		transformPaymentInstruction(cents,instruction) {
+			return instruction.replace("{price}",cents/100);
+		},
+		parseGetPaymentInstructionsResult(userId, instructions) {
+			var n = {};
+			n[userId] = instructions.paymentInstructions;
+			this.paymentInstructions = Object.assign({}, this.paymentInstructions, n) ;
+		},
+		getPaymentInstructions(userId){
+			if (userId) {
+				lunch.then(
+					client => client.apis.User.getPaymentInstructions({
+						community: this.community, userId: userId
+					})
+				).then(
+					result => this.parseGetPaymentInstructionsResult(userId, JSON.parse(result.text)),
+					reason => this.error('Could not get payment instructions (' + reason.response.body.error + ')')
+				);
 			}
 		},
 		init() {

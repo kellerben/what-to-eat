@@ -43,3 +43,10 @@ CREATE TABLE IF NOT EXISTS lunch.shops (
 	`comment` varchar(5000),
 	PRIMARY KEY (`community`,`shop`)
 );
+
+CREATE TABLE IF NOT EXISTS lunch.users (
+	`community` varchar(64) NOT NULL,
+	`user` varchar(64) NOT NULL,
+	`paymentInstructions` varchar(5000),
+	PRIMARY KEY (`community`,`user`)
+);

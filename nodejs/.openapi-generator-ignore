@@ -8,3 +8,4 @@ services/OrderService.js
 services/ShopService.js
 services/PaymentsService.js
 services/FetchService.js
+services/UserService.js

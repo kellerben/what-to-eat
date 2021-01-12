@@ -1,6 +1,10 @@
 .btn {
 	background-color: #1d71b8;
 }
+.tooltip-inner{
+	max-width: 500px;
+	text-align: left;
+}
 a {
 	color: #1d71b8;
 }

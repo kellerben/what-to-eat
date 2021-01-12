@@ -10,6 +10,9 @@
 				<!--#set var="active" value="config"-->
 				<!--#include virtual="/nav.shtml"-->
 				<div>
+					<b-alert v-model="showAlertTime" :variant="alertClass" fade dismissible>
+						<strong>{{alertType}}!</strong> {{alertMsg}}
+					</b-alert>
 					<h1>
 						Config
 					</h1>
@@ -21,6 +24,25 @@
 						</b-form-invalid-feedback>
 						Please enter your name (optional):
 						<b-form-input type="text" class="form-control" v-on:change="changeUserId" v-model.trim="userId" placeholder="Peter Pan"></b-form-input>
+
+						Please enter instructions, how others can make payments (optional):
+						<b-tooltip target="paymentInstructionsTextArea" triggers="hover">
+							<dl>
+								<dt>Link support</dt><dd>[linktitle](https://www.example.org/)</dd>
+								<dt>{price}</dt><dd>will be replaced by price in EUR (e.g. 550 ct = 5.50)</dd>
+							</dl>
+						</b-tooltip>
+
+						<textarea id="paymentInstructionsTextArea"
+							class="form-control" v-model="paymentInstructions" placeholder="Payment instructions (with markdown support)" rows='1'></textarea>
+						<b-card>
+						<vue-markdown
+							:show="true" :anchor-attributes="anchorAttrs" :source="paymentInstructionsSample"></vue-markdown>
+						</b-card>
+						<button
+							class="btn btn-primary btn-sm"
+							v-on:click="setPaymentInstructions"
+						>Send Instructions</button>
 					</div>
 				</div>
 
