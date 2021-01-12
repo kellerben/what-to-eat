@@ -21,6 +21,9 @@ Vagrant.configure("2") do |config|
 	config.vm.provision "shell", inline: <<~SHELL
 		apt-get install -y python-pip
 		pip install watchntouch
+
+		apt-get install -y ntp
+		adduser vagrant docker
 	SHELL
 
 	config.vm.provision "shell", run: "always", inline: <<~SHELL
