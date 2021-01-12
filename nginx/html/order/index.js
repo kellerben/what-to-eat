@@ -35,6 +35,7 @@ renewconnection();
 //}}}
 
 // vue {{{
+Vue.use(VueMarkdown);
 const vueapp = new Vue({
 	data: {
 		alertMsg: '',
@@ -52,7 +53,11 @@ const vueapp = new Vue({
 		foodOptions: [],
 		meals: {},
 		price: '',
-		orders: []
+		orders: [],
+		anchorAttrs: {
+			target: '_blank',
+			rel: 'noopener noreferrer nofollow'
+		}
 	},
 	computed: {
 		total(){
@@ -201,7 +206,25 @@ const vueapp = new Vue({
 			}
 		},
 		// current Suggestions {{{
+		updateSuggestionDetails(detail) {
+			var a = [];
+			this.suggestions.forEach(function(s){
+				if (s.shop == detail.shop) {
+					a.push(Object.assign({}, s, detail));
+				} else {
+					a.push(s);
+				}
+			});
+			this.suggestions = a;
+		},
 		updateSuggestions(suggestions){
+			suggestions.forEach(function(s){
+				lunch.then(
+					client => client.apis.Shop.getShopData({ community: vueapp.community, shopId: s.shop })
+				).then(
+					result => vueapp.updateSuggestionDetails(JSON.parse(result.text))
+				);
+			});
 			this.suggestions = suggestions;
 			if (suggestions.length == 1 && this.shopId == '') {
 				this.shopId = suggestions[0].shop;
