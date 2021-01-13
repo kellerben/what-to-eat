@@ -20,7 +20,18 @@ new Vue({
 			this.getPaymentInstructions()
 		},
 		paymentInstructions: function() {
-			this.paymentInstructionsSample = this.paymentInstructions.replace("{price}","5.50")
+			var val = this.paymentInstructions;
+			[
+				["price","5.50"],
+				["from","Peter"],
+				["day","1970-01-01"],
+				["shop","Eva's Pizza"],
+				["meal","Pizza Quattro Formaggi"]
+			].forEach(function([k,v]){
+				val = val.replace("{"+k+"}",v);
+				val = val.replace("{"+k+":uri}",encodeURI(v));
+			});
+			this.paymentInstructionsSample = val;
 		}
 	},
 	methods: {

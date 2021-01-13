@@ -28,8 +28,18 @@
 						Please enter instructions, how others can make payments (optional):
 						<b-tooltip target="paymentInstructionsTextArea" triggers="hover">
 							<dl>
+								<dt>Markdown support</dt><dd><b>**Bold**</b> <i>*Italic*</i> etc…</dd>
 								<dt>Link support</dt><dd>[linktitle](https://www.example.org/)</dd>
 								<dt>{price}</dt><dd>will be replaced by price in EUR (e.g. 550 ct = 5.50)</dd>
+								<dt>{from}</dt><dd>will be replaced with the person who needs to pay</dd>
+								<dt>{day}</dt><dd>will be replaced with day, the food was fetched</dd>
+								<dt>{meal}</dt><dd>will be replaced with the meal which was fetched</dd>
+								<dt>{shop}</dt><dd>will be replaced with the shop where the meal was fetched</dd>
+								<dt>{key:uri}</dt>
+								<dd>
+									will encode the respecting entry with encodeURI()<br/>
+									e.g. [Pay for {meal}](https://example.org/{price}?subject={meal:uri})
+								</dd>
 							</dl>
 						</b-tooltip>
 

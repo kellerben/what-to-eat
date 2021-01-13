@@ -168,8 +168,19 @@ const vueapp = new Vue({
 				localStorage.community = this.community;
 			}
 		},
-		transformPaymentInstruction(cents,instruction) {
-			return instruction.replace("{price}",cents/100);
+		transformPaymentInstruction(instruction,payment) {
+			var val = instruction;
+			[
+				["price",payment.price/100],
+				["from",payment.from_user],
+				["day",payment.day],
+				["shop",payment.shop],
+				["meal",payment.meal]
+			].forEach(function([k,v]){
+				val = val.replace("{"+k+"}",v);
+				val = val.replace("{"+k+":uri}",encodeURI(v));
+			});
+			return val;
 		},
 		parseGetPaymentInstructionsResult(userId, instructions) {
 			var n = {};

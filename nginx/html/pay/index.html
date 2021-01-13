@@ -46,12 +46,16 @@
 											:target="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.mail+payment.row.day"
 											triggers="focus">
 									<vue-markdown
-										:show="true" :anchor-attributes="anchorAttrs" :source="transformPaymentInstruction(payment.row.price,paymentInstructions[payment.row.to_user])"></vue-markdown>
+										:show="true"
+										:anchor-attributes="anchorAttrs"
+										:source="transformPaymentInstruction(paymentInstructions[payment.row.to_user],payment.row)"
+										></vue-markdown>
 									</b-tooltip>
 									<button
 										:id="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.mail+payment.row.day"
 										class="btn btn-primary btn-sm"
-									>Instructions</button>
+										title="Get Payment Instructions…"
+									>ℹ</button>
 									</span>
 								</span>
 							</template>
