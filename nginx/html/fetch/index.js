@@ -71,7 +71,30 @@ const vueapp = new Vue({
 			return this.orders.reduce((total, product) => product.price + total  ,0);
 		}
 	},
+	watch: {
+		orders: function() {
+			this.orders.forEach(function(o){
+				lunch.then(
+					client => client.apis.Shop.getShopData({ community: vueapp.community, shopId: o.shop })
+				).then(
+					result => vueapp.updateShopPhoneNum(JSON.parse(result.text))
+				);
+			});
+		},
+	},
 	methods: {
+		updateShopPhoneNum(shopDetails){
+			this.orders.forEach(function(o){
+				if (o.shop == shopDetails.shop) {
+					if (shopDetails.phone) {
+						var number = shopDetails.phone.replace(/[^+0-9 ()-]/g,"");
+						var URInumber = number.replace(/[() ]/g,"-");
+						o.label = o.shop + " (<a href='tel:"+encodeURI(URInumber)+"'>" + number + "</a>)";
+						o.html = true;
+					}
+				}
+			});
+		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
 			if (u.has("in")) {
@@ -109,6 +132,7 @@ function fetchTodaysOrders() {
 					o[elem.shop] = {
 						mode: 'span',
 						label: elem.shop,
+						shop: elem.shop,
 						html: false,
 						children: [ elem ]
 					}
