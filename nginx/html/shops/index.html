@@ -38,7 +38,9 @@
 								</span>
 								<span v-else-if="shop.column.field == 'phone'">
 									<span v-if="shop.row.shop != edit.shop">
-										<a v-if="typeof shop.row.phone != 'undefined'" v-bind:href="'tel:'+shop.row.phone">{{shop.row.phone}}</a>
+										<a
+											v-if="typeof shop.row.phone != 'undefined'"
+											v-bind:href="'tel:'+encodeURI(String(shop.row.phone).replace(/[() ]/g,'-'))">{{shop.row.phone}}</a>
 									</span>
 									<span v-else>
 										<input type="text" class="form-control" v-model="edit.phone" placeholder="Phone" />
