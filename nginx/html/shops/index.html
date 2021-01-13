@@ -47,9 +47,29 @@
 									</span>
 								</span>
 								<span v-else-if="shop.column.field == 'comment'">
-									<span v-if="shop.row.shop != edit.shop"><vue-markdown :anchor-attributes="anchorAttrs">{{shop.row.comment}}</vue-markdown></span>
+									<span v-if="shop.row.shop != edit.shop">
+										<vue-markdown :anchor-attributes="anchorAttrs">{{shop.row.comment}}</vue-markdown>
+									</span>
 									<span v-else>
-										<textarea class="form-control" v-model="edit.comment" placeholder="Comment (with markdown support)" rows='1'></textarea>
+										<b-tooltip target="shopedit" triggers="hover">
+											<dl>
+												<dt>Basic Markdown</dt><dd><b>**Bold**</b> <i>*Italic*</i> etc…</dd>
+												<dt>Links</dt><dd>[linktitle](https://www.example.org/)</dd>
+											</dl>
+										</b-tooltip>
+										<textarea
+											id="shopedit"
+											class="form-control"
+											v-model="edit.comment"
+											placeholder="Comment (with markdown support)"
+											rows='1'></textarea>
+										<b-card>
+											<vue-markdown
+												:anchor-attributes="anchorAttrs"
+												:show="true"
+												:source="edit.comment"
+												></vue-markdown>
+										</b-card>
 									</span>
 								</span>
 								<span v-else-if="shop.column.field == 'action'">
