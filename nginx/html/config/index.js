@@ -28,8 +28,8 @@ new Vue({
 				["shop","Eva's Pizza"],
 				["meal","Pizza Quattro Formaggi"]
 			].forEach(function([k,v]){
-				val = val.replace("{"+k+"}",v);
-				val = val.replace("{"+k+":uri}",encodeURI(v));
+				val = val.replaceAll("{"+k+"}",v);
+				val = val.replaceAll("{"+k+":uri}",encodeURI(v));
 			});
 			this.paymentInstructionsSample = val;
 		}

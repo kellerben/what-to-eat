@@ -177,8 +177,8 @@ const vueapp = new Vue({
 				["shop",payment.shop],
 				["meal",payment.meal]
 			].forEach(function([k,v]){
-				val = val.replace("{"+k+"}",v);
-				val = val.replace("{"+k+":uri}",encodeURI(v));
+				val = val.replaceAll("{"+k+"}",v);
+				val = val.replaceAll("{"+k+":uri}",encodeURI(v));
 			});
 			return val;
 		},
