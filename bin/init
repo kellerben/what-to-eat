@@ -9,6 +9,7 @@ ln -fs -t /etc/logrotate.d/ "$(pwd)/etc/logrotate.d/docker.conf"
 ln -fs -t /etc/logrotate.d/ "$(pwd)/etc/logrotate.d/backup.conf"
 service rsyslog restart
 ln -fs -t /etc/cron.daily/ "$(pwd)/etc/cron.daily/backup"
+ln -fs -t /etc/cron.daily/ "$(pwd)/etc/cron.daily/cleanup"
 
 
 apt-get install -y docker.io docker-compose

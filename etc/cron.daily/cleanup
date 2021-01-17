@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ -L "$0" ]; then
+	F=$(readlink "$0")
+else
+	F="$0"
+fi
+P=$(realpath "$(dirname "$F")/../")
+
+docker run  -e LANG=C.UTF-8 -i --rm --network=lunch mariadb mysql -u root -p"$(cat "$P"/db_root_pw)" -h mariadb lunch < "$P/../db/cleanup.sql"
