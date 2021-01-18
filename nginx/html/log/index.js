@@ -79,49 +79,43 @@ const vueapp = new Vue({
 		],
 		sortOpts: {
 			initialSortBy: [
-				{field: 'state'},
-				{field: 'day'},
+				{field: 'day', type: 'desc'}
 			]
 		},
 		prices: []
 	},
 	methods: {
 		parsePaymentLog(log) {
-			var o = {};
+			var o = {
+				'NEW': {
+					label: 'New and unpaid orders',
+				},
+				'FETCHED': {
+					label: 'Fetched but unpaid orders',
+				},
+				'PAYED': {
+					label: 'Payed orders',
+				},
+				'DISCARDED': {
+					label: 'Discarded orders',
+				}
+			}
+			for (const key in o) {
+				o[key].children = [];
+				o[key].mode = 'span'
+				o[key].html= false
+			}
 			log.forEach(function(elem){
 				elem.day = elem.day.substring(0,10);
-				if (typeof(o[elem.state]) == 'undefined') {
-					var label;
-					switch(elem.state) {//['NEW', 'FETCHED', 'PAYED', 'DISCARDED']
-						case 'NEW':
-							label = 'New and unpaid orders';
-							break;
-						case 'FETCHED':
-							label = 'Fetched but unpaid orders';
-							break;
-						case 'PAYED':
-							label = 'Payed orders';
-							break;
-						case 'DISCARDED':
-							label = 'Discarded orders';
-							break;
-						default:
-							label = 'error'
-					}
-					o[elem.state] = {
-						mode: 'span',
-						label: label,
-						html: false,
-						children: [ elem ]
-					}
-				} else {
-					o[elem.state].children.push(elem);
+				o[elem.state].children.push(elem);
+			});
+			var p = [];
+			['NEW','FETCHED','PAYED','DISCARDED'].forEach(function(key) {
+				if (o[key].children.length != 0) {
+					p.push(o[key]);
 				}
 			});
-			this.payments = [];
-			for (const key in o) {
-				this.payments.push(o[key]);
-			}
+			this.payments = p;
 		},
 		getOpenPayments: function (event) {
 			lunch.then(
