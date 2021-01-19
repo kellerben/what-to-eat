@@ -307,6 +307,7 @@ paths:
         required: true
         schema:
           type: number
+          format: int32
       responses:
         405:
           description: Validation exception
@@ -489,6 +490,7 @@ components:
           description: What do you want to have?
         price:
           type: number
+          format: int32
           description: Expected price
         date:
           type: string
@@ -537,6 +539,7 @@ components:
         distance:
           description: The distance in meter
           type: number
+          format: int32
         phone:
           description: The Phone number
           type: string
