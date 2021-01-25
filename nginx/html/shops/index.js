@@ -169,6 +169,7 @@ const vueapp = new Vue({
 						community: this.community
 					}, { requestBody:  pos }).then(
 						result => {
+							this.mapSearchAddress = ''
 							this.communityLatLng = pos;
 							this.searchMarker.position = {}
 						},
@@ -180,6 +181,7 @@ const vueapp = new Vue({
 			} else {
 				this.shops[this.editshopname].position = pos
 				this.searchMarker.position = {}
+				this.mapSearchAddress = ''
 			}
 		},
 		getCommunityInformation(){
