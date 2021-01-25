@@ -8,5 +8,8 @@
 	<link rel='stylesheet' integrity='sha256-J91srdt+A53QhKPC5pHSWmE4+hEd367QFMHXsVgfPS8=' crossorigin='anonymous' href='https://unpkg.com/bootstrap-vue@2.19.0/dist/bootstrap-vue.min.css'>
 	<link rel='stylesheet' integrity='sha256-3f/B+1hX1WQ8ARPmJNAT5negBTgYRhaHfbziEqu7/EE=' crossorigin='anonymous' href='https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css'>
 	<link rel='stylesheet' integrity='sha256-tCSXoU6NEM8uMX8IcvZm5W5+oD19RWlCoAnnys6TjXo=' crossorigin='anonymous' href='https://unpkg.com/vue-good-table@2.21.1/dist/vue-good-table.min.css'>
+
+	<link rel='stylesheet' integrity='sha256-BPfK9M5v34c2XP6p0cxVz1mUQLst0gTLk0mlc7kuodA=' crossorigin='anonymous' href='https://unpkg.com/leaflet@1.7.1/dist/leaflet.css'>
+
 	<link rel='stylesheet' href='/style.css'>
 </head>

@@ -5,4 +5,7 @@
 <script src='https://unpkg.com/bootstrap-vue@2.18.1/dist/bootstrap-vue.min.js' integrity='sha256-nNKj6IdIDnMrroYTi78x1uBhX4h10Rf1Qz7s3PJ/0Kw=' crossorigin='anonymous'></script>
 <script src='https://unpkg.com/bootstrap-vue@2.18.1/dist/bootstrap-vue-icons.min.js' integrity='sha256-HFhJXM/axz5V4P/TNu5B9XXhzME6A0TT9iPzJ6Qg1Bw=' crossorigin='anonymous'></script>
 
+<script integrity='sha256-yDc0eil8GjWFKqN1OSzHSVCiuGghTosZCcRje4tj7iQ=' crossorigin='anonymous' src='https://unpkg.com/leaflet@1.7.1/dist/leaflet.js'></script>
+<script integrity='sha256-4HQ+ddgUx8TU9wJDwepjZRA+HfuVH6CyXX7CcMsgGj4=' crossorigin='anonymous' src='https://unpkg.com/vue2-leaflet@2.6.0/dist/vue2-leaflet.min.js'></script>
+
 <script src="index.js"></script>

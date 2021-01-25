@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS lunch.shops (
 	`shop` varchar(64) NOT NULL,
 	`distance` int(5),
 	`phone` varchar(50),
+	`lat` DECIMAL(17,15),
+	`lng` DECIMAL(18,15),
 	`comment` varchar(5000),
 	PRIMARY KEY (`community`,`shop`)
 );
@@ -49,4 +51,11 @@ CREATE TABLE IF NOT EXISTS lunch.users (
 	`user` varchar(64) NOT NULL,
 	`paymentInstructions` varchar(5000),
 	PRIMARY KEY (`community`,`user`)
+);
+
+CREATE TABLE IF NOT EXISTS lunch.communities (
+	`community` varchar(64) NOT NULL,
+	`lat` DECIMAL(17,15),
+	`lng` DECIMAL(18,15),
+	PRIMARY KEY (`community`)
 );

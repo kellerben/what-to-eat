@@ -34,14 +34,22 @@ renewconnection();
 
 // vue {{{
 Vue.use(VueMarkdown);
+Vue.component('l-map', window.Vue2Leaflet.LMap);
+Vue.component('l-tile-layer', window.Vue2Leaflet.LTileLayer);
+Vue.component('l-marker', window.Vue2Leaflet.LMarker);
+Vue.component('l-icon', window.Vue2Leaflet.LIcon);
+Vue.component('l-tooltip', window.Vue2Leaflet.LTooltip);
+Vue.component('l-popup', window.Vue2Leaflet.LPopup);
+Vue.component('l-icon', window.Vue2Leaflet.LIcon);
 const vueapp = new Vue({
 	data: {
 		community: localStorage.community,
+		communityLatLng: {},
 		alertMsg: '',
 		alertClass: '',
 		alertType: '',
 		showAlertTime: 0,
-		edit: {},
+		editshopname: '',
 		shops: {},
 		shopAry: [],
 		shopHeader: [
@@ -70,14 +78,38 @@ const vueapp = new Vue({
 		anchorAttrs: {
 			target: '_blank',
 			rel: 'noopener noreferrer nofollow'
-		}
+		},
+		shopMapCenter: {},
+		searchMarker: { position: {} },
+		mapSearchAddress: '',
 	},
 	watch: {
 		shops: function(){
 			this.shopAry = Object.values(this.shops)
+		},
+		mapSearchAddress() {
+			this.searchAddress(this.mapSearchAddress)
 		}
 	},
 	methods: {
+		searchAddress(address){
+			fetch(
+				`https://nominatim.openstreetmap.org/search.php?q=${address}&polygon_geojson=1&format=jsonv2`
+			).then(result => result.json())
+				.then(data => {
+					if (data.length > 0) {
+						var position = { lat: data[0].lat, lng: data[0].lon };
+						this.searchMarker.position = position;
+						this.shopMapCenter = position;
+						this.searchMarker.tooltip = address;
+						if (this.editshopname == "") {
+							this.searchMarker.actionText = "Update community location"
+						} else {
+							this.searchMarker.actionText = "Update shop location"
+						}
+					}
+				})
+		},
 		warning(string) {
 			this.showAlert(string, 'warning');
 		},
@@ -94,21 +126,29 @@ const vueapp = new Vue({
 			var shop = e.target.dataset.shop;
 		},*/
 		editShop(e) {
-			this.edit = Object.assign({}, this.shops[e.target.dataset.shop]);
+			this.editshopname = e.target.dataset.shop;
+			this.shops[this.editshopname].draggable = true;
+			var pos = this.shops[this.editshopname].position;
+			if (pos.lat && pos.lng) {
+				this.shopMapCenter = pos;
+			}
 		},
 		cancelEdit(e) {
-			this.edit = {};
+			this.shops[this.editshopname].draggable = false;
+			this.editshopname = "";
 		},
 		confirmEdit(e) {
 			var postBody = {};
-			if(this.edit.distance != "") { postBody.distance = this.edit.distance }
-			if(this.edit.phone != "") { postBody.phone = this.edit.phone }
-			if(this.edit.comment != "") { postBody.comment = this.edit.comment }
+			if(this.shops[this.editshopname].distance != "") { postBody.distance = this.shops[this.editshopname].distance }
+			if(this.shops[this.editshopname].phone != "") { postBody.phone = this.shops[this.editshopname].phone }
+			if(this.shops[this.editshopname].comment != "") { postBody.comment = this.shops[this.editshopname].comment }
+			if(this.shops[this.editshopname].lat != "") { postBody.lat = this.shops[this.editshopname].position.lat }
+			if(this.shops[this.editshopname].lng != "") { postBody.lng = this.shops[this.editshopname].position.lng }
 			lunch.then(
-				client => client.apis.Shop.setShopData({ community: this.community, shopId: this.edit.shop }, { requestBody: postBody })
+				client => client.apis.Shop.setShopData({ community: this.community, shopId: this.editshopname }, { requestBody: postBody })
 			).then(
 				result => this.cancelEdit(),
-				reason => this.error('Could not edit the shop data. (' + reason.response.body.error + ')')
+				reason => this.error('Could not edit the shop data.')
 			);
 		},
 		getCommunityFromHash() {
@@ -118,12 +158,55 @@ const vueapp = new Vue({
 				localStorage.community = this.community;
 			}
 		},
+		setLatLon(){
+			var pos = {
+				lat: this.searchMarker.position.lat,
+				lng: this.searchMarker.position.lng
+			}
+			if (this.editshopname == "") {
+				lunch.then(
+					client => client.apis.Community.setCommunityInformation({
+						community: this.community
+					}, { requestBody:  pos }).then(
+						result => {
+							this.communityLatLng = pos;
+							this.searchMarker.position = {}
+						},
+						error => {
+							this.error('Could not update the communities address');
+						}
+					)
+				);
+			} else {
+				this.shops[this.editshopname].position = pos
+				this.searchMarker.position = {}
+			}
+		},
+		getCommunityInformation(){
+			lunch.then(
+				client => client.apis.Community.getCommunityInformation({
+					community: this.community
+				}).then(
+					result => {
+						if (result && result.obj.lng && result.obj.lat) {
+							var pos = { lat: result.obj.lat, lng: result.obj.lng };
+							this.communityLatLng = pos;
+							this.shopMapCenter = pos;
+						}
+					},
+					error => {
+						this.warning('The community\'s location was not found.');
+					}
+				)
+			);
+		},
 		init() {
 			this.getCommunityFromHash();
 			if (typeof(this.community) == "undefined" || this.community == "") {
 				document.location = '/config/'
 			} else {
 				updateShops();
+				this.getCommunityInformation();
 			}
 		}
 	},
@@ -144,9 +227,15 @@ function updateShops() {
 	function setShops(shops){
 		function setShopDetails(shop, details) {
 			if (Object.keys(details).length == 0){
-				vueapp.shops[shop] = { shop: shop };
+				vueapp.shops[shop] = {
+					shop: shop,
+					position: {}
+				};
 			} else {
+				var pos = { lat: details.lat, lng: details.lng };
+				details.position = pos;
 				vueapp.shops[shop] = details;
+				vueapp.shops[shop].draggable = false;
 			}
 			vueapp.shopAry = Object.values(vueapp.shops)
 		}
@@ -169,4 +258,3 @@ function updateShops() {
 	);
 }
 // }}}
-

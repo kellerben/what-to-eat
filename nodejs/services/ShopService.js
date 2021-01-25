@@ -244,9 +244,9 @@ const setShopData = ({ community, shopId, shopMetaData }) => new Promise(
 	async (resolve, reject) => {
 		try {
 			shopId = shopId.trim();
-			var values = [shopMetaData.distance, shopMetaData.phone, shopMetaData.comment, community, shopId];
+			var values = [shopMetaData.lat, shopMetaData.lng, shopMetaData.distance, shopMetaData.phone, shopMetaData.comment, community, shopId];
 			var stmt =
-				"UPDATE shops SET distance = ?, phone = ?, comment = ? WHERE community = ? AND shop = ?";
+				"UPDATE shops SET lat = ?, lng = ?, distance = ?, phone = ?, comment = ? WHERE community = ? AND shop = ?";
 			var sql = mysql.format(stmt, values);
 			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
 				if (err) {
@@ -256,8 +256,8 @@ const setShopData = ({ community, shopId, shopMetaData }) => new Promise(
 					if (rows['affectedRows'] === 0){
 						var stmt =
 							"INSERT INTO shops " +
-							"(distance, phone, comment, community, shop) " +
-							"VALUES (?, ?, ?, ?, ?)";
+							"(lat, lng, distance, phone, comment, community, shop) " +
+							"VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 						var sql = mysql.format(stmt, values);
 						Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
