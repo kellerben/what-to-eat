@@ -124,6 +124,15 @@ const vueapp = new Vue({
 					}
 				})
 		},
+		getFootDistance(e) {
+			var to = this.shops[e.target.dataset.shop].position;
+			fetch(
+				`https://routing.openstreetmap.de/routed-foot/route/v1/driving/${this.communityLatLng.lng},${this.communityLatLng.lat};${to.lng},${to.lat}`
+			).then(result => result.json())
+				.then(data => {
+					this.shops[e.target.dataset.shop].distance = Math.round(data.routes[0].distance);
+				})
+		},
 		warning(string) {
 			this.showAlert(string, 'warning');
 		},

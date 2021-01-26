@@ -166,6 +166,14 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 						:draggable="shop.draggable"
 						:lat-lng.sync="shop.position"
 						>
+						<l-popup
+							v-if="shop.draggable"
+							>
+							<b-button
+								v-bind:data-shop="shop.shop"
+								@click="getFootDistance"
+								>Calculate distance by foot…</b-button>
+						</l-popup>
 						<l-icon
 							icon-url="https://openclipart.org/download/278690/Pizza-by-Jessica-Sawyer.svg"
 							>
