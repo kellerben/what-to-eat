@@ -125,6 +125,7 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 					:zoom="17"
 					:center="shopMapCenter"
 					v-if="shopMapCenter.lat && shopMapCenter.lng"
+					v-on:click="clickMap"
 					worldCopyJump="true"
 					>
 					<l-tile-layer

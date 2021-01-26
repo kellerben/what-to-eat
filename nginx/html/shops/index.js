@@ -110,6 +110,20 @@ const vueapp = new Vue({
 					}
 				})
 		},
+		clickMap(e){
+			this.searchMarker.position = e.latlng
+			fetch(
+				`https://nominatim.openstreetmap.org/reverse.php?lat=${this.searchMarker.position.lat}&lon=${this.searchMarker.position.lng}&format=jsonv2`
+			).then(result => result.json())
+				.then(data => {
+					this.searchMarker.tooltip = data.display_name;
+					if (this.editshopname == "") {
+						this.searchMarker.actionText = "Update community location"
+					} else {
+						this.searchMarker.actionText = "Update shop location"
+					}
+				})
+		},
 		warning(string) {
 			this.showAlert(string, 'warning');
 		},
