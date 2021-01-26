@@ -199,6 +199,7 @@ const vueapp = new Vue({
 				this.shops[this.editshopname].position = pos
 				this.searchMarker.position = {}
 				this.mapSearchAddress = ''
+				this.searchMarker.actionText = ''
 			}
 		},
 		getCommunityInformation(){
