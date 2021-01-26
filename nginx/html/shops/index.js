@@ -125,6 +125,9 @@ const vueapp = new Vue({
 		/*proposeShop(e) {
 			var shop = e.target.dataset.shop;
 		},*/
+		showShop(e) {
+			this.shopMapCenter = this.shops[e.target.dataset.shop].position;
+		},
 		editShop(e) {
 			this.editshopname = e.target.dataset.shop;
 			this.shops[this.editshopname].draggable = true;

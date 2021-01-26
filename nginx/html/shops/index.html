@@ -26,7 +26,12 @@
 							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
 							>
 							<template slot="table-row" slot-scope="shop">
-								<span v-if="shop.column.field == 'distance'">
+								<span v-if="shop.column.field == 'shop'"
+											v-bind:data-shop="shop.row.shop"
+											v-on:mouseover="showShop">
+									{{shop.row.shop}}
+								</span>
+								<span v-else-if="shop.column.field == 'distance'">
 									<span v-if="shop.row.shop != editshopname">
 										<span v-if="typeof shop.row.distance != 'undefined' && shop.row.distance != null">
 											{{shop.row.distance}} m
