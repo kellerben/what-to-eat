@@ -1,5 +1,4 @@
 const Service = require('./Service');
-const mysql = require('mysql');
 const ws = require('../ws');
 
 /**
@@ -15,9 +14,9 @@ const getMenu = ({ community, shopId }) => new Promise(
 
 		var stmt =
 			"SELECT meal,price FROM meals WHERE community = ? AND shop = ?";
-		var sql = mysql.format(stmt, [community, shopId]);
+		var vars = [community, shopId];
 		try {
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching meals'));
@@ -48,8 +47,8 @@ const getPrice = ({ community, shopId, meal }) => new Promise(
 			meal = meal.trim();
 
 			var stmt = "SELECT price FROM meals WHERE community = ? AND shop = ? AND meal = ?";
-			var sql = mysql.format(stmt, [community, shopId, meal]);
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			var vars = [community, shopId, meal];
+			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
@@ -77,10 +76,9 @@ const getShopData = ({ community, shopId }) => new Promise(
 		var stmt =
 			"SELECT * FROM shops WHERE community = ? AND shop = ?";
 		shopId = shopId.trim();
-
-		var sql = mysql.format(stmt, [community, shopId]);
+		var vars = [community, shopId];
 		try {
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching shop details'));
@@ -110,9 +108,9 @@ const getShops = ({ community }) => new Promise(
 	async (resolve, reject) => {
 		var stmt =
 			"SELECT DISTINCT shop FROM meals WHERE community = ? UNION SELECT DISTINCT shop FROM walks WHERE community = ?;";
-		var sql = mysql.format(stmt, [community, community]);
+		var vars = [community, community];
 		try {
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching shops'));
@@ -142,10 +140,9 @@ const getSpecialRequests = ({ community, shopId }) => new Promise(
 		var stmt =
 			"SELECT specialRequest FROM specialRequests WHERE community = ? AND shop = ?";
 		shopId = shopId.trim();
-
-		var sql = mysql.format(stmt, [community, shopId]);
+		var vars = [community, shopId];
 		try {
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching special requests'));
@@ -181,8 +178,8 @@ const setPrice = ({ community, meal, shopId, price }) => new Promise(
 			var updatePriceInOrders = function() {
 				var stmt =
 					"UPDATE orders SET price = ? WHERE community = ? AND shop = ? AND meal = ? AND day = ?";
-				var sql = mysql.format(stmt, [price, community, shopId, meal, new Date().toISOString().slice(0,10)]);
-				Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+				var vars = [price, community, shopId, meal, new Date().toISOString().slice(0,10)];
+				Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 					if (err) {
 						console.error(err);
 						reject(Service.rejectResponse('Error while updating orders'));
@@ -195,8 +192,8 @@ const setPrice = ({ community, meal, shopId, price }) => new Promise(
 
 			var stmt =
 				"UPDATE meals SET price = ? WHERE community = ? AND shop = ? AND meal = ?";
-			var sql = mysql.format(stmt, [price, community, shopId, meal]);
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			var vars = [price, community, shopId, meal];
+			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while updating orders'));
@@ -206,9 +203,8 @@ const setPrice = ({ community, meal, shopId, price }) => new Promise(
 							"INSERT INTO meals " +
 							"(community, shop, meal, price) " +
 							"VALUES (?, ?, ?, ?)";
-
-						var sql = mysql.format(stmt, [community, shopId, meal, price]);
-						Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+						var vars = [community, shopId, meal, price];
+						Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 							if (err) {
 								console.error(err);
 								reject(Service.rejectResponse('error'));
@@ -244,11 +240,10 @@ const setShopData = ({ community, shopId, shopMetaData }) => new Promise(
 	async (resolve, reject) => {
 		try {
 			shopId = shopId.trim();
-			var values = [shopMetaData.lat, shopMetaData.lng, shopMetaData.distance, shopMetaData.phone, shopMetaData.comment, community, shopId];
 			var stmt =
 				"UPDATE shops SET lat = ?, lng = ?, distance = ?, phone = ?, comment = ? WHERE community = ? AND shop = ?";
-			var sql = mysql.format(stmt, values);
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			var values = [shopMetaData.lat, shopMetaData.lng, shopMetaData.distance, shopMetaData.phone, shopMetaData.comment, community, shopId];
+			Service.mysql_connection_pool.execute(stmt, values, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while updating orders'));
@@ -259,8 +254,7 @@ const setShopData = ({ community, shopId, shopMetaData }) => new Promise(
 							"(lat, lng, distance, phone, comment, community, shop) " +
 							"VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-						var sql = mysql.format(stmt, values);
-						Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+						Service.mysql_connection_pool.execute(stmt, values, function (err, rows, fields) {
 							if (err) {
 								console.error(err);
 								reject(Service.rejectResponse('error'));

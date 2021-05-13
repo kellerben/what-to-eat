@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
-const mysql = require('mysql');
 const ws = require('../ws');
 
 /**
@@ -26,8 +25,7 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 			"(community, user, shop, day) " +
 			"VALUES (?, ?, ?, ?)";
 
-		var sql = mysql.format(stmt, inserts);
-		Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+		Service.mysql_connection_pool.execute(stmt, inserts, function (err, rows, fields) {
 			if (err) {
 				if (err.errno == 1062) { // duplicate primary key
 					resolve(Service.rejectResponse('This announcement was already made.', 400));
@@ -60,9 +58,9 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 			date = date.toISOString().slice(0,10);
 			Service.trimStrings(shopAnnouncement);
 
-			var statement = "DELETE FROM walks WHERE community = ? AND user = ? AND shop = ? AND day = ?";
-			var sql = mysql.format(statement, [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date]);
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			var stmt = "DELETE FROM walks WHERE community = ? AND user = ? AND shop = ? AND day = ?";
+			var vars = [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date];
+			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('error'));
@@ -101,8 +99,8 @@ const getShopAnnouncements = ({ community, date }) => new Promise(
 			date = date.toISOString().slice(0,10);
 			var stmt =
 				"SELECT user,shop FROM walks WHERE community = ? AND day = ?";
-			var sql = mysql.format(stmt, [community, date]);
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			var vars = [community, date];
+			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));

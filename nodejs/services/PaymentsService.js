@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
-const mysql = require('mysql');
 
 /**
 * Get open or closed payments
@@ -41,9 +40,8 @@ const getPayments = ({ community, from, to, states }) => new Promise(
 		if (additionalQueries.length > 0){
 			statement += " AND (  " +additionalQueries.join(' OR ') + ")";
 		}
-		var sql = mysql.format(statement, vars);
 		try {
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(statement, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));

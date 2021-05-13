@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
-const mysql = require('mysql');
 
 /**
 * Get the community information
@@ -11,9 +10,8 @@ const mysql = require('mysql');
 const getCommunityInformation = ({ community }) => new Promise(
 	async (resolve, reject) => {
 		var stmt = "SELECT * FROM communities WHERE community = ?";
-		var sql = mysql.format(stmt, [community]);
 		try {
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, [community], function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching community properties'));
@@ -44,11 +42,10 @@ const setCommunityInformation = ({ community, communityInformation }) => new Pro
 	async (resolve, reject) => {
 		try {
 			Service.trimStrings(communityInformation);
-			var values = [communityInformation.lat, communityInformation.lng, community];
 			var stmt =
 				"UPDATE communities SET lat = ?, lng = ? WHERE community = ?";
-			var sql = mysql.format(stmt, values);
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			var values = [communityInformation.lat, communityInformation.lng, community];
+			Service.mysql_connection_pool.execute(stmt, values, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while setting communityInformation'));
@@ -59,8 +56,7 @@ const setCommunityInformation = ({ community, communityInformation }) => new Pro
 							"(lat, lng, community) " +
 							"VALUES (?, ?, ?)";
 
-						var sql = mysql.format(stmt, values);
-						Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+						Service.mysql_connection_pool.execute(stmt, values, function (err, rows, fields) {
 							if (err) {
 								console.error(err);
 								reject(Service.rejectResponse('error'));

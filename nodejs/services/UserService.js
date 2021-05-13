@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
-const mysql = require('mysql');
 const ws = require('../ws');
 
 /**
@@ -14,9 +13,9 @@ const getPaymentInstructions = ({ community, userId }) => new Promise(
 	async (resolve, reject) => {
 		var stmt =
 			"SELECT paymentInstructions FROM users WHERE community = ? AND user = ?";
-		var sql = mysql.format(stmt, [community, userId]);
+		var vars = [community, userId];
 		try {
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching paymentInstructions'));
@@ -49,16 +48,14 @@ const setPaymentInstructions = ({ community, userId, paymentInstructions }) => n
 				" (paymentInstructions, community, user)" +
 				" VALUES (?, ?, ?)";
 
-			var sql = mysql.format(stmt, inserts);
-			Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, inserts, function (err, rows, fields) {
 				if (err) {
 					if (err.errno == 1062) { // duplicate primary key
 						stmt =
 							"UPDATE users" +
 							" SET paymentInstructions = ?" +
 							" WHERE community = ? AND user = ?";
-						sql = mysql.format(stmt, inserts);
-						Service.mysql_connection_pool.query(sql, function (err, rows, fields) {
+						Service.mysql_connection_pool.execute(stmt, inserts, function (err, rows, fields) {
 							if (err) {
 								console.log('Error during update of paymentinfo: ', err);
 								reject(Service.rejectResponse('Error during the insertion of the payment instructions'));
