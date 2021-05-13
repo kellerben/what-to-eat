@@ -240,8 +240,12 @@ const setShopData = ({ community, shopId, shopMetaData }) => new Promise(
 	async (resolve, reject) => {
 		try {
 			shopId = shopId.trim();
-			var stmt =
-				"UPDATE shops SET lat = ?, lng = ?, distance = ?, phone = ?, comment = ? WHERE community = ? AND shop = ?";
+			["lat","lng","distance","phone","comment"].forEach(elem => {
+				if (typeof(shopMetaData[elem]) === 'undefined') {
+					shopMetaData[elem] = null
+				}
+			});
+			var stmt = "UPDATE shops SET lat = ?, lng = ?, distance = ?, phone = ?, comment = ? WHERE community = ? AND shop = ?";
 			var values = [shopMetaData.lat, shopMetaData.lng, shopMetaData.distance, shopMetaData.phone, shopMetaData.comment, community, shopId];
 			Service.mysql_connection_pool.execute(stmt, values, function (err, rows, fields) {
 				if (err) {
