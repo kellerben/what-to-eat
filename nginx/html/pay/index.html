@@ -18,7 +18,11 @@
 							:rows="payments"
 							:columns="header"
 							:sort-options="sortOpts"
-							:search-options="{ enabled: true }"
+							:search-options="{
+								enabled: true,
+								placeholder: 'If search includes at least 1 space, it will search for transactions with all involved people.',
+								searchFn: filterUsernameTable
+							}"
 							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
 							>
 							<template slot="table-row" slot-scope="payment">

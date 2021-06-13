@@ -199,6 +199,18 @@ const vueapp = new Vue({
 				);
 			}
 		},
+		filterUsernameTable(row, col, cellValue, searchTerm){
+			let searches = searchTerm.split(" ").map(
+				value => value.toLowerCase()
+			)
+			if (searches.length === 1) {
+				// match if either from or to matches the searchterm
+				return cellValue.match(new RegExp(searchTerm,"i"))
+			} else {
+				// match if searches are in from && to
+				return searches.includes(row.from_user.toLowerCase()) && searches.includes(row.to_user.toLowerCase())
+			}
+		},
 		init() {
 			this.getCommunityFromHash();
 			if (typeof(this.community) == "undefined" || this.community == "") {
