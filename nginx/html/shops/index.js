@@ -149,7 +149,7 @@ const vueapp = new Vue({
 			var shop = e.target.dataset.shop;
 		},*/
 		showShop(e) {
-			this.shopMapCenter = this.shops[e.target.dataset.shop].position;
+			this.shopMapCenter = e.row.position
 		},
 		editShop(e) {
 			this.editshopname = e.target.dataset.shop;

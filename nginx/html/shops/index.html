@@ -25,11 +25,11 @@
 							:search-options="{ enabled: true }"
 							:pagination-options="{ enabled: true, perPage: 5, perPageDropdown: [5, 10, 15, 20, 25], }"
 							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
+							@on-row-mouseenter="showShop"
 							>
 							<template slot="table-row" slot-scope="shop">
 								<span v-if="shop.column.field == 'shop'"
-											v-bind:data-shop="shop.row.shop"
-											v-on:mouseover="showShop">
+											v-bind:data-shop="shop.row.shop">
 									{{shop.row.shop}}
 								</span>
 								<span v-else-if="shop.column.field == 'distance'">
