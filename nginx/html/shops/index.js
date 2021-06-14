@@ -149,7 +149,11 @@ const vueapp = new Vue({
 			var shop = e.target.dataset.shop;
 		},*/
 		showShop(e) {
-			this.shopMapCenter = e.row.position
+			if (e.row.position.lat && e.row.position.lng) {
+				this.shopMapCenter = e.row.position
+			} else {
+				this.shopMapCenter = this.communityLatLng
+			}
 		},
 		editShop(e) {
 			this.editshopname = e.target.dataset.shop;
