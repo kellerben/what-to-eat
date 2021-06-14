@@ -36,6 +36,8 @@ const vueapp = new Vue({
 		community: localStorage.community,
 		userId: localStorage.userId,
 		payments: [],
+		searchTerm: "",
+		paymentPool: {},
 		paymentInstructions: { },
 		anchorAttrs: {
 			target: '_blank',
@@ -85,7 +87,35 @@ const vueapp = new Vue({
 		},
 		prices: []
 	},
+	watch: {
+		payments: function() {
+			this.updatePaymentPool()
+		},
+		searchTerm: function() {
+			this.updatePaymentPool()
+		}
+	},
 	methods: {
+		setSearchTerm(p) {
+			this.searchTerm = p.searchTerm
+		},
+		updatePaymentPool: function () {
+			this.paymentPool = {}
+			this.payments.forEach(p => {
+				if (p.price) {
+					if (this.searchTerm === "" || this.filterUsernameTable(p,{},"",this.searchTerm)) {
+						if (!this.paymentPool[p.from_user]) {
+							this.paymentPool[p.from_user] = 0
+						}
+						if (!this.paymentPool[p.to_user]) {
+							this.paymentPool[p.to_user] = 0
+						}
+						this.paymentPool[p.from_user] += p.price
+						this.paymentPool[p.to_user] -= p.price
+					}
+				}
+			})
+		},
 		getOpenPayments: function (event) {
 			lunch.then(
 				client => client.apis.Payments.getPayments({ community: this.community, states: ["NEW","FETCHED"] })
@@ -205,7 +235,7 @@ const vueapp = new Vue({
 			)
 			if (searches.length === 1) {
 				// match if either from or to matches the searchterm
-				return cellValue.match(new RegExp(searchTerm,"i"))
+				return searches.includes(row.from_user.toLowerCase()) || searches.includes(row.to_user.toLowerCase())
 			} else {
 				// match if searches are in from && to
 				return searches.includes(row.from_user.toLowerCase()) && searches.includes(row.to_user.toLowerCase())
