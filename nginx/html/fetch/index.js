@@ -89,8 +89,10 @@ const vueapp = new Vue({
 					if (shopDetails.phone) {
 						var number = shopDetails.phone.replace(/[^+0-9 ()-]/g,"");
 						var URInumber = number.replace(/[() ]/g,"-");
-						o.label = o.shop + " (<a href='tel:"+encodeURI(URInumber)+"'>" + number + "</a>)";
-						o.html = true;
+						o.label = o.shop
+						o.label += ` (<a href='tel:${encodeURI(URInumber)}"'>${number}</a>)`
+						o.label += `, total: ${o.totalPrice} ct`
+						o.html = true
 					}
 				}
 			});
@@ -130,6 +132,7 @@ function fetchTodaysOrders() {
 			if (elem.state != 'DISCARDED') {
 				if (typeof(o[elem.shop]) == 'undefined') {
 					o[elem.shop] = {
+						totalPrice: elem.price,
 						mode: 'span',
 						label: elem.shop,
 						shop: elem.shop,
@@ -138,6 +141,7 @@ function fetchTodaysOrders() {
 					}
 				} else {
 					o[elem.shop].children.push(elem);
+					o[elem.shop].totalPrice += elem.price;
 				}
 			}
 		});
