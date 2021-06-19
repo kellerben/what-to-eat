@@ -14,4 +14,12 @@ a {
 body {
 	font-family: 'TypoPRO Linux Biolinum', 'DejaVu Sans', sans-serif;
 }
+@media (max-width:990px) {
+	body {
+		font-size: calc(100% + 1vw);
+	}
+}
+table.vgt-table {
+	font-size: 100%
+}
 
