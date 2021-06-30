@@ -77,23 +77,23 @@ const vueapp = new Vue({
 				lunch.then(
 					client => client.apis.Shop.getShopData({ community: vueapp.community, shopId: o.shop })
 				).then(
-					result => vueapp.updateShopPhoneNum(JSON.parse(result.text))
+					result => vueapp.updateShopLabel(JSON.parse(result.text))
 				);
 			});
 		},
 	},
 	methods: {
-		updateShopPhoneNum(shopDetails){
+		updateShopLabel(shopDetails){
 			this.orders.forEach(function(o){
 				if (o.shop == shopDetails.shop) {
+					o.label = o.shop
 					if (shopDetails.phone) {
 						var number = shopDetails.phone.replace(/[^+0-9 ()-]/g,"");
 						var URInumber = number.replace(/[() ]/g,"-");
-						o.label = o.shop
 						o.label += ` (<a href='tel:${encodeURI(URInumber)}"'>${number}</a>)`
-						o.label += `, total: ${o.totalPrice} ct`
 						o.html = true
 					}
+					o.label += `, total: ${o.totalPrice} ct`
 				}
 			});
 		},
