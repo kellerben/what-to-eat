@@ -72,7 +72,7 @@ new Vue({
 					})
 				).then(
 					result => this.parseGetPaymentInstructionsResult(JSON.parse(result.text)),
-					reason => this.error('Could not get payment instructions (' + reason.response.body.error + ')')
+					reason => this.error('Could not get payment instructions (' + reason.response.body.message + ')')
 				);
 			}
 		},
@@ -84,7 +84,7 @@ new Vue({
 					requestBody: { paymentInstructions: this.paymentInstructions }
 				}).then(
 					result => {},
-					reason => this.error('Could not set payment instructions (' + reason.response.body.error + ')')
+					reason => this.error('Could not set payment instructions (' + reason.response.body.message + ')')
 				)
 			);
 		}
