@@ -48,7 +48,7 @@
 									>€</button>
 									<span v-if="paymentInstructions[payment.row.to_user]">
 										<b-tooltip
-											:target="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.mail+payment.row.day"
+											:target="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.mail+payment.row.day+payment.row.meal"
 											triggers="focus">
 									<vue-markdown
 										:show="true"
@@ -57,7 +57,7 @@
 										></vue-markdown>
 									</b-tooltip>
 									<button
-										:id="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.mail+payment.row.day"
+										:id="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.mail+payment.row.day+payment.row.meal"
 										class="btn btn-primary btn-sm"
 										title="Get Payment Instructions…"
 									>ℹ</button>
