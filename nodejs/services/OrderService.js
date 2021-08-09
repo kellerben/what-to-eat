@@ -111,9 +111,12 @@ const orderLunch = ({ mealOrder }) => new Promise(
 
 			stmt =
 				"INSERT INTO orders" +
-				" (community, user, shop, meal, specialRequest, price, day, state)" +
-				" VALUES (?, ?, ?, ?, ?, ?, ?, 'NEW')";
-			var inserts = [mealOrder.community, mealOrder.userId, mealOrder.shopId, mealOrder.meal, mealOrder.specialRequest, mealOrder.price, date];
+				" SET community = ?, user = ?, shop = ?, meal = ?, specialRequest = ?, day = ?, state = 'NEW'";
+			var inserts = [mealOrder.community, mealOrder.userId, mealOrder.shopId, mealOrder.meal, mealOrder.specialRequest, date];
+			if (typeof(mealOrder.price) !== 'undefined') {
+				stmt += ", price = ?";
+				inserts.push(mealOrder.price);
+			}
 
 			Service.mysql_connection_pool.execute(stmt, inserts, function (err, rows, fields) {
 				if (err) {
