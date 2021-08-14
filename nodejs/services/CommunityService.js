@@ -52,9 +52,8 @@ const setCommunityInformation = ({ community, communityInformation }) => new Pro
 				} else {
 					if (rows['affectedRows'] === 0){
 						var stmt =
-							"INSERT INTO communities " +
-							"(lat, lng, community) " +
-							"VALUES (?, ?, ?)";
+							"INSERT INTO communities" +
+							" SET lat = ?, lng = ?, community = ?";
 
 						Service.mysql_connection_pool.execute(stmt, values, function (err, rows, fields) {
 							if (err) {

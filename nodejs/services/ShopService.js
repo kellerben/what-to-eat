@@ -200,9 +200,8 @@ const setPrice = ({ community, meal, shopId, price }) => new Promise(
 				} else {
 					if (rows['affectedRows'] === 0){
 						var stmt =
-							"INSERT INTO meals " +
-							"(community, shop, meal, price) " +
-							"VALUES (?, ?, ?, ?)";
+							"INSERT INTO meals" +
+							" SET community = ?, shop = ?, meal = ?, price = ?";
 						var vars = [community, shopId, meal, price];
 						Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 							if (err) {
@@ -255,8 +254,7 @@ const setShopData = ({ community, shopId, shopMetaData }) => new Promise(
 					if (rows['affectedRows'] === 0){
 						var stmt =
 							"INSERT INTO shops " +
-							"(lat, lng, distance, phone, comment, community, shop) " +
-							"VALUES (?, ?, ?, ?, ?, ?, ?)";
+							" SET lat = ?, lng = ?, distance = ?, phone = ?, comment = ?, community = ?, shop = ?";
 
 						Service.mysql_connection_pool.execute(stmt, values, function (err, rows, fields) {
 							if (err) {

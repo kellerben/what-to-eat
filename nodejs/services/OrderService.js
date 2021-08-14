@@ -102,8 +102,7 @@ const orderLunch = ({ mealOrder }) => new Promise(
 			if (mealOrder.specialRequest != "") {
 				stmt =
 					"INSERT INTO specialRequests" +
-					" (community, shop, specialRequest)" +
-					" VALUES (?, ?, ?)";
+					" SET community = ?, shop = ?, specialRequest = ?";
 
 				vars = [mealOrder.community, mealOrder.shopId, mealOrder.specialRequest];
 				Service.mysql_connection_pool.execute(stmt, vars);

@@ -45,8 +45,7 @@ const setPaymentInstructions = ({ community, userId, paymentInstructions }) => n
 			var inserts = [paymentInstructions.paymentInstructions, community, userId];
 			var stmt =
 				"INSERT INTO users" +
-				" (paymentInstructions, community, user)" +
-				" VALUES (?, ?, ?)";
+				" SET paymentInstructions = ?, community = ?, user = ?";
 
 			Service.mysql_connection_pool.execute(stmt, inserts, function (err, rows, fields) {
 				if (err) {

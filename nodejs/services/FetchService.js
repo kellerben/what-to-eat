@@ -22,8 +22,7 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 		var inserts = [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date];
 		var stmt =
 			"INSERT INTO walks " +
-			"(community, user, shop, day) " +
-			"VALUES (?, ?, ?, ?)";
+			" SET community = ?, user = ?, shop = ?, day = ?";
 
 		Service.mysql_connection_pool.execute(stmt, inserts, function (err, rows, fields) {
 			if (err) {
