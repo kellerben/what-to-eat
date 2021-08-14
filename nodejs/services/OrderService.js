@@ -18,10 +18,12 @@ const getOrdersOfDay = ({ community, date }) => new Promise(
 		}
 		date = date.toISOString().slice(0,10);
 		let stmt =
-			"SELECT shop,user,meal,specialRequest,price,state FROM orders WHERE community = ? AND day = ? ORDER BY shop,meal,specialRequest";
+			"SELECT shop, user, meal, specialRequest, price, state" +
+			" FROM orders WHERE community = ? AND day = ?" +
+			" ORDER BY shop, meal, specialRequest";
 		let vars = [community, date];
 		try {
-			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
@@ -58,10 +60,11 @@ const getShopOrders = ({ community, shopId, date }) => new Promise(
 		shopId = shopId.trim();
 
 		let stmt =
-			"SELECT user,meal,price FROM orders WHERE community = ? AND shop = ? AND day = ?";
+			"SELECT user,meal,price FROM orders" +
+			" WHERE community = ? AND shop = ? AND day = ?";
 		let vars = [community, shopId, date];
 		try {
-			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
@@ -104,20 +107,35 @@ const orderLunch = ({ mealOrder }) => new Promise(
 					"INSERT INTO specialRequests" +
 					" SET community = ?, shop = ?, specialRequest = ?";
 
-				vars = [mealOrder.community, mealOrder.shopId, mealOrder.specialRequest];
+				vars = [
+					mealOrder.community, mealOrder.shopId, mealOrder.specialRequest
+				];
 				Service.mysql_connection_pool.execute(stmt, vars);
 			}
 
 			stmt =
 				"INSERT INTO orders" +
-				" SET community = ?, user = ?, shop = ?, meal = ?, specialRequest = ?, day = ?, state = 'NEW'";
-			let inserts = [mealOrder.community, mealOrder.userId, mealOrder.shopId, mealOrder.meal, mealOrder.specialRequest, date];
+				" SET community = ?," +
+				" user = ?," +
+				" shop = ?," +
+				" meal = ?," +
+				" specialRequest = ?," +
+				" day = ?," +
+				" state = 'NEW'";
+			let inserts = [
+				mealOrder.community,
+				mealOrder.userId,
+				mealOrder.shopId,
+				mealOrder.meal,
+				mealOrder.specialRequest,
+				date
+			];
 			if (typeof(mealOrder.price) !== 'undefined') {
 				stmt += ", price = ?";
 				inserts.push(mealOrder.price);
 			}
 
-			Service.mysql_connection_pool.execute(stmt, inserts, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, inserts, (err, rows, fields) => {
 				if (err) {
 					if (err.errno == 1062) { // duplicate primary key
 						resolve(Service.rejectResponse('This order was already placed.', 400));
@@ -171,10 +189,20 @@ const updateOrder = ({ mealOrder }) => new Promise(
 				stmt += ",state = ? ";
 				vars.push(mealOrder.state);
 			}
-			stmt += "WHERE community = ? AND shop = ? AND user = ? AND day = ? AND meal = ?";
-			vars.push(mealOrder.community, mealOrder.shopId, mealOrder.userId, date, mealOrder.meal);
+			stmt += "WHERE community = ?" +
+				" AND shop = ? " +
+				" AND user = ? " +
+				" AND day = ? " +
+				" AND meal = ?";
+			vars.push(
+				mealOrder.community,
+				mealOrder.shopId,
+				mealOrder.userId,
+				date,
+				mealOrder.meal
+			);
 
-			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
 					console.log('Error during insertion of order: ', err);
 					reject(Service.rejectResponse('Error during insertion of order'));

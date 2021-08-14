@@ -13,18 +13,28 @@ const Service = require('./Service');
 const getPayments = ({ community, from, to, states }) => new Promise(
 	async (resolve, reject) => {
 		let statement =
-			"SELECT orders.user AS from_user,walks.user AS to_user,price,orders.shop,orders.shop,orders.meal,orders.day,orders.state " +
-			"FROM orders,walks " +
-			"WHERE orders.community = ? AND walks.community = ? " +
-			"AND walks.day = orders.day AND walks.shop = orders.shop " +
-			"AND walks.user != orders.user ";
+			"SELECT " +
+			" orders.user AS from_user," +
+			" walks.user AS to_user," +
+			" price," +
+			" orders.shop," +
+			" orders.meal," +
+			" orders.day," +
+			" orders.state" +
+			" FROM orders, walks " +
+			" WHERE" +
+			" orders.community = ? AND walks.community = ?" +
+			" AND walks.day = orders.day AND walks.shop = orders.shop" +
+			" AND walks.user != orders.user ";
 		let vars = [ community, community ];
 		if (typeof states == "undefined") {
 			states = [];
 		}
 		if (states.length > 0){
 			statement += "AND (";
-			statement += Array.apply('', Array(states.length)).map(function () {return ' orders.state = ? '}).join(' OR ');
+			statement += Array.apply('', Array(states.length)).map(
+				() => ' orders.state = ? '
+			).join(' OR ');
 			statement += ")";
 			vars = vars.concat(states);
 		}
@@ -41,7 +51,7 @@ const getPayments = ({ community, from, to, states }) => new Promise(
 			statement += " AND (  " +additionalQueries.join(' OR ') + ")";
 		}
 		try {
-			Service.mysql_connection_pool.execute(statement, vars, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(statement, vars, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));

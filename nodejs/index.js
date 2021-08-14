@@ -9,7 +9,10 @@ const launchServer = async () => {
 		this.ws.launch();
 		logger.info('websocket server running');
 
-		this.expressServer = new ExpressServer(config.URL_PORT, config.OPENAPI_YAML);
+		this.expressServer = new ExpressServer(
+			config.URL_PORT,
+			config.OPENAPI_YAML
+		);
 		this.expressServer.app.disable('x-powered-by');
 		this.expressServer.launch();
 		logger.info('Express server running');

@@ -11,18 +11,22 @@ const getCommunityInformation = ({ community }) => new Promise(
 	async (resolve, reject) => {
 		let stmt = "SELECT * FROM communities WHERE community = ?";
 		try {
-			Service.mysql_connection_pool.execute(stmt, [community], function (err, rows, fields) {
-				if (err) {
-					console.error(err);
-					reject(Service.rejectResponse('Error while fetching community properties'));
-				} else {
-					if (rows.length == 0) {
-						reject(Service.rejectResponse('The community was not found',404));
+			Service.mysql_connection_pool.execute(stmt,
+				[community],
+				(err, rows, fields) => {
+					if (err) {
+						console.error(err);
+						reject(Service.rejectResponse(
+							'Error while fetching community properties'
+						));
 					} else {
-						resolve(Service.successResponse(rows[0]));
+						if (rows.length == 0) {
+							reject(Service.rejectResponse('The community was not found',404));
+						} else {
+							resolve(Service.successResponse(rows[0]));
+						}
 					}
-				}
-			});
+				});
 		} catch (e) {
 			reject(Service.rejectResponse(
 				e.message || 'Invalid input',
@@ -38,24 +42,31 @@ const getCommunityInformation = ({ community }) => new Promise(
 * communityInformation CommunityInformation
 * no response value expected for this operation
 * */
-const setCommunityInformation = ({ community, communityInformation }) => new Promise(
+const setCommunityInformation = ({
+	community, communityInformation
+}) => new Promise(
 	async (resolve, reject) => {
 		try {
 			Service.trimStrings(communityInformation);
 			let stmt =
 				"UPDATE communities SET lat = ?, lng = ? WHERE community = ?";
-			let values = [communityInformation.lat, communityInformation.lng, community];
-			Service.mysql_connection_pool.execute(stmt, values, function (err, rows, fields) {
+			let values = [communityInformation.lat,
+				communityInformation.lng,
+				community
+			];
+			Service.mysql_connection_pool.execute(stmt, values, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
-					reject(Service.rejectResponse('Error while setting communityInformation'));
+					reject(Service.rejectResponse(
+						'Error while setting communityInformation'
+					));
 				} else {
 					if (rows['affectedRows'] === 0){
 						let stmt =
 							"INSERT INTO communities" +
 							" SET lat = ?, lng = ?, community = ?";
 
-						Service.mysql_connection_pool.execute(stmt, values, function (err, rows, fields) {
+						Service.mysql_connection_pool.execute(stmt, values, (err, rows, fields) => {
 							if (err) {
 								console.error(err);
 								reject(Service.rejectResponse('error'));

@@ -19,18 +19,27 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 		date = date.toISOString().slice(0,10);
 		Service.trimStrings(shopAnnouncement);
 
-		let inserts = [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date];
+		let inserts = [
+			shopAnnouncement.community,
+			shopAnnouncement.userId,
+			shopAnnouncement.shopId,
+			date
+		];
 		let stmt =
 			"INSERT INTO walks " +
 			" SET community = ?, user = ?, shop = ?, day = ?";
 
-		Service.mysql_connection_pool.execute(stmt, inserts, function (err, rows, fields) {
+		Service.mysql_connection_pool.execute(stmt, inserts, (err, rows, fields) => {
 			if (err) {
 				if (err.errno == 1062) { // duplicate primary key
-					resolve(Service.rejectResponse('This announcement was already made.', 400));
+					resolve(Service.rejectResponse(
+						'This announcement was already made.', 400
+					));
 				} else {
 					console.log('Error during insertion of the announcement: ', err);
-					reject(Service.rejectResponse('Error during insertion of the announcement'));
+					reject(Service.rejectResponse(
+						'Error during insertion of the announcement'
+					));
 				}
 			} else {
 				ws.sendCommunity(shopAnnouncement.community, "getShopAnnouncements");
@@ -57,17 +66,26 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 			date = date.toISOString().slice(0,10);
 			Service.trimStrings(shopAnnouncement);
 
-			let stmt = "DELETE FROM walks WHERE community = ? AND user = ? AND shop = ? AND day = ?";
-			let vars = [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date];
-			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
+			let stmt = "DELETE FROM walks" +
+				" WHERE community = ? AND user = ? AND shop = ? AND day = ?";
+			let vars = [shopAnnouncement.community,
+				shopAnnouncement.userId,
+				shopAnnouncement.shopId,
+				date
+			];
+			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('error'));
 				} else {
 					if (rows['affectedRows'] === 0){
-						reject(Service.rejectResponse("User didn't announced this shop yet", 404));
+						reject(Service.rejectResponse(
+							"User didn't announced this shop yet", 404
+						));
 					} else {
-						ws.sendCommunity(shopAnnouncement.community, "getShopAnnouncements");
+						ws.sendCommunity(
+							shopAnnouncement.community, "getShopAnnouncements"
+						);
 						resolve(Service.successResponse('success'));
 					}
 				}
@@ -99,7 +117,7 @@ const getShopAnnouncements = ({ community, date }) => new Promise(
 			let stmt =
 				"SELECT user,shop FROM walks WHERE community = ? AND day = ?";
 			let vars = [community, date];
-			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));

@@ -15,10 +15,12 @@ const getPaymentInstructions = ({ community, userId }) => new Promise(
 			"SELECT paymentInstructions FROM users WHERE community = ? AND user = ?";
 		let vars = [community, userId];
 		try {
-			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
-					reject(Service.rejectResponse('Error while fetching paymentInstructions'));
+					reject(Service.rejectResponse(
+						'Error while fetching paymentInstructions'
+					));
 				} else {
 					resolve(Service.successResponse(rows[0]));
 				}
@@ -39,25 +41,35 @@ const getPaymentInstructions = ({ community, userId }) => new Promise(
 * paymentInstructions PaymentInstructions
 * no response value expected for this operation
 * */
-const setPaymentInstructions = ({ community, userId, paymentInstructions }) => new Promise(
+const setPaymentInstructions = ({
+	community,
+	userId,
+	paymentInstructions
+}) => new Promise(
 	async (resolve, reject) => {
 		try {
-			let inserts = [paymentInstructions.paymentInstructions, community, userId];
+			let inserts = [
+				paymentInstructions.paymentInstructions,
+				community,
+				userId
+			];
 			let stmt =
 				"INSERT INTO users" +
 				" SET paymentInstructions = ?, community = ?, user = ?";
 
-			Service.mysql_connection_pool.execute(stmt, inserts, function (err, rows, fields) {
+			Service.mysql_connection_pool.execute(stmt, inserts, (err, rows, fields) => {
 				if (err) {
 					if (err.errno == 1062) { // duplicate primary key
 						stmt =
 							"UPDATE users" +
 							" SET paymentInstructions = ?" +
 							" WHERE community = ? AND user = ?";
-						Service.mysql_connection_pool.execute(stmt, inserts, function (err, rows, fields) {
+						Service.mysql_connection_pool.execute(stmt, inserts, (err, rows, fields) => {
 							if (err) {
 								console.log('Error during update of paymentinfo: ', err);
-								reject(Service.rejectResponse('Error during the insertion of the payment instructions'));
+								reject(Service.rejectResponse(
+									'Error during the insertion of the payment instructions'
+								));
 							} else {
 								ws.sendCommunity(community, "refreshOrders");
 								resolve(Service.successResponse('success'));
@@ -65,7 +77,9 @@ const setPaymentInstructions = ({ community, userId, paymentInstructions }) => n
 						});
 					} else {
 						console.log('Error during insertion of paymentinfo: ', err);
-						reject(Service.rejectResponse('Error during the insertion of the payment instructions'));
+						reject(Service.rejectResponse(
+							'Error during the insertion of the payment instructions'
+						));
 					}
 				} else {
 					ws.sendCommunity(community, "refreshOrders");
