@@ -9,7 +9,9 @@ function renewconnection(){
 	} else {
 		prot = "ws://";
 	}
-	connection = new WebSocket(prot+location.hostname+":"+location.port+"/ws/", "json");
+	connection = new WebSocket(
+		prot+location.hostname+":"+location.port+"/ws/", "json"
+	);
 	connection.onopen = function() {
 		connection.send(JSON.stringify({'community':vueapp.community}));
 	}
@@ -130,7 +132,9 @@ const vueapp = new Vue({
 				`https://routing.openstreetmap.de/routed-foot/route/v1/driving/${this.communityLatLng.lng},${this.communityLatLng.lat};${to.lng},${to.lat}`
 			).then(result => result.json())
 				.then(data => {
-					this.shops[e.target.dataset.shop].distance = Math.round(data.routes[0].distance);
+					this.shops[e.target.dataset.shop].distance = Math.round(
+						data.routes[0].distance
+					);
 				})
 		},
 		warning(string) {
@@ -170,13 +174,26 @@ const vueapp = new Vue({
 		},
 		confirmEdit(e) {
 			var postBody = {};
-			if(this.shops[this.editshopname].distance != "") { postBody.distance = this.shops[this.editshopname].distance }
-			if(this.shops[this.editshopname].phone != "") { postBody.phone = this.shops[this.editshopname].phone }
-			if(this.shops[this.editshopname].comment != "") { postBody.comment = this.shops[this.editshopname].comment }
-			if(this.shops[this.editshopname].lat != "") { postBody.lat = this.shops[this.editshopname].position.lat }
-			if(this.shops[this.editshopname].lng != "") { postBody.lng = this.shops[this.editshopname].position.lng }
+			if(this.shops[this.editshopname].distance != "") {
+				postBody.distance = this.shops[this.editshopname].distance
+			}
+			if(this.shops[this.editshopname].phone != "") {
+				postBody.phone = this.shops[this.editshopname].phone
+			}
+			if(this.shops[this.editshopname].comment != "") {
+				postBody.comment = this.shops[this.editshopname].comment
+			}
+			if(this.shops[this.editshopname].lat != "") {
+				postBody.lat = this.shops[this.editshopname].position.lat
+			}
+			if(this.shops[this.editshopname].lng != "") {
+				postBody.lng = this.shops[this.editshopname].position.lng
+			}
 			lunch.then(
-				client => client.apis.Shop.setShopData({ community: this.community, shopId: this.editshopname }, { requestBody: postBody })
+				client => client.apis.Shop.setShopData(
+					{ community: this.community, shopId: this.editshopname },
+					{ requestBody: postBody }
+				)
 			).then(
 				result => this.cancelEdit(),
 				reason => this.error('Could not edit the shop data.')
@@ -277,10 +294,14 @@ function updateShops() {
 		shops.forEach(function(elem){
 			//vueapp.shops.push({shop: elem});
 			lunch.then(
-				client => client.apis.Shop.getShopData({ community: vueapp.community, shopId: elem })
+				client => client.apis.Shop.getShopData(
+					{ community: vueapp.community, shopId: elem }
+				)
 			).then(
 				result => setShopDetails(elem, JSON.parse(result.text)),
-				reason => vueapp.warning('Could not fetch available shops. ('+reason+')')
+				reason => vueapp.warning(
+					'Could not fetch available shops. ('+reason+')'
+				)
 			);
 		});
 	}

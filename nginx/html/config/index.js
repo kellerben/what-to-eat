@@ -27,7 +27,7 @@ new Vue({
 				["day","1970-01-01"],
 				["shop","Eva's Pizza"],
 				["meal","Pizza Quattro Formaggi"]
-			].forEach(function([k,v]){
+			].forEach(([k,v]) => {
 				val = val.replaceAll("{"+k+"}",v);
 				val = val.replaceAll("{"+k+":uri}",encodeURI(v));
 			});
@@ -71,8 +71,14 @@ new Vue({
 						community: this.community, userId: this.userId
 					})
 				).then(
-					result => this.parseGetPaymentInstructionsResult(JSON.parse(result.text)),
-					reason => this.error('Could not get payment instructions (' + reason.response.body.message + ')')
+					result => this.parseGetPaymentInstructionsResult(
+						JSON.parse(result.text)
+					),
+					reason => this.error(
+						'Could not get payment instructions (' +
+						reason.response.body.message +
+						')'
+					)
 				);
 			}
 		},
@@ -84,7 +90,10 @@ new Vue({
 					requestBody: { paymentInstructions: this.paymentInstructions }
 				}).then(
 					result => {},
-					reason => this.error('Could not set payment instructions (' + reason.response.body.message + ')')
+					reason => this.error(
+						'Could not set payment instructions (' +
+						reason.response.body.message +
+						')')
 				)
 			);
 		}

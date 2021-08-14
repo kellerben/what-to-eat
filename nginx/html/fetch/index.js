@@ -9,8 +9,10 @@ function renewconnection(){
 	} else {
 		prot = "ws://";
 	}
-	connection = new WebSocket(prot+location.hostname+":"+location.port+"/ws/", "json");
-	connection.onopen = function() {
+	connection = new WebSocket(
+		prot+location.hostname+":"+location.port+"/ws/", "json"
+	);
+	connection.onopen = () => {
 		connection.send(JSON.stringify({'community':vueapp.community}));
 	}
 	connection.onmessage = incommingMessage;
@@ -73,9 +75,11 @@ const vueapp = new Vue({
 	},
 	watch: {
 		orders: function() {
-			this.orders.forEach(function(o){
+			this.orders.forEach(o => {
 				lunch.then(
-					client => client.apis.Shop.getShopData({ community: vueapp.community, shopId: o.shop })
+					client => client.apis.Shop.getShopData({
+						community: vueapp.community, shopId: o.shop
+					})
 				).then(
 					result => vueapp.updateShopLabel(JSON.parse(result.text))
 				);
@@ -84,7 +88,7 @@ const vueapp = new Vue({
 	},
 	methods: {
 		updateShopLabel(shopDetails){
-			this.orders.forEach(function(o){
+			this.orders.forEach(o => {
 				if (o.shop == shopDetails.shop) {
 					o.label = o.shop
 					if (shopDetails.phone) {
@@ -128,7 +132,7 @@ const vueapp = new Vue({
 function fetchTodaysOrders() {
 	function updateOrders(orders){
 		var o = {};
-		orders.forEach(function(elem){
+		orders.forEach(elem => {
 			if (elem.state != 'DISCARDED') {
 				if (typeof(o[elem.shop]) == 'undefined') {
 					o[elem.shop] = {

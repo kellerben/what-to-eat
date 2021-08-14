@@ -9,8 +9,10 @@ function renewconnection(){
 	} else {
 		prot = "ws://";
 	}
-	connection = new WebSocket(prot+location.hostname+":"+location.port+"/ws/", "json");
-	connection.onopen = function() {
+	connection = new WebSocket(
+		prot+location.hostname+":"+location.port+"/ws/", "json"
+	);
+	connection.onopen = () => {
 		connection.send(JSON.stringify({'community':vueapp.community}));
 	}
 	connection.onmessage = incommingMessage;
@@ -40,7 +42,7 @@ const vueapp = new Vue({
 				label: 'State',
 				field: 'state',
 				hidden: true,
-				sortFn: function (x,y) {
+				sortFn: (x,y) => {
 					var sortary = ['NEW', 'FETCHED', 'PAYED', 'DISCARDED'];
 					var a = sortary.indexOf(x);
 					var b = sortary.indexOf(y);
@@ -105,26 +107,28 @@ const vueapp = new Vue({
 				o[key].mode = 'span'
 				o[key].html= false
 			}
-			log.forEach(function(elem){
+			log.forEach(elem => {
 				elem.day = elem.day.substring(0,10);
 				o[elem.state].children.push(elem);
 			});
 			var p = [];
-			['NEW','FETCHED','PAYED','DISCARDED'].forEach(function(key) {
+			['NEW','FETCHED','PAYED','DISCARDED'].forEach(key => {
 				if (o[key].children.length != 0) {
 					p.push(o[key]);
 				}
 			});
 			this.payments = p;
 		},
-		getOpenPayments: function (event) {
+		getOpenPayments: function(event) {
 			lunch.then(
-				client => client.apis.Payments.getPayments({ community: this.community, from: this.userId, to: this.userId })
+				client => client.apis.Payments.getPayments({
+					community: this.community, from: this.userId, to: this.userId
+				})
 			).then(
 				result => this.parsePaymentLog(JSON.parse(result.text).rows)
 			)
 		},
-		setOrderFetched: function (event) {
+		setOrderFetched: function(event) {
 			lunch.then(
 				client => client.apis.Order.updateOrder({ }, {
 					requestBody: {
@@ -138,7 +142,7 @@ const vueapp = new Vue({
 				})
 			)
 		},
-		setOrderPayed: function (event) {
+		setOrderPayed: function(event) {
 			lunch.then(
 				client => client.apis.Order.updateOrder({ }, {
 					requestBody: {
@@ -152,7 +156,7 @@ const vueapp = new Vue({
 				})
 			)
 		},
-		updatePrice: function (event) {
+		updatePrice: function(event) {
 			var elem = this.prices[event.target.dataset["id"]];
 			if (elem.price === "") {
 				return;

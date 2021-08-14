@@ -9,7 +9,9 @@ function renewconnection(){
 	} else {
 		prot = "ws://";
 	}
-	connection = new WebSocket(prot+location.hostname+":"+location.port+"/ws/", "json");
+	connection = new WebSocket(
+		prot+location.hostname+":"+location.port+"/ws/", "json"
+	);
 	connection.onopen = function() {
 		connection.send(JSON.stringify({'community':vueapp.community}));
 	}
@@ -103,7 +105,10 @@ const vueapp = new Vue({
 			this.paymentPool = {}
 			this.payments.forEach(p => {
 				if (p.price) {
-					if (this.searchTerm === "" || this.filterUsernameTable(p,{},"",this.searchTerm)) {
+					if (
+						this.searchTerm === "" ||
+						this.filterUsernameTable(p,{},"",this.searchTerm)
+					) {
 						if (!this.paymentPool[p.from_user]) {
 							this.paymentPool[p.from_user] = 0
 						}
@@ -118,7 +123,10 @@ const vueapp = new Vue({
 		},
 		getOpenPayments: function (event) {
 			lunch.then(
-				client => client.apis.Payments.getPayments({ community: this.community, states: ["NEW","FETCHED"] })
+				client => client.apis.Payments.getPayments({
+					community: this.community,
+					states: ["NEW","FETCHED"]
+				})
 			).then(
 				result => function(){
 					var p = JSON.parse(result.text).rows;
@@ -224,8 +232,14 @@ const vueapp = new Vue({
 						community: this.community, userId: userId
 					})
 				).then(
-					result => this.parseGetPaymentInstructionsResult(userId, JSON.parse(result.text)),
-					reason => this.error('Could not get payment instructions (' + reason.response.body.error + ')')
+					result => this.parseGetPaymentInstructionsResult(
+						userId,
+						JSON.parse(result.text)
+					),
+					reason => this.error(
+						'Could not get payment instructions (' +
+						reason.response.body.error + ')'
+					)
 				);
 			}
 		},
@@ -235,10 +249,12 @@ const vueapp = new Vue({
 			)
 			if (searches.length === 1) {
 				// match if either from or to matches the searchterm
-				return searches.includes(row.from_user.toLowerCase()) || searches.includes(row.to_user.toLowerCase())
+				return searches.includes(row.from_user.toLowerCase()) ||
+					searches.includes(row.to_user.toLowerCase())
 			} else {
 				// match if searches are in from && to
-				return searches.includes(row.from_user.toLowerCase()) && searches.includes(row.to_user.toLowerCase())
+				return searches.includes(row.from_user.toLowerCase()) &&
+					searches.includes(row.to_user.toLowerCase())
 			}
 		},
 		init() {

@@ -9,7 +9,9 @@ function renewconnection(){
 	} else {
 		prot = "ws://";
 	}
-	connection = new WebSocket(prot+location.hostname+":"+location.port+"/ws/", "json");
+	connection = new WebSocket(
+		prot+location.hostname+":"+location.port+"/ws/", "json"
+	);
 	connection.onopen = function() {
 		connection.send(JSON.stringify({'community':vueapp.community}));
 	}
@@ -95,7 +97,7 @@ const vueapp = new Vue({
 		setFoodSuggestions(meals){
 			var f = [];
 			var mealobj = {};
-			meals.forEach(function(m){
+			meals.forEach(m => {
 				f.push(m.meal);
 				mealobj[m.meal] = m.price;
 			});
@@ -108,16 +110,24 @@ const vueapp = new Vue({
 		updateFoodSuggestions() {
 			if (this.shopId != "") {
 				lunch.then(
-					client => client.apis.Shop.getMenu({ community: this.community, shopId: this.shopId })
+					client => client.apis.Shop.getMenu({
+						community: this.community, shopId: this.shopId
+					})
 				).then(
 					result => this.setFoodSuggestions(JSON.parse(result.text)),
-					reason => this.warning('Could not fetch the shop\'s menu. (' + reason + ')')
+					reason => this.warning(
+						'Could not fetch the shop\'s menu. (' + reason + ')'
+					)
 				);
 				lunch.then(
-					client => client.apis.Shop.getSpecialRequests({ community: this.community, shopId: this.shopId })
+					client => client.apis.Shop.getSpecialRequests({
+						community: this.community, shopId: this.shopId
+					})
 				).then(
 					result => this.setSpecialRequestOptions(JSON.parse(result.text)),
-					reason => this.warning('Could not fetch special request suggestions. (' + reason + ')')
+					reason => this.warning(
+						'Could not fetch special request suggestions. (' + reason + ')'
+					)
 				);
 			}
 		},//}}}
@@ -133,7 +143,9 @@ const vueapp = new Vue({
 				})
 			).then(
 				result => null,
-				reason => this.error('Could not delete the suggestion. (' + reason.response.body.error + ')')
+				reason => this.error(
+					'Could not delete the suggestion. (' + reason.response.body.error + ')'
+				)
 			);
 		},
 		deleteOrder: function (event) {
@@ -149,7 +161,9 @@ const vueapp = new Vue({
 				})
 			).then(
 				result => null,
-				reason => this.error('Could not delete the order. (' + reason.response.body.error + ')')
+				reason => this.error(
+					'Could not delete the order. (' + reason.response.body.error + ')'
+				)
 			);
 		},
 		announceShop: function (event) {
@@ -157,10 +171,18 @@ const vueapp = new Vue({
 				return;
 			}
 			lunch.then(
-				client => client.apis.Fetch.announceShop({}, { requestBody: { community: this.community, userId: this.userId, shopId: this.shopId } })
+				client => client.apis.Fetch.announceShop({}, {
+					requestBody: {
+						community: this.community,
+						userId: this.userId,
+						shopId: this.shopId
+					}
+				})
 			).then(
 				result => null,
-				reason => this.error('Could not send the suggestion. (' + reason.response.body.error + ')')
+				reason => this.error(
+					'Could not send the suggestion. (' + reason.response.body.error + ')'
+				)
 			);
 		},
 		clearOrderEntry: function() {
@@ -172,7 +194,13 @@ const vueapp = new Vue({
 			if (this.userId === "" || this.shopId === '' || this.meal === null) {
 				return;
 			}
-			var order = { userId: this.userId, community: this.community, shopId: this.shopId, meal: this.meal, specialRequest: this.specialRequest};
+			var order = {
+				userId: this.userId,
+				community: this.community,
+				shopId: this.shopId,
+				meal: this.meal,
+				specialRequest: this.specialRequest
+			};
 			if (this.price !== "" && typeof this.price != "undefined") {
 				order.price = this.price;
 				lunch.then(client => client.apis.Shop.setPrice(order));
@@ -180,7 +208,10 @@ const vueapp = new Vue({
 			// do updateLunch(state->new) if lunch was already ordered and discarded
 			var oldOrder;
 			this.orders.forEach(function(o){
-				if (o.user === order.userId && o.shop == order.shopId && o.meal === order.meal && o.state === 'DISCARDED') {
+				if (
+					o.user === order.userId && o.shop == order.shopId &&
+					o.meal === order.meal && o.state === 'DISCARDED'
+				) {
 					oldOrder = o;
 				}
 			});
@@ -191,7 +222,9 @@ const vueapp = new Vue({
 					})
 				).then(
 					result => this.clearOrderEntry(),
-					reason => this.error('Could not place the order. (' + reason.response.body.error + ')')
+					reason => this.error(
+						'Could not place the order. (' + reason.response.body.error + ')'
+					)
 				);
 			} else {
 				order.state = 'NEW';
@@ -201,7 +234,9 @@ const vueapp = new Vue({
 					})
 				).then(
 					result => this.clearOrderEntry(),
-					reason => this.error('Could not place the order. (' + reason.response.body.error + ')')
+					reason => this.error(
+						'Could not place the order. (' + reason.response.body.error + ')'
+					)
 				);
 			}
 		},
@@ -220,7 +255,10 @@ const vueapp = new Vue({
 		updateSuggestions(suggestions){
 			suggestions.forEach(function(s){
 				lunch.then(
-					client => client.apis.Shop.getShopData({ community: vueapp.community, shopId: s.shop })
+					client => client.apis.Shop.getShopData({
+						community: vueapp.community,
+						shopId: s.shop
+					})
 				).then(
 					result => vueapp.updateSuggestionDetails(JSON.parse(result.text))
 				);
@@ -234,10 +272,14 @@ const vueapp = new Vue({
 		fetchSuggestions() {
 
 			lunch.then(
-				client => client.apis.Fetch.getShopAnnouncements({ community: this.community })
+				client => client.apis.Fetch.getShopAnnouncements({
+					community: this.community
+				})
 			).then(
 				result => this.updateSuggestions(JSON.parse(result.text).rows),
-				reason => this.warning('Could not fetch today\'s suggestions. ('+reason+')')
+				reason => this.warning(
+					'Could not fetch today\'s suggestions. ('+reason+')'
+				)
 			);
 		},
 		//}}}
@@ -260,9 +302,15 @@ const vueapp = new Vue({
 		},
 
 		userId2LocalStorage() {
-			if ((typeof localStorage.userId == "undefined" || localStorage.userId == "") && typeof this.userId != "undefined" && this.userId != "") {
+			if (
+				(typeof localStorage.userId == "undefined" || localStorage.userId == "")
+				&& typeof this.userId != "undefined" && this.userId != ""
+			) {
 				localStorage.userId = this.userId;
-				this.info('User id (' + this.userId+ ') was stored for later usage. This can be changed in the config-tab…')
+				this.info(
+					'User id (' + this.userId + ') was stored for later usage.' +
+					' This can be changed in the config-tab…'
+				)
 			}
 		},
 		getCommunityFromHash() {
