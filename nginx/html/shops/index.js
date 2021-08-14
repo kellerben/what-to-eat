@@ -51,8 +51,9 @@ const vueapp = new Vue({
 		alertClass: '',
 		alertType: '',
 		showAlertTime: 0,
-		editshopname: '',
+		editShop: {},
 		shops: {},
+		shopsBackup: {},
 		shopAry: [],
 		shopHeader: [
 			{
@@ -111,7 +112,7 @@ const vueapp = new Vue({
 						this.searchMarker.position = position;
 						this.shopMapCenter = position;
 						this.searchMarker.tooltip = address;
-						if (this.editshopname == "") {
+						if (typeof(this.editShop.shop) == "undefined") {
 							this.searchMarker.actionText = "Update community location"
 						} else {
 							this.searchMarker.actionText = "Update shop location"
@@ -126,7 +127,7 @@ const vueapp = new Vue({
 			).then(result => result.json())
 				.then(data => {
 					this.searchMarker.tooltip = data.display_name;
-					if (this.editshopname == "") {
+					if (typeof(this.editShop.shop) == "undefined") {
 						this.searchMarker.actionText = "Update community location"
 					} else {
 						this.searchMarker.actionText = "Update shop location"
@@ -167,41 +168,45 @@ const vueapp = new Vue({
 				this.shopMapCenter = this.communityLatLng
 			}
 		},
-		editShop(e) {
-			this.editshopname = e.target.dataset.shop;
-			this.shops[this.editshopname].draggable = true;
-			var pos = this.shops[this.editshopname].position;
-			if (pos.lat && pos.lng) {
-				this.shopMapCenter = pos;
+		editShopFunc(e) {
+			this.shopsBackup = Object.assign({}, this.shops);
+			this.editShop = this.shops[e.target.dataset.shop];
+			this.editShop.draggable = true;
+			if (this.editShop.position.lat && this.editShop.position.lng) {
+				this.shopMapCenter = this.editShop.position;
 			}
+			this.shops = {}
+			this.shops[this.editShop.shop] = this.editShop;
 		},
 		cancelEdit(e) {
-			this.shops[this.editshopname].draggable = false;
-			this.editshopname = "";
+			this.shops = Object.assign({}, this.shopsBackup);
+			this.shops[this.editShop.shop].draggable = false;
+			this.editShop = {};
 		},
 		confirmEdit(e) {
 			var postBody = {};
-			if(this.shops[this.editshopname].distance != "") {
-				postBody.distance = this.shops[this.editshopname].distance
+			if(this.editShop.distance != "") {
+				postBody.distance = this.editShop.distance
 			}
-			if(this.shops[this.editshopname].phone != "") {
-				postBody.phone = this.shops[this.editshopname].phone
+			if(this.editShop.phone != "") {
+				postBody.phone = this.editShop.phone
 			}
-			if(this.shops[this.editshopname].comment != "") {
-				postBody.comment = this.shops[this.editshopname].comment
+			if(this.editShop.comment != "") {
+				postBody.comment = this.editShop.comment
 			}
-			if(this.shops[this.editshopname].lat != "") {
-				postBody.lat = this.shops[this.editshopname].position.lat
+			if(this.editShop.lat != "") {
+				postBody.lat = this.editShop.position.lat
 			}
-			if(this.shops[this.editshopname].lng != "") {
-				postBody.lng = this.shops[this.editshopname].position.lng
+			if(this.editShop.lng != "") {
+				postBody.lng = this.editShop.position.lng
 			}
-			lunch.then(
-				client => client.apis.Shop.setShopData(
-					{ community: this.community, shopId: this.editshopname },
+			lunch.then(client => {
+				client.apis.Shop.setShopData(
+					{ community: this.community, shopId: this.editShop.shop },
 					{ requestBody: postBody }
 				)
-			).then(
+				this.shops = Object.assign({}, this.shopsBackup);
+			}).then(
 				result => this.cancelEdit(),
 				reason => this.error('Could not edit the shop data.')
 			);
@@ -218,7 +223,7 @@ const vueapp = new Vue({
 				lat: this.searchMarker.position.lat,
 				lng: this.searchMarker.position.lng
 			}
-			if (this.editshopname == "") {
+			if (typeof(this.editShop.shop) == "undefined") {
 				lunch.then(
 					client => client.apis.Community.setCommunityInformation({
 						community: this.community
@@ -234,7 +239,8 @@ const vueapp = new Vue({
 					)
 				);
 			} else {
-				this.shops[this.editshopname].position = pos
+				this.shops[this.editShop.shop].position = pos
+				this.editShop.position = pos
 				this.searchMarker.position = {}
 				this.mapSearchAddress = ''
 				this.searchMarker.actionText = ''

@@ -32,7 +32,7 @@
 									{{shop.row.shop}}
 								</span>
 								<span v-else-if="shop.column.field == 'distance'">
-									<span v-if="shop.row.shop != editshopname">
+									<span v-if="shop.row.shop != editShop.shop">
 										<span v-if="typeof shop.row.distance != 'undefined' && shop.row.distance != null">
 											{{shop.row.distance}} m
 										</span>
@@ -41,7 +41,7 @@
 										<input
 											type="text"
 											class="form-control"
-											v-model="shops[editshopname].distance"
+											v-model="shops[editShop.shop].distance"
 											placeholder="number in meter"
 											/><br/>
 Lat:&nbsp;{{shop.row.position.lat}}<br/>
@@ -49,17 +49,17 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 									</span>
 								</span>
 								<span v-else-if="shop.column.field == 'phone'">
-									<span v-if="shop.row.shop != editshopname">
+									<span v-if="shop.row.shop != editShop.shop">
 										<a
 											v-if="typeof shop.row.phone != 'undefined'"
 											v-bind:href="'tel:'+encodeURI(String(shop.row.phone).replace(/[() ]/g,'-'))">{{shop.row.phone}}</a>
 									</span>
 									<span v-else>
-										<input type="text" class="form-control" v-model="shops[editshopname].phone" placeholder="Phone" />
+										<input type="text" class="form-control" v-model="shops[editShop.shop].phone" placeholder="Phone" />
 									</span>
 								</span>
 								<span v-else-if="shop.column.field == 'comment'">
-									<span v-if="shop.row.shop != editshopname">
+									<span v-if="shop.row.shop != editShop.shop">
 										<vue-markdown :anchor-attributes="anchorAttrs">{{shop.row.comment}}</vue-markdown>
 									</span>
 									<span v-else>
@@ -72,23 +72,23 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 										<textarea
 											id="shopedit"
 											class="form-control"
-											v-model="shops[editshopname].comment"
+											v-model="shops[editShop.shop].comment"
 											placeholder="Comment (with markdown support)"
 											rows='1'></textarea>
 										<b-card>
 											<vue-markdown
 												:anchor-attributes="anchorAttrs"
 												:show="true"
-												:source="shops[editshopname].comment"
+												:source="shops[editShop.shop].comment"
 												></vue-markdown>
 										</b-card>
 									</span>
 								</span>
 								<span v-else-if="shop.column.field == 'action'">
-									<span v-if="shop.row.shop != editshopname">
+									<span v-if="shop.row.shop != editShop.shop">
 										<button
 											class="btn btn-primary btn-sm"
-											v-on:click="editShop"
+											v-on:click="editShopFunc"
 											v-bind:data-shop="shop.row.shop"
 										>✍</button>
 										<!--button
