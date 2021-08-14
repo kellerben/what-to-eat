@@ -23,7 +23,7 @@
 							:columns="shopHeader"
 							:sort-options="{ initialSortBy: [ {field: 'distance'} ] }"
 							:search-options="{ enabled: true }"
-							:pagination-options="{ enabled: true, perPage: 5, perPageDropdown: [5, 10, 15, 20, 25], }"
+							:pagination-options="paginationOptions"
 							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
 							>
 							<template slot="table-row" slot-scope="shop">

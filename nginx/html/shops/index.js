@@ -84,6 +84,13 @@ const vueapp = new Vue({
 		shopMapCenter: {},
 		searchMarker: { position: {} },
 		mapSearchAddress: '',
+		paginationOptions: {
+			setCurrentPage: 2,
+			enabled: true,
+			perPage: 5,
+			perPageDropdown: [5, 10, 15, 20, 25],
+			position: 'top'
+		}
 	},
 	watch: {
 		shops: function(){
