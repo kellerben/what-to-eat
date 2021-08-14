@@ -10,7 +10,7 @@ const ws = require('../ws');
 * */
 const announceShop = ({ shopAnnouncement }) => new Promise(
 	async (resolve, reject) => {
-		var date;
+		let date;
 		if (typeof(shopAnnouncement.date) === 'undefined') {
 			date = new Date();
 		} else {
@@ -19,8 +19,8 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 		date = date.toISOString().slice(0,10);
 		Service.trimStrings(shopAnnouncement);
 
-		var inserts = [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date];
-		var stmt =
+		let inserts = [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date];
+		let stmt =
 			"INSERT INTO walks " +
 			" SET community = ?, user = ?, shop = ?, day = ?";
 
@@ -48,7 +48,7 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 	async (resolve, reject) => {
 		try {
-			var date;
+			let date;
 			if (typeof(shopAnnouncement.date) === 'undefined') {
 				date = new Date();
 			} else {
@@ -57,8 +57,8 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 			date = date.toISOString().slice(0,10);
 			Service.trimStrings(shopAnnouncement);
 
-			var stmt = "DELETE FROM walks WHERE community = ? AND user = ? AND shop = ? AND day = ?";
-			var vars = [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date];
+			let stmt = "DELETE FROM walks WHERE community = ? AND user = ? AND shop = ? AND day = ?";
+			let vars = [shopAnnouncement.community, shopAnnouncement.userId, shopAnnouncement.shopId, date];
 			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
@@ -96,9 +96,9 @@ const getShopAnnouncements = ({ community, date }) => new Promise(
 				date = new Date(date);
 			}
 			date = date.toISOString().slice(0,10);
-			var stmt =
+			let stmt =
 				"SELECT user,shop FROM walks WHERE community = ? AND day = ?";
-			var vars = [community, date];
+			let vars = [community, date];
 			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
 					console.error(err);

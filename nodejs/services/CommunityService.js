@@ -9,7 +9,7 @@ const Service = require('./Service');
 * */
 const getCommunityInformation = ({ community }) => new Promise(
 	async (resolve, reject) => {
-		var stmt = "SELECT * FROM communities WHERE community = ?";
+		let stmt = "SELECT * FROM communities WHERE community = ?";
 		try {
 			Service.mysql_connection_pool.execute(stmt, [community], function (err, rows, fields) {
 				if (err) {
@@ -42,16 +42,16 @@ const setCommunityInformation = ({ community, communityInformation }) => new Pro
 	async (resolve, reject) => {
 		try {
 			Service.trimStrings(communityInformation);
-			var stmt =
+			let stmt =
 				"UPDATE communities SET lat = ?, lng = ? WHERE community = ?";
-			var values = [communityInformation.lat, communityInformation.lng, community];
+			let values = [communityInformation.lat, communityInformation.lng, community];
 			Service.mysql_connection_pool.execute(stmt, values, function (err, rows, fields) {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while setting communityInformation'));
 				} else {
 					if (rows['affectedRows'] === 0){
-						var stmt =
+						let stmt =
 							"INSERT INTO communities" +
 							" SET lat = ?, lng = ?, community = ?";
 

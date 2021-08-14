@@ -10,16 +10,16 @@ const ws = require('../ws');
 * */
 const getOrdersOfDay = ({ community, date }) => new Promise(
 	async (resolve, reject) => {
-		var date;
+		let date;
 		if (typeof(date) === 'undefined') {
 			date = new Date();
 		} else {
 			date = new Date(date);
 		}
 		date = date.toISOString().slice(0,10);
-		var stmt =
+		let stmt =
 			"SELECT shop,user,meal,specialRequest,price,state FROM orders WHERE community = ? AND day = ? ORDER BY shop,meal,specialRequest";
-		var vars = [community, date];
+		let vars = [community, date];
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
@@ -57,9 +57,9 @@ const getShopOrders = ({ community, shopId, date }) => new Promise(
 		date = date.toISOString().slice(0,10);
 		shopId = shopId.trim();
 
-		var stmt =
+		let stmt =
 			"SELECT user,meal,price FROM orders WHERE community = ? AND shop = ? AND day = ?";
-		var vars = [community, shopId, date];
+		let vars = [community, shopId, date];
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
@@ -88,7 +88,7 @@ const getShopOrders = ({ community, shopId, date }) => new Promise(
 const orderLunch = ({ mealOrder }) => new Promise(
 	async (resolve, reject) => {
 		try {
-			var date;
+			let date;
 			if (typeof(mealOrder.date) === 'undefined') {
 				date = new Date();
 			} else {
@@ -98,7 +98,7 @@ const orderLunch = ({ mealOrder }) => new Promise(
 
 			Service.trimStrings(mealOrder);
 
-			var stmt, vars;
+			let stmt, vars;
 			if (mealOrder.specialRequest != "") {
 				stmt =
 					"INSERT INTO specialRequests" +
@@ -111,7 +111,7 @@ const orderLunch = ({ mealOrder }) => new Promise(
 			stmt =
 				"INSERT INTO orders" +
 				" SET community = ?, user = ?, shop = ?, meal = ?, specialRequest = ?, day = ?, state = 'NEW'";
-			var inserts = [mealOrder.community, mealOrder.userId, mealOrder.shopId, mealOrder.meal, mealOrder.specialRequest, date];
+			let inserts = [mealOrder.community, mealOrder.userId, mealOrder.shopId, mealOrder.meal, mealOrder.specialRequest, date];
 			if (typeof(mealOrder.price) !== 'undefined') {
 				stmt += ", price = ?";
 				inserts.push(mealOrder.price);
@@ -147,7 +147,7 @@ const orderLunch = ({ mealOrder }) => new Promise(
 const updateOrder = ({ mealOrder }) => new Promise(
 	async (resolve, reject) => {
 		try {
-			var date;
+			let date;
 			if (typeof(mealOrder.date) === 'undefined') {
 				date = new Date();
 			} else {
@@ -157,8 +157,8 @@ const updateOrder = ({ mealOrder }) => new Promise(
 
 			Service.trimStrings(mealOrder);
 
-			var stmt = "UPDATE orders SET day = ?";
-			var vars = [date];
+			let stmt = "UPDATE orders SET day = ?";
+			let vars = [date];
 			if (typeof(mealOrder.price) !== 'undefined') {
 				stmt += ",price = ?";
 				vars.push(mealOrder.price);

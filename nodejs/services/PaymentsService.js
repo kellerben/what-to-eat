@@ -12,13 +12,13 @@ const Service = require('./Service');
 * */
 const getPayments = ({ community, from, to, states }) => new Promise(
 	async (resolve, reject) => {
-		var statement =
+		let statement =
 			"SELECT orders.user AS from_user,walks.user AS to_user,price,orders.shop,orders.shop,orders.meal,orders.day,orders.state " +
 			"FROM orders,walks " +
 			"WHERE orders.community = ? AND walks.community = ? " +
 			"AND walks.day = orders.day AND walks.shop = orders.shop " +
 			"AND walks.user != orders.user ";
-		var vars = [ community, community ];
+		let vars = [ community, community ];
 		if (typeof states == "undefined") {
 			states = [];
 		}
@@ -28,7 +28,7 @@ const getPayments = ({ community, from, to, states }) => new Promise(
 			statement += ")";
 			vars = vars.concat(states);
 		}
-		var additionalQueries = [];
+		let additionalQueries = [];
 		if (typeof from !== "undefined") {
 			additionalQueries.push(" orders.user = ?");
 			vars.push(from);

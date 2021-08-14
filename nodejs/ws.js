@@ -11,7 +11,7 @@ class WebsocketServer {
 		WebsocketServer.wss.on("connection", function connection(ws, req) {
 			//handle receiving a message{{{
 			ws.on("message", function incoming(message) {
-				var m = JSON.parse(message);
+				let m = JSON.parse(message);
 				if (typeof m.community != undefined && m.community != '') {
 					if (typeof WebsocketServer.clients[m.community] == 'undefined'){
 						WebsocketServer.clients[m.community] = [];
@@ -28,7 +28,7 @@ class WebsocketServer {
 
 	static sendCommunity(community, data) {
 		if (typeof WebsocketServer.clients[community] != 'undefined') {
-			var oldclients = [];
+			let oldclients = [];
 			WebsocketServer.clients[community].forEach(function each(client) {
 				if (client.readyState === WebSocket.OPEN) {
 					client.send(data);

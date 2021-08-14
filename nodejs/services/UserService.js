@@ -11,9 +11,9 @@ const ws = require('../ws');
 * */
 const getPaymentInstructions = ({ community, userId }) => new Promise(
 	async (resolve, reject) => {
-		var stmt =
+		let stmt =
 			"SELECT paymentInstructions FROM users WHERE community = ? AND user = ?";
-		var vars = [community, userId];
+		let vars = [community, userId];
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, function (err, rows, fields) {
 				if (err) {
@@ -42,8 +42,8 @@ const getPaymentInstructions = ({ community, userId }) => new Promise(
 const setPaymentInstructions = ({ community, userId, paymentInstructions }) => new Promise(
 	async (resolve, reject) => {
 		try {
-			var inserts = [paymentInstructions.paymentInstructions, community, userId];
-			var stmt =
+			let inserts = [paymentInstructions.paymentInstructions, community, userId];
+			let stmt =
 				"INSERT INTO users" +
 				" SET paymentInstructions = ?, community = ?, user = ?";
 
