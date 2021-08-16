@@ -15,3 +15,12 @@ services:
       - 'pm2-runtime'
       - '--watch'
       - 'index.js'
+  smtp:
+    image: tecnativa/smtp-sink
+    networks:
+      - lunch
+    logging:
+      driver: "syslog"
+      options:
+        syslog-facility: local0
+        tag: "smtp"

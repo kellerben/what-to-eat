@@ -3,6 +3,8 @@ const fs = require('fs');
 const DB_PASSWD = '/run/secrets/db_user_pw';
 const db_user_passwd = fs.readFileSync(DB_PASSWD, 'UTF-8').trim();
 
+const nodemailer = require('nodemailer');
+
 class Service {
 	static rejectResponse(error, code = 500) {
 		return { error, code };
@@ -19,6 +21,15 @@ class Service {
 		"password": db_user_passwd,
 		"charset": "utf8mb4"
 	});
+
+	static mail_transporter = nodemailer.createTransport({
+		host: "smtp",
+		port: 25,
+		auth: {
+			user: "foo",
+			pass: "bar"
+		}
+	})
 
 	static trimStrings(object) {
 		for (const key in object) {

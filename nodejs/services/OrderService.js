@@ -186,6 +186,66 @@ const updateOrder = ({ mealOrder }) => new Promise(
 				vars.push(mealOrder.specialRequest);
 			}
 			if (typeof(mealOrder.state) !== 'undefined') {
+
+				if (mealOrder.state === "PAYED") {
+					// notify the user who should have
+					// received the payment
+					let s = "SELECT users.user,users.email,orders.price" +
+						" FROM users,orders" +
+						" WHERE users.community = ?" +
+						" AND orders.community = ?" +
+						" AND orders.shop = ?" +
+						" AND orders.day = ?" +
+						" AND orders.meal = ?" +
+						" AND orders.user = ?" +
+						" AND users.user = (SELECT user FROM walks " +
+						" WHERE community = ? AND shop = ? AND day = ?)"
+					let v = [
+						mealOrder.community,
+						mealOrder.community,
+						mealOrder.shopId,
+						mealOrder.date,
+						mealOrder.meal,
+						mealOrder.userId,
+						mealOrder.community,
+						mealOrder.shopId,
+						mealOrder.date
+					]
+
+					Service.mysql_connection_pool.execute(s, v, (err, rows, fields) => {
+						if (err) {
+							console.log(
+								'Error during SQL-query for sendmail of payment: ', err
+							);
+						} else {
+							if (rows[0].email) {
+								let s = `${mealOrder.userId} payed ${rows[0].price} ct` +
+									` to ${rows[0].user}`;
+								let b = `Hi ${rows[0].user}!\n\n` +
+									`The meal (${mealOrder.meal}) which you fetched on ` +
+									`${mealOrder.date} from ${mealOrder.shopId} was marked ` +
+									`payed just now…\n` +
+									`This means, you have received ${rows[0].price} ct from ` +
+									`${mealOrder.userId}.\n\n` +
+									`Cheers!`;
+								Service.mail_transporter.sendMail({
+									from: "No Reply <noreply@what.to-e.at>",
+									to: rows[0].email,
+									subject: s,
+									text: b
+								}, function (err, info){
+									if (err) {
+										console.log(
+											'Error while sending mail: ', err, info
+										);
+									}
+								});
+							}
+						}
+					});
+
+				}
+
 				stmt += ",state = ? ";
 				vars.push(mealOrder.state);
 			}
