@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS lunch.users (
 	`community` varchar(64) NOT NULL,
 	`user` varchar(64) NOT NULL,
 	`paymentInstructions` varchar(5000),
+	`email` varchar(64),
 	PRIMARY KEY (`community`,`user`)
 );
 

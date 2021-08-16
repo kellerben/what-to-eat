@@ -34,6 +34,58 @@ const getPaymentInstructions = ({ community, userId }) => new Promise(
 	},
 );
 /**
+* Set the email of the user
+*
+* community String The community string.
+* userId String The user
+* email Email
+* no response value expected for this operation
+* */
+const setEmail = ({ community, userId, email }) => new Promise(
+	async (resolve, reject) => {
+		try {
+			let inserts = [email.email, community, userId];
+			let stmt =
+				"INSERT INTO users" +
+				" (email, community, user)" +
+				" VALUES (?, ?, ?)";
+
+			Service.mysql_connection_pool.execute(stmt, inserts, (err, rows, fields) => {
+				if (err) {
+					if (err.errno == 1062) { // duplicate primary key
+						stmt =
+							"UPDATE users" +
+							" SET email = ?" +
+							" WHERE community = ? AND user = ?";
+						Service.mysql_connection_pool.execute(stmt, inserts, (err, rows, fields) => {
+							if (err) {
+								console.log('Error during update of email: ', err);
+								reject(Service.rejectResponse(
+									'Error during the insertion of the email'
+								));
+							} else {
+								resolve(Service.successResponse('success'));
+							}
+						});
+					} else {
+						console.log('Error during insertion of email: ', err);
+						reject(Service.rejectResponse(
+							'Error during the insertion of the email'
+						));
+					}
+				} else {
+					resolve(Service.successResponse('success'));
+				}
+			});
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	},
+);
+/**
 * Set the payment information of the user
 *
 * community String The community string.
@@ -97,5 +149,6 @@ const setPaymentInstructions = ({
 
 module.exports = {
 	getPaymentInstructions,
+	setEmail,
 	setPaymentInstructions,
 };

@@ -467,6 +467,37 @@ paths:
         405:
           description: Invalid input
           content: {}
+  /{community}/{userId}/email:
+    put:
+      tags:
+      - User
+      summary: Set the email of the user
+      operationId: setEmail
+      parameters:
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
+            type: string
+            maxLength: 64
+        - name: userId
+          in: path
+          required: true
+          description: The user
+          schema:
+            type: string
+            maxLength: 64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/email'
+      responses:
+        405:
+          description: Invalid input
+          content: {}
   /{community}:
     get:
       tags:
@@ -610,6 +641,14 @@ components:
           type: string
           maxLength: 5000
           description: The information, how money can be payed
+    email:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 500
+          description: The e-mail of the user
     communityInformation:
       type: object
       properties:

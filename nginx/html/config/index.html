@@ -25,6 +25,9 @@
 						Please enter your name (optional):
 						<b-form-input type="text" class="form-control" v-on:change="changeUserId" v-model.trim="userId" placeholder="Peter Pan"></b-form-input>
 
+						Please enter an e-mail address (optional):
+						<b-form-input type="email" class="form-control" v-on:change="setUserEmail" v-model.trim="email" placeholder="peter.pan@example.org"></b-form-input>
+
 						Please enter instructions, how others can make payments (optional):
 						<b-tooltip target="paymentInstructionsTextArea" triggers="hover">
 							<dl>

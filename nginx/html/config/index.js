@@ -8,6 +8,7 @@ new Vue({
 		alertType: '',
 		showAlertTime: 0,
 		userId: localStorage.userId,
+		email: '',
 		paymentInstructions: '',
 		paymentInstructionsSample: '',
 		anchorAttrs: {
@@ -53,6 +54,20 @@ new Vue({
 		changeCommunity(event) {
 			localStorage.community = this.community;
 			document.location.hash = "in=" + this.community;
+		},
+		setUserEmail(event) {
+			lunch.then(
+				client => client.apis.User.setEmail({
+					community: this.community, userId: this.userId
+				}, {
+					requestBody: { email: this.email }
+				}).then(
+					result => {},
+					reason => this.error(
+						'Could not set email (' + reason.response.body.message + ')'
+					)
+				)
+			);
 		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
