@@ -4,5 +4,4 @@ if [ -L "$0" ]; then
 else
 	F="$0"
 fi
-P=$(realpath --relative-to="$PWD" "$(dirname "$F")/../etc")
-docker run -e LANG=C.UTF-8 -ti --rm --network=lunch mariadb mysql -u root -p"$(cat "$P"/db_root_pw)" -h mariadb lunch
+docker run -e LANG=C.UTF-8 -ti --rm --network=lunch mariadb mysql -u root -p"$(cat /etc/db_root_pw)" -h mariadb lunch

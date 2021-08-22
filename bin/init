@@ -16,7 +16,9 @@ apt-get install -y docker.io docker-compose
 systemctl start docker
 systemctl enable docker
 
-PWDIR=$(dirname "$0")/../etc
+PWDIR=/etc/what-to-eat/
+mkdir -p "$PWDIR"
+
 for PWFILE in db_user_pw db_root_pw; do
 	if [ ! -f "$PWDIR/$PWFILE" ]; then
 		openssl rand -base64 -out "$PWDIR/$PWFILE" 24

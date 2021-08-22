@@ -104,6 +104,6 @@ networks:
 
 secrets:
     db_user_pw:
-        file: etc/db_user_pw
+        file: /etc/what-to-eat/db_user_pw
     db_root_pw:
-        file: etc/db_root_pw
+        file: /etc/what-to-eat/db_root_pw
