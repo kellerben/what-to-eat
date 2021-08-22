@@ -4,4 +4,4 @@ if [ -L "$0" ]; then
 else
 	F="$0"
 fi
-docker run -e LANG=C.UTF-8 -ti --rm --network=lunch mariadb mysql -u root -p"$(cat /etc/db_root_pw)" -h mariadb lunch
+docker run -e LANG=C.UTF-8 -ti --rm --network=lunch mariadb mysql -u root -p"$(cat /etc/what-to-eat/db_root_pw)" -h mariadb lunch

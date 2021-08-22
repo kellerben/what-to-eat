@@ -19,8 +19,8 @@ systemctl enable docker
 PWDIR=/etc/what-to-eat/
 mkdir -p "$PWDIR"
 
-cp etc/smtprc.json "$PWDIR"
-chmod go-rwx "$PWDIR/smtprc.json"
+cp etc/smtprc.yaml "$PWDIR"
+chmod go-rwx "$PWDIR/smtprc.yaml"
 
 for PWFILE in db_user_pw db_root_pw; do
 	if [ ! -f "$PWDIR/$PWFILE" ]; then
