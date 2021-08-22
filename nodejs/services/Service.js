@@ -5,8 +5,9 @@ const db_user_passwd = fs.readFileSync(DB_PASSWD, 'UTF-8').trim();
 
 const nodemailer = require('nodemailer');
 const nodemailerCramMd5 = require('nodemailer-cram-md5');
-const smtp_config = JSON.parse(
-	fs.readFileSync('/run/secrets/smtprc.json', 'UTF-8')
+const jsYaml = require('js-yaml');
+const smtp_config = jsYaml.safeLoad(
+	fs.readFileSync('/run/secrets/smtprc.yaml', 'UTF-8')
 );
 smtp_config.transport.customAuth = {
 	"CRAM-MD5": nodemailerCramMd5

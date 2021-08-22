@@ -50,7 +50,7 @@ services:
             - lunch
         secrets:
             - db_user_pw
-            - smtprc.json
+            - smtprc.yaml
         depends_on:
             - mariadb
         deploy:
@@ -108,6 +108,6 @@ secrets:
         file: /etc/what-to-eat/db_user_pw
     db_root_pw:
         file: /etc/what-to-eat/db_root_pw
-    smtprc.json:
-        file: /etc/what-to-eat/smtprc.json
+    smtprc.yaml:
+        file: /etc/what-to-eat/smtprc.yaml
         name: smtp
