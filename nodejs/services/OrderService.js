@@ -228,18 +228,14 @@ const updateOrder = ({ mealOrder }) => new Promise(
 									`This means, you have received ${rows[0].price} ct from ` +
 									`${mealOrder.userId}.\n\n` +
 									`Cheers!`;
-								Service.mail_transporter.sendMail({
-									from: "No Reply <noreply@what.to-e.at>",
-									to: rows[0].email,
-									subject: s,
-									text: b
-								}, function (err, info){
-									if (err) {
-										console.log(
-											'Error while sending mail: ', err, info
-										);
-									}
-								});
+								Service.sendMail(rows[0].email, s, b,
+									function (err, info){
+										if (err) {
+											console.log(
+												'Error while sending mail: ', err, info
+											);
+										}
+									});
 							}
 						}
 					});

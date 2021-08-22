@@ -19,6 +19,9 @@ systemctl enable docker
 PWDIR=/etc/what-to-eat/
 mkdir -p "$PWDIR"
 
+cp etc/smtprc.json "$PWDIR"
+chmod go-rwx "$PWDIR/smtprc.json"
+
 for PWFILE in db_user_pw db_root_pw; do
 	if [ ! -f "$PWDIR/$PWFILE" ]; then
 		openssl rand -base64 -out "$PWDIR/$PWFILE" 24
