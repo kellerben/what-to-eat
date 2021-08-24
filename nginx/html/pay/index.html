@@ -37,18 +37,32 @@
 										v-bind:data-meal="payment.row.meal"
 										v-bind:data-day="payment.row.day"
 									>🍕</button-->
+									<b-tooltip
+										:target="'payAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal"
+										triggers="focus">
+											Did {{payment.row.from_user}} gave {{payment.row.price}} ct to {{payment.row.to_user}}?
+										<b-button
+											v-on:click="setOrderPayed"
+											class="btn btn-primary btn-sm"
+											variant="success"
+											v-bind:data-user="payment.row.from_user"
+											v-bind:data-shop="payment.row.shop"
+											v-bind:data-meal="payment.row.meal"
+											v-bind:data-day="payment.row.day">Yes</b-button>
+										<b-button
+											variant="danger"
+											class="btn btn-primary btn-sm"
+											v-on:click="vueapp.$root.$emit('bv::hide::tooltip','payAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal)"
+											>No</b-button>
+									</b-tooltip>
 									<button
+										:id="'payAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal"
 										class="btn btn-primary btn-sm"
-										title="The order was payed!"
-										v-on:click="setOrderPayed"
-										v-bind:data-user="payment.row.from_user"
-										v-bind:data-shop="payment.row.shop"
-										v-bind:data-meal="payment.row.meal"
-										v-bind:data-day="payment.row.day"
+										title="Set payment…"
 									>€</button>
 									<span v-if="paymentInstructions[payment.row.to_user]">
 										<b-tooltip
-											:target="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.mail+payment.row.day+payment.row.meal"
+											:target="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal"
 											triggers="focus">
 									<vue-markdown
 										:show="true"
@@ -57,7 +71,7 @@
 										></vue-markdown>
 									</b-tooltip>
 									<button
-										:id="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.mail+payment.row.day+payment.row.meal"
+										:id="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal"
 										class="btn btn-primary btn-sm"
 										title="Get Payment Instructions…"
 									>ℹ</button>
