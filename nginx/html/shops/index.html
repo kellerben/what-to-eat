@@ -166,6 +166,14 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 						:draggable="shop.draggable"
 						:lat-lng.sync="shop.position"
 						>
+						<l-popup>
+							<h1>{{shop.shop}}</h1>
+							<vue-markdown
+								:anchor-attributes="anchorAttrs"
+								:show="true"
+								:source="shop.comment"
+								></vue-markdown>
+						</l-popup>
 						<l-popup
 							v-if="shop.draggable"
 							>
