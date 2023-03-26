@@ -185,20 +185,6 @@ const vueapp = new Vue({
 				})
 			)
 		},
-		updatePrice: function (event) {
-			var elem = this.prices[event.target.dataset["id"]];
-			if (elem.price === "") {
-				return;
-			}
-			lunch.then(
-				client => client.apis.Shop.setPrice({
-					community: this.community,
-					shopId: elem.shop,
-					meal: elem.meal,
-					price: elem.price
-				})
-			)
-		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
 			if (u.has("in")) {

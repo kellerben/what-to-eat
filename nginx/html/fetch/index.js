@@ -23,6 +23,9 @@ function incommingMessage(e) {
 		case "refreshOrders":
 			fetchTodaysOrders();
 			break;
+		case "refreshPrices":
+			fetchTodaysOrders();
+			break;
 	}
 }
 renewconnection();
@@ -36,6 +39,7 @@ const vueapp = new Vue({
 		specialRequest: '',
 		community: localStorage.community,
 		orders: [],
+		prices: [],
 		header: [
 			{
 				label: 'Name',
@@ -108,6 +112,20 @@ const vueapp = new Vue({
 				localStorage.community = this.community;
 			}
 		},
+		updatePrice(event) {
+			var elem = this.prices[event.target.dataset["id"]];
+			if (elem.price === "") {
+				return;
+			}
+			lunch.then(
+				client => client.apis.Shop.setPrice({
+					community: this.community,
+					shopId: elem.shop,
+					meal: elem.meal,
+					price: elem.price
+				})
+			)
+		},
 		init() {
 			this.getCommunityFromHash();
 			if (typeof(this.community) == "undefined" || this.community == "") {
@@ -132,8 +150,10 @@ const vueapp = new Vue({
 function fetchTodaysOrders() {
 	function updateOrders(orders){
 		var o = {};
+		vueapp.prices = [];
 		orders.forEach(elem => {
 			if (elem.state != 'DISCARDED') {
+				vueapp.prices.push(elem);
 				if (typeof(o[elem.shop]) == 'undefined') {
 					o[elem.shop] = {
 						totalPrice: elem.price,
