@@ -296,6 +296,11 @@ function updateShops() {
 					position: {}
 				};
 			} else {
+				Object.keys(details).forEach(function(elem){
+					if(details[elem] === null) {
+						details[elem] = ""
+					}
+				});
 				var pos = { lat: details.lat, lng: details.lng };
 				details.position = pos;
 				vueapp.shops[shop] = details;
