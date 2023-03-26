@@ -1,8 +1,8 @@
-from: No Reply <what@to-e.at>
+from: Na Reply <what@to-e.at>
 transport:
-	host: smtp
-	port: 25
-	secure: false
-	auth:
-		user: someuser
-		pass: supersecret
+  host: smtp
+  port: 25
+  secure: false
+  auth:
+    user: someuser
+    pass: supersecret
