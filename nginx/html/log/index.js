@@ -43,7 +43,7 @@ const vueapp = new Vue({
 				field: 'state',
 				hidden: true,
 				sortFn: (x,y) => {
-					var sortary = ['NEW', 'FETCHED', 'PAYED', 'DISCARDED'];
+					var sortary = ['NEW', 'FETCHED', 'PAID', 'DISCARDED'];
 					var a = sortary.indexOf(x);
 					var b = sortary.indexOf(y);
 					return (a < b ? -1 : (a > b ? 1 : 0));
@@ -95,8 +95,8 @@ const vueapp = new Vue({
 				'FETCHED': {
 					label: 'Fetched but unpaid orders',
 				},
-				'PAYED': {
-					label: 'Payed orders',
+				'PAID': {
+					label: 'Paid orders',
 				},
 				'DISCARDED': {
 					label: 'Discarded orders',
@@ -112,7 +112,7 @@ const vueapp = new Vue({
 				o[elem.state].children.push(elem);
 			});
 			var p = [];
-			['NEW','FETCHED','PAYED','DISCARDED'].forEach(key => {
+			['NEW','FETCHED','PAID','DISCARDED'].forEach(key => {
 				if (o[key].children.length != 0) {
 					p.push(o[key]);
 				}
@@ -142,7 +142,7 @@ const vueapp = new Vue({
 				})
 			)
 		},
-		setOrderPayed: function(event) {
+		setOrderPaid: function(event) {
 			lunch.then(
 				client => client.apis.Order.updateOrder({ }, {
 					requestBody: {
@@ -151,7 +151,7 @@ const vueapp = new Vue({
 						userId: event.target.dataset["user"],
 						meal: event.target.dataset["meal"],
 						date: event.target.dataset["day"],
-						state: 'PAYED'
+						state: 'PAID'
 					}
 				})
 			)

@@ -400,7 +400,7 @@ paths:
           items:
             type: string
             maxLength: 16
-            pattern: '^(NEW|FETCHED|PAYED|DISCARDED)$'
+            pattern: '^(NEW|FETCHED|PAID|DISCARDED)$'
       tags:
       - Payments
       summary: Get open or closed payments
@@ -575,9 +575,9 @@ components:
           description: Any specialties?
         state:
           type: string
-          pattern: '^(NEW|FETCHED|PAYED|DISCARDED)$'
+          pattern: '^(NEW|FETCHED|PAID|DISCARDED)$'
           maxLength: 16
-          description: In which state is the Order? (NEW, FETCHED, PAYED, DISCARDED)
+          description: In which state is the Order? (NEW, FETCHED, PAID, DISCARDED)
       required:
         - community
         - shopId
@@ -640,7 +640,7 @@ components:
         paymentInstructions:
           type: string
           maxLength: 5000
-          description: The information, how money can be payed
+          description: The information, how money can be paid
     email:
       type: object
       properties:

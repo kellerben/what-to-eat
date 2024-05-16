@@ -42,7 +42,7 @@
 										triggers="focus">
 											Did {{payment.row.from_user}} gave {{payment.row.price}} ct to {{payment.row.to_user}}?
 										<b-button
-											v-on:click="setOrderPayed"
+											v-on:click="setOrderPaid"
 											class="btn btn-primary btn-sm"
 											variant="success"
 											v-bind:data-user="payment.row.from_user"

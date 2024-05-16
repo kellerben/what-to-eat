@@ -187,7 +187,7 @@ const updateOrder = ({ mealOrder }) => new Promise(
 			}
 			if (typeof(mealOrder.state) !== 'undefined') {
 
-				if (mealOrder.state === "PAYED") {
+				if (mealOrder.state === "PAID") {
 					// notify the user who should have
 					// received the payment
 					let s = "SELECT users.user,users.email,orders.price" +
@@ -219,12 +219,12 @@ const updateOrder = ({ mealOrder }) => new Promise(
 							);
 						} else {
 							if (rows[0].email) {
-								let s = `${mealOrder.userId} payed ${rows[0].price} ct` +
+								let s = `${mealOrder.userId} paid ${rows[0].price} ct` +
 									` to ${rows[0].user}`;
 								let b = `Hi ${rows[0].user}!\n\n` +
 									`The meal (${mealOrder.meal}) which you fetched on ` +
 									`${mealOrder.date} from ${mealOrder.shopId} was marked ` +
-									`payed just now…\n` +
+									`paid just now…\n` +
 									`This means, you have received ${rows[0].price} ct from ` +
 									`${mealOrder.userId}.\n\n` +
 									`Cheers!`;

@@ -171,7 +171,7 @@ const vueapp = new Vue({
 				})
 			)
 		},
-		setOrderPayed: function (event) {
+		setOrderPaid: function (event) {
 			lunch.then(
 				client => client.apis.Order.updateOrder({ }, {
 					requestBody: {
@@ -180,7 +180,7 @@ const vueapp = new Vue({
 						userId: event.target.dataset["user"],
 						meal: event.target.dataset["meal"],
 						date: event.target.dataset["day"],
-						state: 'PAYED'
+						state: 'PAID'
 					}
 				})
 			)
