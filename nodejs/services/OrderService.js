@@ -110,7 +110,12 @@ const orderLunch = ({ mealOrder }) => new Promise(
 				vars = [
 					mealOrder.community, mealOrder.shopId, mealOrder.specialRequest
 				];
-				Service.mysql_connection_pool.execute(stmt, vars);
+				Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
+					if (err && err.errno != 1062) { // 1062 := duplicate primary key, nothing to do
+						console.log('Error during insertion of order: ', err);
+						reject(Service.rejectResponse('Error during insertion of order'));
+					}
+				});
 			}
 
 			stmt =
