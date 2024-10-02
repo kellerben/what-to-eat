@@ -223,7 +223,7 @@ const updateOrder = ({ mealOrder }) => new Promise(
 								'Error during SQL-query for sendmail of payment: ', err
 							);
 						} else {
-							if (rows[0].email) {
+							if (rows[0] && rows[0].email) {
 								let s = `${mealOrder.userId} paid ${rows[0].price} ct` +
 									` to ${rows[0].user}`;
 								let b = `Hi ${rows[0].user}!\n\n` +
