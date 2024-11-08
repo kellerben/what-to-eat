@@ -39,7 +39,7 @@ const vueapp = new Vue({
 		specialRequest: '',
 		community: localStorage.community,
 		orders: [],
-		prices: [],
+		prices: {},
 		header: [
 			{
 				label: 'Name',
@@ -112,8 +112,7 @@ const vueapp = new Vue({
 				localStorage.community = this.community;
 			}
 		},
-		updatePrice(event) {
-			var elem = this.prices[event.target.dataset["id"]];
+		updatePrice(elem) {
 			if (elem.price === "") {
 				return;
 			}
@@ -150,10 +149,12 @@ const vueapp = new Vue({
 function fetchTodaysOrders() {
 	function updateOrders(orders){
 		var o = {};
-		vueapp.prices = [];
+		vueapp.prices = {};
 		orders.forEach(elem => {
 			if (elem.state != 'DISCARDED') {
-				vueapp.prices.push(elem);
+				vueapp.prices[`${elem.shop}-${elem.meal}`] = {
+					shop: elem.shop, meal: elem.meal, price: elem.price
+				};
 				if (typeof(o[elem.shop]) == 'undefined') {
 					o[elem.shop] = {
 						totalPrice: elem.price,

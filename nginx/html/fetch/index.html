@@ -45,7 +45,7 @@
 								<input type="number" class="form-control" v-model="p.price" placeholder="Price in Cent" />
 							</td>
 							<td>
-								<button class="btn btn-primary btn-sm" v-bind:data-id="prices.indexOf(p)" v-on:click="updatePrice">update</button>
+								<button class="btn btn-primary btn-sm" v-on:click="updatePrice(p)">update</button>
 							</td>
 						</tr>
 					</tbody>
