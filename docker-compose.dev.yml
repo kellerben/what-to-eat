@@ -18,7 +18,7 @@ services:
   smtp:
     image: tecnativa/smtp-sink
     networks:
-      - lunch
+      - what-to-eat
     logging:
       driver: "syslog"
       options:

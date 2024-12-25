@@ -1,15 +1,13 @@
 #!/bin/sh
 # usage: update [dev]
 
-./generate-api "$@"
-
-docker-compose build
-docker-compose push
 
 if [ "$1" = "dev" ];then
+	./generate-api "$@"
+	docker-compose build
 	ADDOPTS="-c docker-compose.dev.yml"
 fi
-docker stack deploy -c docker-compose.yml $ADDOPTS --prune lunch
+docker stack deploy -c docker-compose.yml $ADDOPTS --prune what-to-eat --detach
 
 if [ "$1" = "dev" ];then
 	docker system prune -f

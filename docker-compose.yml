@@ -5,7 +5,7 @@ services:
         image: mariadb:10.8.2
         command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
         networks:
-            - lunch
+            - what-to-eat
         volumes:
             - type: volume
               source: dbdata
@@ -40,14 +40,14 @@ services:
             driver: "syslog"
             options:
                 syslog-facility: local0
-                tag: "db"
+                tag: "wte-db"
 
     nodejs:
-        image: 127.0.0.1:5000/lunch_nodejs
+        image: kellerben/what-to-eat-api
         build:
             context: nodejs
         networks:
-            - lunch
+            - what-to-eat
         secrets:
             - db_user_pw
             - smtprc.yaml
@@ -68,14 +68,14 @@ services:
             driver: "syslog"
             options:
                 syslog-facility: local0
-                tag: "nodejs"
+                tag: "wte-api"
 
     nginx:
-        image: 127.0.0.1:5000/lunch_nginx
+        image: kellerben/what-to-eat-static
         build:
             context: nginx
         networks:
-            - lunch
+            - what-to-eat
         ports:
             - 80:80
             - 443:443
@@ -94,13 +94,13 @@ services:
             driver: "syslog"
             options:
                 syslog-facility: local0
-                tag: "nginx"
+                tag: "wte-static"
 
 volumes:
     dbdata:
 
 networks:
-    lunch:
+    what-to-eat:
         external: true
 
 secrets:
