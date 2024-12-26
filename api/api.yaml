@@ -1,3 +1,4 @@
+---
 openapi: 3.0.1
 info:
   title: Lunch
@@ -7,12 +8,12 @@ info:
     url: https://www.gnu.org/licenses/agpl-3.0.html
   version: 1.0.0
 servers:
-- url: /api
+  - url: /api
 paths:
   /order:
     post:
       tags:
-      - Order
+        - Order
       summary: Order lunch
       operationId: orderLunch
       requestBody:
@@ -30,7 +31,7 @@ paths:
           content: {}
     put:
       tags:
-      - Order
+        - Order
       summary: Change price, special request or state of an order
       operationId: updateOrder
       requestBody:
@@ -52,7 +53,7 @@ paths:
   /fetchFood:
     post:
       tags:
-      - Fetch
+        - Fetch
       summary: I will walk to the shop
       operationId: announceShop
       requestBody:
@@ -70,7 +71,7 @@ paths:
           content: {}
     delete:
       tags:
-      - Fetch
+        - Fetch
       summary: I will not walk to the shop
       operationId: deleteShopAnnouncement
       requestBody:
@@ -85,23 +86,23 @@ paths:
           content: {}
     get:
       tags:
-      - Fetch
+        - Fetch
       summary: Get all shop announcements
       operationId: getShopAnnouncements
       parameters:
-      - name: community
-        in: query
-        description: The community string
-        required: true
-        schema:
-          type: string
-          maxLength: 64
-      - name: date
-        in: query
-        description: For which day do you want to get the shop announcements?
-        schema:
-          type: string
-          format: date
+        - name: community
+          in: query
+          description: The community string
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+        - name: date
+          in: query
+          description: For which day do you want to get the shop announcements?
+          schema:
+            type: string
+            format: date
       responses:
         404:
           description: No Announcements done yet
@@ -112,23 +113,23 @@ paths:
   /{community}/getOrdersOfDay:
     get:
       tags:
-      - Order
+        - Order
       summary: Get all orders of one day
       operationId: getOrdersOfDay
       parameters:
-      - name: community
-        in: path
-        description: The community string
-        required: true
-        schema:
-          type: string
-          maxLength: 64
-      - name: date
-        in: query
-        description: For which day do you want to get the orders?
-        schema:
-          type: string
-          format: date
+        - name: community
+          in: path
+          description: The community string
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+        - name: date
+          in: query
+          description: For which day do you want to get the orders?
+          schema:
+            type: string
+            format: date
       responses:
         404:
           description: Nothing ordered yet
@@ -139,30 +140,30 @@ paths:
   /{community}/{shopId}/getShopOrders:
     get:
       tags:
-      - Order
+        - Order
       summary: Get all orders of one shop
       operationId: getShopOrders
       parameters:
-      - name: community
-        in: path
-        description: The community string
-        required: true
-        schema:
-          type: string
-          maxLength: 64
-      - name: shopId
-        in: path
-        description: Which shop orders do you want to have?
-        required: true
-        schema:
-          type: string
-          maxLength: 64
-      - name: date
-        in: query
-        description: For which day do you want to get the orders?
-        schema:
-          type: string
-          format: date
+        - name: community
+          in: path
+          description: The community string
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+        - name: shopId
+          in: path
+          description: Which shop orders do you want to have?
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+        - name: date
+          in: query
+          description: For which day do you want to get the orders?
+          schema:
+            type: string
+            format: date
       responses:
         404:
           description: Nothing ordered yet
@@ -173,17 +174,17 @@ paths:
   /{community}/allShops:
     get:
       tags:
-      - Shop
+        - Shop
       summary: Get all known shops
       operationId: getShops
       parameters:
-      - name: community
-        in: path
-        description: The community string
-        required: true
-        schema:
-          type: string
-          maxLength: 64
+        - name: community
+          in: path
+          description: The community string
+          required: true
+          schema:
+            type: string
+            maxLength: 64
       responses:
         405:
           description: Validation exception
@@ -191,24 +192,24 @@ paths:
   /{community}/{shopId}/menu:
     get:
       tags:
-      - Shop
+        - Shop
       summary: Get the shop's menu
       operationId: getMenu
       parameters:
-      - name: community
-        in: path
-        description: The community string
-        required: true
-        schema:
-          type: string
-          maxLength: 64
-      - name: shopId
-        in: path
-        description: The menu of which shop do you want to have?
-        required: true
-        schema:
-          type: string
-          maxLength: 64
+        - name: community
+          in: path
+          description: The community string
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+        - name: shopId
+          in: path
+          description: The menu of which shop do you want to have?
+          required: true
+          schema:
+            type: string
+            maxLength: 64
       responses:
         405:
           description: Validation exception
@@ -216,24 +217,24 @@ paths:
   /{community}/{shopId}/specialRequests:
     get:
       tags:
-      - Shop
+        - Shop
       summary: Get typical special requests of the shop
       operationId: getSpecialRequests
       parameters:
-      - name: community
-        in: path
-        required: true
-        description: The community string.
-        schema:
-          type: string
-          maxLength: 64
-      - name: shopId
-        in: path
-        description: The typical special requests of which shop do you want to have?
-        required: true
-        schema:
-          type: string
-          maxLength: 64
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
+            type: string
+            maxLength: 64
+        - name: shopId
+          in: path
+          description: The typical special requests of which shop do you want to have?
+          required: true
+          schema:
+            type: string
+            maxLength: 64
       responses:
         405:
           description: Validation exception
@@ -241,31 +242,31 @@ paths:
   /{community}/{shopId}/{meal}/price:
     get:
       tags:
-      - Shop
+        - Shop
       summary: Get price of a meal
       operationId: getPrice
       parameters:
-      - name: community
-        in: path
-        required: true
-        description: The community string.
-        schema:
-          type: string
-          maxLength: 64
-      - name: shopId
-        in: path
-        description: Which shop offers the meal?
-        required: true
-        schema:
-          type: string
-          maxLength: 64
-      - name: meal
-        in: path
-        description: Which meal-price do you want to have?
-        required: true
-        schema:
-          type: string
-          maxLength: 64
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
+            type: string
+            maxLength: 64
+        - name: shopId
+          in: path
+          description: Which shop offers the meal?
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+        - name: meal
+          in: path
+          description: Which meal-price do you want to have?
+          required: true
+          schema:
+            type: string
+            maxLength: 64
       responses:
         404:
           description: Price not found
@@ -276,38 +277,38 @@ paths:
   /{community}/{shopId}/{meal}/{price}/price:
     post:
       tags:
-      - Shop
+        - Shop
       summary: Set price of a meal
       operationId: setPrice
       parameters:
-      - name: community
-        in: path
-        required: true
-        description: The community string.
-        schema:
-          type: string
-          maxLength: 64
-      - name: meal
-        in: path
-        description: Which meal-price do you want to set?
-        required: true
-        schema:
-          type: string
-          maxLength: 64
-      - name: shopId
-        in: path
-        description: Which shop offers the meal?
-        required: true
-        schema:
-          type: string
-          maxLength: 64
-      - name: price
-        in: path
-        description: The price of the meal
-        required: true
-        schema:
-          type: number
-          format: int32
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
+            type: string
+            maxLength: 64
+        - name: meal
+          in: path
+          description: Which meal-price do you want to set?
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+        - name: shopId
+          in: path
+          description: Which shop offers the meal?
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+        - name: price
+          in: path
+          description: The price of the meal
+          required: true
+          schema:
+            type: number
+            format: int32
       responses:
         405:
           description: Validation exception
@@ -315,48 +316,48 @@ paths:
   /{community}/{shopId}/details:
     get:
       tags:
-      - Shop
+        - Shop
       summary: Get the shop's metadata
       operationId: getShopData
       parameters:
-      - name: community
-        in: path
-        required: true
-        description: The community string.
-        schema:
-          type: string
-          maxLength: 64
-      - name: shopId
-        in: path
-        description: The Metadata of which shop do you want to have?
-        required: true
-        schema:
-          type: string
-          maxLength: 64
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
+            type: string
+            maxLength: 64
+        - name: shopId
+          in: path
+          description: The Metadata of which shop do you want to have?
+          required: true
+          schema:
+            type: string
+            maxLength: 64
       responses:
         405:
           description: Validation exception
           content: {}
     post:
       tags:
-      - Shop
+        - Shop
       summary: Set the shop's metadata
       operationId: setShopData
       parameters:
-      - name: community
-        in: path
-        required: true
-        description: The community string.
-        schema:
-          type: string
-          maxLength: 64
-      - name: shopId
-        in: path
-        description: The Metadata of the shop you want to set
-        required: true
-        schema:
-          type: string
-          maxLength: 64
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
+            type: string
+            maxLength: 64
+        - name: shopId
+          in: path
+          description: The Metadata of the shop you want to set
+          required: true
+          schema:
+            type: string
+            maxLength: 64
       requestBody:
         required: true
         content:
@@ -370,39 +371,39 @@ paths:
   /{community}/getPayments:
     get:
       parameters:
-      - name: community
-        in: path
-        required: true
-        description: The community string.
-        schema:
-          type: string
-          maxLength: 64
-      - name: from
-        in: query
-        required: false
-        description: Payment sender
-        schema:
-          type: string
-          maxLength: 64
-      - name: to
-        in: query
-        required: false
-        description: Payment receiver
-        schema:
-          type: string
-          maxLength: 64
-      - name: states
-        in: query
-        required: false
-        description: Show only payments of these states
-        schema:
-          type: array
-          items:
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
             type: string
-            maxLength: 16
-            pattern: '^(NEW|FETCHED|PAID|DISCARDED)$'
+            maxLength: 64
+        - name: from
+          in: query
+          required: false
+          description: Payment sender
+          schema:
+            type: string
+            maxLength: 64
+        - name: to
+          in: query
+          required: false
+          description: Payment receiver
+          schema:
+            type: string
+            maxLength: 64
+        - name: states
+          in: query
+          required: false
+          description: Show only payments of these states
+          schema:
+            type: array
+            items:
+              type: string
+              maxLength: 16
+              pattern: '^(NEW|FETCHED|PAID|DISCARDED)$'
       tags:
-      - Payments
+        - Payments
       summary: Get open or closed payments
       operationId: getPayments
       responses:
@@ -412,7 +413,7 @@ paths:
   /{community}/{userId}/paymentInstructions:
     get:
       tags:
-      - User
+        - User
       summary: Get the payment information of a user
       operationId: getPaymentInstructions
       parameters:
@@ -436,7 +437,7 @@ paths:
           content: {}
     post:
       tags:
-      - User
+        - User
       summary: Set the payment information of the user
       operationId: setPaymentInstructions
       parameters:
@@ -470,7 +471,7 @@ paths:
   /{community}/{userId}/email:
     put:
       tags:
-      - User
+        - User
       summary: Set the email of the user
       operationId: setEmail
       parameters:
@@ -501,7 +502,7 @@ paths:
   /{community}:
     get:
       tags:
-      - Community
+        - Community
       summary: Get the community information
       operationId: getCommunityInformation
       parameters:
@@ -518,7 +519,7 @@ paths:
           content: {}
     post:
       tags:
-      - Community
+        - Community
       summary: Set the community information
       operationId: setCommunityInformation
       parameters:
