@@ -274,7 +274,7 @@ paths:
         405:
           description: Validation exception
           content: {}
-  /{community}/{shopId}/{meal}:
+  /{community}/{shopId}/{meal}/:
     delete:
       tags:
         - Shop
