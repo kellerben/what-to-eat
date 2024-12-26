@@ -1,18 +1,27 @@
 #!/bin/sh
 
-apt-get -y update
-
+apt-get install -y rsyslog
 mkdir /var/log/docker
 chown syslog:adm /var/log/docker
 ln -fs -t /etc/rsyslog.d "$(pwd)/etc/rsyslog.d/99-docker.conf"
-ln -fs -t /etc/logrotate.d/ "$(pwd)/etc/logrotate.d/docker.conf"
-ln -fs -t /etc/logrotate.d/ "$(pwd)/etc/logrotate.d/backup.conf"
 service rsyslog restart
+ln -fs -t /etc/logrotate.d/ "$(pwd)/etc/logrotate.d/docker.conf"
+
+
+ln -fs -t /etc/logrotate.d/ "$(pwd)/etc/logrotate.d/backup.conf"
 ln -fs -t /etc/cron.daily/ "$(pwd)/etc/cron.daily/backup"
 ln -fs -t /etc/cron.daily/ "$(pwd)/etc/cron.daily/cleanup"
 
+mkdir -p /etc/apt/keyrings/
+curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
 
-apt-get install -y docker.io docker-compose
+. /etc/os-release
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $VERSION_CODENAME stable" | \
+	tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+apt-get -y update
+apt-get install -y docker-ce
 systemctl start docker
 systemctl enable docker
 

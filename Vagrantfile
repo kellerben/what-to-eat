@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
 	config.vm.define "lunch"
 	config.vm.hostname = "lunch"
-	config.vm.box = "bento/debian-10"
+	config.vm.box = "bento/debian-12"
 	ENV['LC_ALL']="en_US.UTF-8"
 
 	config.vm.network "forwarded_port", guest: 80, host_ip: "127.0.0.1", host: 8080
@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
 
 	# dev only
 	config.vm.provision "shell", inline: <<~SHELL
-		apt-get install -y ntp
+		apt-get install -y ntp make
 
 		adduser vagrant docker
 
@@ -33,14 +33,6 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provision "shell", run: "always", inline: <<~SHELL
 		cd /vagrant
-		./bin/update dev
-	SHELL
-
-	config.vm.provision "shell", inline: <<~SHELL
-		apt-get install -y python-pip
-		pip install watchntouch
-	SHELL
-	config.vm.provision "shell", run: "always", inline: <<~SHELL
-		sudo -u vagrant tmux new-session -d 'watchntouch -w /vagrant/nodejs'
+		make
 	SHELL
 end

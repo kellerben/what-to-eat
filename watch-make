@@ -1,0 +1,14 @@
+#!/bin/sh
+
+while true; do
+	date
+
+	if make -q; then
+		printf "\033[1A"
+	else
+		make
+	fi
+
+	sleep 2
+
+done

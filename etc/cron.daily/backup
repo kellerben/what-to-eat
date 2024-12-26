@@ -8,4 +8,5 @@ fi
 docker run -e LANG=C.UTF-8 -i --rm --network=what-to-eat mariadb:10.8.2 mysqldump -u root -p"$(cat /etc/what-to-eat/db_root_pw)" -h mariadb lunch > /var/backups/lunch_dump.sql
 
 # restore with
-# docker run -e LANG=C.UTF-8 -i --rm --network=what-to-eat mariadb mysql -u root -p"$(cat /etc/what-to-eat/db_root_pw)" -h mariadb lunch < /var/backups/lunch_dump.sql
+# docker run -e LANG=C.UTF-8 -i --rm --network=what-to-eat mariadb:10.8.2 mysql -u root -p"$(cat /etc/what-to-eat/db_root_pw)" -h mariadb lunch < /var/backups/lunch_dump.sql
+# docker run -e LANG=C.UTF-8 -i --rm --network=what-to-eat mariadb mariadb -u root -p"$(cat /etc/what-to-eat/db_root_pw)" --ssl=0 -h mariadb lunch < lunch_dump.sql
