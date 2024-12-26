@@ -21,7 +21,7 @@
 						<table class="table table-bordered table-striped table-hover table-condensed">
 							<thead>
 								<tr>
-									<th>User</th><th>Food Store<th>Comment</th></th><th>Action</th>
+									<th>User</th><th>Food Store</th><th>Comment</th><th>Action</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -131,6 +131,34 @@
 									</td>
 									<td>
 										<button class="btn btn-primary btn-sm" v-on:click="orderLunch">Order Lunch</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div>
+					<h1>Meals - {{shopId}}</h1>
+					<div id="meals">
+						<table class="table table-bordered table-striped table-hover table-condensed">
+							<thead>
+								<tr>
+									<th>Meal</th><th>Price</th><th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="meal in foodOptions">
+									<td>{{meal}}</td><td>{{meals[meal]}}<span v-if="meals[meal]"> ct</span></td>
+									<td>
+										<button
+											class="btn btn-primary btn-sm"
+											title="Put this item to basked"
+											v-on:click="setOrder(meal)"
+										>🛒</button>
+										<button
+											class="btn btn-primary btn-sm"
+											v-on:click="deleteMeal(meal)"
+											>✘</button>
 									</td>
 								</tr>
 							</tbody>

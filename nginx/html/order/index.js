@@ -20,6 +20,11 @@ function renewconnection(){
 }
 function incommingMessage(e) {
 	switch(e.data) {
+		case "getShopSuggestions":
+			vueapp.fetchSuggestions();
+			vueapp.updateShopSuggestions();
+			vueapp.updateFoodSuggestions();
+			break;
 		case "getShopAnnouncements":
 			vueapp.fetchSuggestions();
 			vueapp.updateShopSuggestions();
@@ -190,7 +195,7 @@ const vueapp = new Vue({
 			this.meal = "";
 			this.specialRequest = "";
 		},
-		orderLunch: function (event) {
+		orderLunch: function (event) { // {{{
 			if (this.userId === "" || this.shopId === '' || this.meal === null) {
 				return;
 			}
@@ -239,7 +244,24 @@ const vueapp = new Vue({
 					)
 				);
 			}
-		},
+		}, // }}}
+		setOrder(meal) { // {{{
+			this.meal = meal;
+			this.selectFood();
+		}, // }}}
+		deleteMeal(meal) { // {{{
+			console.log(this.shopId);
+			lunch.then(
+				client => client.apis.Shop.deleteMeal({
+					community: this.community,
+					shopId: this.shopId,
+					meal: meal
+				})
+			).then(
+				result => this.setShopOptions(JSON.parse(result.text)),
+				reason => this.warning('Could not delete meal. (' + reason + ')')
+			);
+		}, // }}}
 		// current Suggestions {{{
 		updateSuggestionDetails(detail) {
 			var a = [];

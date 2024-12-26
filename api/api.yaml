@@ -274,6 +274,41 @@ paths:
         405:
           description: Validation exception
           content: {}
+  /{community}/{shopId}/{meal}:
+    delete:
+      tags:
+        - Shop
+      summary: Delete a meal
+      operationId: deleteMeal
+      parameters:
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
+            type: string
+            maxLength: 64
+        - name: shopId
+          in: path
+          description: Which shop offers the meal?
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+        - name: meal
+          in: path
+          description: Which meal do you want to delete?
+          required: true
+          schema:
+            type: string
+            maxLength: 64
+      responses:
+        404:
+          description: Community+Shop+Meal not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
   /{community}/{shopId}/{meal}/{price}/price:
     post:
       tags:

@@ -2,6 +2,48 @@ const Service = require('./Service');
 const ws = require('../ws');
 
 /**
+ * Delete a meal
+ *
+ * community String The community string.
+ * shopId String Which shop offers the meal?
+ * meal String Which meal do you want to delete?
+ * no response value expected for this operation
+ * */
+const deleteMeal = ({
+	community,
+	shopId,
+	meal
+}) => new Promise(
+	async (resolve, reject) => {
+		try {
+			let stmt =
+				"DELETE FROM meals WHERE community = ? AND shop = ? AND meal = ?";
+			let vars = [community, shopId, meal];
+			try {
+				Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
+					if (err) {
+						console.error(err);
+						reject(Service.rejectResponse('Error while deleting meal'));
+					} else {
+						ws.sendCommunity(community, "getShopSuggestions");
+						resolve(Service.successResponse());
+					}
+				});
+			} catch (e) {
+				reject(Service.rejectResponse(
+					e.message || 'Invalid input',
+					e.status || 405,
+				));
+			}
+		} catch (e) {
+			reject(Service.rejectResponse(
+				e.message || 'Invalid input',
+				e.status || 405,
+			));
+		}
+	},
+);
+/**
 * Get the shop's menu
 *
 * community String The community string
@@ -310,6 +352,7 @@ const setShopData = ({ community, shopId, shopMetaData }) => new Promise(
 );
 
 module.exports = {
+	deleteMeal,
 	getMenu,
 	getPrice,
 	getShopData,
