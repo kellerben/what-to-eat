@@ -2,12 +2,14 @@
 const Service = require('./Service');
 
 /**
-* Get the community information
-*
-* community String The community string.
-* no response value expected for this operation
-* */
-const getCommunityInformation = ({ community }) => new Promise(
+ * Get the community information
+ *
+ * community String The community string.
+ * no response value expected for this operation
+ * */
+const getCommunityInformation = ({
+	community
+}) => new Promise(
 	async (resolve, reject) => {
 		let stmt = "SELECT * FROM communities WHERE community = ?";
 		try {
@@ -36,14 +38,15 @@ const getCommunityInformation = ({ community }) => new Promise(
 	},
 );
 /**
-* Set the community information
-*
-* community String The community string.
-* communityInformation CommunityInformation
-* no response value expected for this operation
-* */
+ * Set the community information
+ *
+ * community String The community string.
+ * communityInformation CommunityInformation 
+ * no response value expected for this operation
+ * */
 const setCommunityInformation = ({
-	community, communityInformation
+	community,
+	communityInformation
 }) => new Promise(
 	async (resolve, reject) => {
 		try {

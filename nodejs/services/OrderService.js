@@ -2,13 +2,16 @@ const Service = require('./Service');
 const ws = require('../ws');
 
 /**
-* Get all orders of one day
-*
-* community String The community string
-* date date For which day do you want to get the orders? (optional)
-* no response value expected for this operation
-* */
-const getOrdersOfDay = ({ community, date }) => new Promise(
+ * Get all orders of one day
+ *
+ * community String The community string
+ * date date For which day do you want to get the orders? (optional)
+ * no response value expected for this operation
+ * */
+const getOrdersOfDay = ({
+	community,
+	date
+}) => new Promise(
 	async (resolve, reject) => {
 		let date;
 		if (typeof(date) === 'undefined') {
@@ -42,14 +45,18 @@ const getOrdersOfDay = ({ community, date }) => new Promise(
 	},
 );
 /**
-* Get all orders of one shop
-*
-* community String The community string
-* shopId String Which shop orders do you want to have?
-* date date For which day do you want to get the orders? (optional)
-* no response value expected for this operation
-* */
-const getShopOrders = ({ community, shopId, date }) => new Promise(
+ * Get all orders of one shop
+ *
+ * community String The community string
+ * shopId String Which shop orders do you want to have?
+ * date date For which day do you want to get the orders? (optional)
+ * no response value expected for this operation
+ * */
+const getShopOrders = ({
+	community,
+	shopId,
+	date
+}) => new Promise(
 	async (resolve, reject) => {
 		if (typeof(date) === 'undefined') {
 			date = new Date();
@@ -83,12 +90,14 @@ const getShopOrders = ({ community, shopId, date }) => new Promise(
 	},
 );
 /**
-* Order lunch
-*
-* mealOrder MealOrder
-* no response value expected for this operation
-* */
-const orderLunch = ({ mealOrder }) => new Promise(
+ * Order lunch
+ *
+ * mealOrder MealOrder 
+ * no response value expected for this operation
+ * */
+const orderLunch = ({
+	mealOrder
+}) => new Promise(
 	async (resolve, reject) => {
 		try {
 			let date;
@@ -162,12 +171,14 @@ const orderLunch = ({ mealOrder }) => new Promise(
 	},
 );
 /**
-* Change an order
-*
-* mealOrder MealOrder
-* no response value expected for this operation
-* */
-const updateOrder = ({ mealOrder }) => new Promise(
+ * Change price, special request or state of an order
+ *
+ * mealOrder MealOrder 
+ * no response value expected for this operation
+ * */
+const updateOrder = ({
+	mealOrder
+}) => new Promise(
 	async (resolve, reject) => {
 		try {
 			let date;

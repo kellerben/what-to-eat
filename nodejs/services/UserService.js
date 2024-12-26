@@ -3,13 +3,16 @@ const Service = require('./Service');
 const ws = require('../ws');
 
 /**
-* Get the payment information of a user
-*
-* community String The community string.
-* userId String The user
-* no response value expected for this operation
-* */
-const getPaymentInstructions = ({ community, userId }) => new Promise(
+ * Get the payment information of a user
+ *
+ * community String The community string.
+ * userId String The user
+ * no response value expected for this operation
+ * */
+const getPaymentInstructions = ({
+	community,
+	userId
+}) => new Promise(
 	async (resolve, reject) => {
 		let stmt =
 			"SELECT paymentInstructions FROM users WHERE community = ? AND user = ?";
@@ -34,14 +37,18 @@ const getPaymentInstructions = ({ community, userId }) => new Promise(
 	},
 );
 /**
-* Set the email of the user
-*
-* community String The community string.
-* userId String The user
-* email Email
-* no response value expected for this operation
-* */
-const setEmail = ({ community, userId, email }) => new Promise(
+ * Set the email of the user
+ *
+ * community String The community string.
+ * userId String The user
+ * email Email 
+ * no response value expected for this operation
+ * */
+const setEmail = ({
+	community,
+	userId,
+	email
+}) => new Promise(
 	async (resolve, reject) => {
 		try {
 			let inserts = [email.email, community, userId];
@@ -86,13 +93,13 @@ const setEmail = ({ community, userId, email }) => new Promise(
 	},
 );
 /**
-* Set the payment information of the user
-*
-* community String The community string.
-* userId String The user
-* paymentInstructions PaymentInstructions
-* no response value expected for this operation
-* */
+ * Set the payment information of the user
+ *
+ * community String The community string.
+ * userId String The user
+ * paymentInstructions PaymentInstructions 
+ * no response value expected for this operation
+ * */
 const setPaymentInstructions = ({
 	community,
 	userId,

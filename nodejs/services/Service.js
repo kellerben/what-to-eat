@@ -17,11 +17,17 @@ mail_transporter = nodemailer.createTransport(smtp_config.transport)
 
 class Service {
 	static rejectResponse(error, code = 500) {
-		return { error, code };
+		return {
+			error,
+			code
+		};
 	}
 
 	static successResponse(payload, code = 200) {
-		return { payload, code };
+		return {
+			payload,
+			code
+		};
 	}
 
 	static mysql_connection_pool = mysql.createPool({

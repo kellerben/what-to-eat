@@ -44,13 +44,16 @@ const deleteMeal = ({
 	},
 );
 /**
-* Get the shop's menu
-*
-* community String The community string
-* shopId String The menu of which shop do you want to have?
-* no response value expected for this operation
-* */
-const getMenu = ({ community, shopId }) => new Promise(
+ * Get the shop's menu
+ *
+ * community String The community string
+ * shopId String The menu of which shop do you want to have?
+ * no response value expected for this operation
+ * */
+const getMenu = ({
+	community,
+	shopId
+}) => new Promise(
 	async (resolve, reject) => {
 		shopId = shopId.trim();
 
@@ -72,17 +75,21 @@ const getMenu = ({ community, shopId }) => new Promise(
 				e.status || 405,
 			));
 		}
-	}
+	},
 );
 /**
-* Get price of a meal
-*
-* community String The community string.
-* shopId String Which shop offers the meal?
-* meal String Which meal-price do you want to have?
-* no response value expected for this operation
-* */
-const getPrice = ({ community, shopId, meal }) => new Promise(
+ * Get price of a meal
+ *
+ * community String The community string.
+ * shopId String Which shop offers the meal?
+ * meal String Which meal-price do you want to have?
+ * no response value expected for this operation
+ * */
+const getPrice = ({
+	community,
+	shopId,
+	meal
+}) => new Promise(
 	async (resolve, reject) => {
 		try {
 			shopId = shopId.trim();
@@ -105,16 +112,19 @@ const getPrice = ({ community, shopId, meal }) => new Promise(
 				e.status || 405,
 			));
 		}
-	}
+	},
 );
 /**
-* Get the shop's metadata
-*
-* community String The community string.
-* shopId String The Metadata of which shop do you want to have?
-* no response value expected for this operation
-* */
-const getShopData = ({ community, shopId }) => new Promise(
+ * Get the shop's metadata
+ *
+ * community String The community string.
+ * shopId String The Metadata of which shop do you want to have?
+ * no response value expected for this operation
+ * */
+const getShopData = ({
+	community,
+	shopId
+}) => new Promise(
 	async (resolve, reject) => {
 		let stmt =
 			"SELECT * FROM shops WHERE community = ? AND shop = ?";
@@ -139,20 +149,26 @@ const getShopData = ({ community, shopId }) => new Promise(
 				e.status || 405,
 			));
 		}
-	}
+	},
 );
 /**
-* Get all known shops
-*
-* community String The community string
-* no response value expected for this operation
-* */
-const getShops = ({ community }) => new Promise(
+ * Get all known shops
+ *
+ * community String The community string
+ * no response value expected for this operation
+ * */
+const getShops = ({
+	community
+}) => new Promise(
 	async (resolve, reject) => {
 		let stmt =
 			"SELECT DISTINCT shop FROM meals WHERE community = ?" +
-			" UNION SELECT DISTINCT shop FROM walks WHERE community = ?;";
-		let vars = [community, community];
+				" UNION SELECT DISTINCT shop FROM walks WHERE community = ? AND day = ?;";
+		let vars = [
+			community,
+			community,
+			new Date().toISOString().slice(0,10)
+		];
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
@@ -170,16 +186,19 @@ const getShops = ({ community }) => new Promise(
 				e.status || 405,
 			));
 		}
-	}
+	},
 );
 /**
-* Get typical special requests of the shop
-*
-* community String The community string.
-* shopId String The typical special requests of which shop do you want to have?
-* no response value expected for this operation
-* */
-const getSpecialRequests = ({ community, shopId }) => new Promise(
+ * Get typical special requests of the shop
+ *
+ * community String The community string.
+ * shopId String The typical special requests of which shop do you want to have?
+ * no response value expected for this operation
+ * */
+const getSpecialRequests = ({
+	community,
+	shopId
+}) => new Promise(
 	async (resolve, reject) => {
 		let stmt =
 			"SELECT specialRequest FROM specialRequests" +
@@ -205,18 +224,23 @@ const getSpecialRequests = ({ community, shopId }) => new Promise(
 				e.status || 405,
 			));
 		}
-	}
+	},
 );
 /**
-* Set price of a meal
-*
-* community String The community string.
-* meal String Which meal-price do you want to set?
-* shopId String Which shop offers the meal?
-* price BigDecimal The price of the meal
-* no response value expected for this operation
-* */
-const setPrice = ({ community, meal, shopId, price }) => new Promise(
+ * Set price of a meal
+ *
+ * community String The community string.
+ * meal String Which meal-price do you want to set?
+ * shopId String Which shop offers the meal?
+ * price BigDecimal The price of the meal
+ * no response value expected for this operation
+ * */
+const setPrice = ({
+	community,
+	meal,
+	shopId,
+	price
+}) => new Promise(
 	async (resolve, reject) => {
 		try {
 			shopId = shopId.trim();
@@ -280,17 +304,21 @@ const setPrice = ({ community, meal, shopId, price }) => new Promise(
 				e.status || 405,
 			));
 		}
-	}
+	},
 );
 /**
-* Set the shop's metadata
-*
-* community String The community string.
-* shopId String The Metadata of the shop you want to set
-* shopMetaData ShopMetaData
-* no response value expected for this operation
-* */
-const setShopData = ({ community, shopId, shopMetaData }) => new Promise(
+ * Set the shop's metadata
+ *
+ * community String The community string.
+ * shopId String The Metadata of the shop you want to set
+ * shopMetaData ShopMetaData 
+ * no response value expected for this operation
+ * */
+const setShopData = ({
+	community,
+	shopId,
+	shopMetaData
+}) => new Promise(
 	async (resolve, reject) => {
 		try {
 			shopId = shopId.trim();

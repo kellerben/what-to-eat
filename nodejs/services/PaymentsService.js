@@ -2,15 +2,20 @@
 const Service = require('./Service');
 
 /**
-* Get open or closed payments
-*
-* community String The community string.
-* from String Payment sender (optional)
-* to String Payment receiver (optional)
-* states List Show only payments of these states (optional)
-* no response value expected for this operation
-* */
-const getPayments = ({ community, from, to, states }) => new Promise(
+ * Get open or closed payments
+ *
+ * community String The community string.
+ * from String Payment sender (optional)
+ * to String Payment receiver (optional)
+ * states List Show only payments of these states (optional)
+ * no response value expected for this operation
+ * */
+const getPayments = ({
+	community,
+	from,
+	to,
+	states
+}) => new Promise(
 	async (resolve, reject) => {
 		let statement =
 			"SELECT " +

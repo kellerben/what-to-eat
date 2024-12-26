@@ -3,12 +3,14 @@ const Service = require('./Service');
 const ws = require('../ws');
 
 /**
-* I will walk to the shop
-*
-* shopAnnouncement ShopAnnouncement
-* no response value expected for this operation
-* */
-const announceShop = ({ shopAnnouncement }) => new Promise(
+ * I will walk to the shop
+ *
+ * shopAnnouncement ShopAnnouncement 
+ * no response value expected for this operation
+ * */
+const announceShop = ({
+	shopAnnouncement
+}) => new Promise(
 	async (resolve, reject) => {
 		let date;
 		if (typeof(shopAnnouncement.date) === 'undefined') {
@@ -46,15 +48,17 @@ const announceShop = ({ shopAnnouncement }) => new Promise(
 				resolve(Service.successResponse('success'));
 			}
 		});
-	}
+	},
 );
 /**
-* I will not walk to the shop
-*
-* shopAnnouncement ShopAnnouncement
-* no response value expected for this operation
-* */
-const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
+ * I will not walk to the shop
+ *
+ * shopAnnouncement ShopAnnouncement 
+ * no response value expected for this operation
+ * */
+const deleteShopAnnouncement = ({
+	shopAnnouncement
+}) => new Promise(
 	async (resolve, reject) => {
 		try {
 			let date;
@@ -96,16 +100,19 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) => new Promise(
 				e.status || 405,
 			));
 		}
-	}
+	},
 );
 /**
-* Get all shop announcements
-*
-* community String The community string
-* date date For which day do you want to get the shop announcements? (optional)
-* no response value expected for this operation
-* */
-const getShopAnnouncements = ({ community, date }) => new Promise(
+ * Get all shop announcements
+ *
+ * community String The community string
+ * date date For which day do you want to get the shop announcements? (optional)
+ * no response value expected for this operation
+ * */
+const getShopAnnouncements = ({
+	community,
+	date
+}) => new Promise(
 	async (resolve, reject) => {
 		try {
 			if (typeof(date) === 'undefined') {
@@ -133,7 +140,7 @@ const getShopAnnouncements = ({ community, date }) => new Promise(
 				e.status || 405,
 			));
 		}
-	}
+	},
 );
 
 module.exports = {
