@@ -73,7 +73,7 @@ const vueapp = new Vue({
 				field: 'day',
 				type: 'date',
 				dateInputFormat: 'yyyy-MM-dd',
-				dateOutputFormat: 'do MMM',
+				dateOutputFormat: 'do MMM yy',
 			},
 			{
 				label: 'Action',
