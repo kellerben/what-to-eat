@@ -266,7 +266,7 @@ const updateOrder = ({
 									`Should you have any further inquiries, kindly direct them to the respective ` +
 									`staff of ${receiver.user} or ${sender.user}.\n\n` +
 									`I remain, as always, your humble and obedient servant,\n` +
-									`James, your loyal butler.`;
+									`Wilfred, your loyal butler.`;
 
 								Service.mysql_connection_pool.execute(s, v, (err, rows, fields) => {
 									if (err) {
