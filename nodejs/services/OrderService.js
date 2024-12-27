@@ -204,8 +204,7 @@ const updateOrder = ({
 			if (typeof(mealOrder.state) !== 'undefined') {
 
 				if (mealOrder.state === "PAID") {
-					// notify the user who should have
-					// received the payment
+					// notify users via e-mail
 					let s = "SELECT users.user,users.email,orders.price" +
 						" FROM users,orders" +
 						" WHERE users.community = ?" +
@@ -234,24 +233,75 @@ const updateOrder = ({
 								'Error during SQL-query for sendmail of payment: ', err
 							);
 						} else {
-							if (rows[0] && rows[0].email) {
-								let s = `${mealOrder.userId} paid ${rows[0].price} ct` +
-									` to ${rows[0].user}`;
-								let b = `Hi ${rows[0].user}!\n\n` +
-									`The meal (${mealOrder.meal}) which you fetched on ` +
-									`${mealOrder.date} from ${mealOrder.shopId} was marked ` +
-									`paid just now…\n` +
-									`This means, you have received ${rows[0].price} ct from ` +
-									`${mealOrder.userId}.\n\n` +
-									`Cheers!`;
-								Service.sendMail(rows[0].email, s, b,
-									function (err, info){
-										if (err) {
-											console.log(
-												'Error while sending mail: ', err, info
-											);
+							if (rows[0]) {
+								let receiver = {
+									user: rows[0].user,
+									email: rows[0].email
+								}
+								let sender = {
+									user: mealOrder.userId,
+									email: ""
+								}
+								let price = rows[0].price;
+
+								// get receiver mail
+								let s = "SELECT email FROM users" +
+									" WHERE community = ?" +
+									" AND user = ?";
+								let v = [
+									mealOrder.community,
+									mealOrder.userId,
+								]
+
+								let subject = `Transaction Notification: ` +
+								 `${sender.user} paid ${price} ct to ${receiver.user}`;
+								let body =
+									`My esteemed guests ${receiver.user} and ${sender.user},\n\n` +
+									`I trust this message finds you in the very best of spirits. ` +
+									`It is my distinct pleasure to inform you that the meal ` +
+									`(${mealOrder.meal}), which ${receiver.user} graciously collected on ` +
+									`${mealOrder.date} from ${mealOrder.shopId}, has now been marked as paid.\n\n` +
+									`Accordingly, ${receiver.user} has received the amount of ` +
+									`${price} ct from ${sender.user}.\n\n` +
+									`Should you have any further inquiries, kindly direct them to the respective ` +
+									`staff of ${receiver.user} or ${sender.user}.\n\n` +
+									`I remain, as always, your humble and obedient servant,\n` +
+									`James, your loyal butler.`;
+
+								Service.mysql_connection_pool.execute(s, v, (err, rows, fields) => {
+									if (err) {
+										console.log(
+											'Error during SQL-query for sendmail of payment: ', err
+										);
+									} else {
+										if (rows[0]) {
+											sender["email"] = rows[0].email;
+											// notify the user who did the payment
+											if (sender.email) {
+												Service.sendMail(sender.email, subject, body,
+													function (err, info){
+														if (err) {
+															console.log(
+																'Error while sending mail: ', err, info
+															);
+														}
+													});
+											}
 										}
-									});
+									}
+								});
+
+								// notify the user who should have received the payment
+								if (receiver.email) {
+									Service.sendMail(receiver.email, subject, body,
+										function (err, info){
+											if (err) {
+												console.log(
+													'Error while sending mail: ', err, info
+												);
+											}
+										});
+								}
 							}
 						}
 					});
