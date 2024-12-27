@@ -38,7 +38,7 @@ const vueapp = new Vue({
 		community: localStorage.community,
 		userId: localStorage.userId,
 		payments: [],
-		searchTerm: "",
+		searchTerm: localStorage.userId.toLowerCase(),
 		paymentPool: {},
 		paymentInstructions: { },
 		anchorAttrs: {
@@ -94,13 +94,11 @@ const vueapp = new Vue({
 			this.updatePaymentPool()
 		},
 		searchTerm: function() {
-			this.updatePaymentPool()
+			this.updatePaymentPool();
+			this.updateLocation();
 		}
 	},
 	methods: {
-		setSearchTerm(p) {
-			this.searchTerm = p.searchTerm
-		},
 		updatePaymentPool: function () {
 			this.paymentPool = {}
 			this.payments.forEach(p => {
@@ -185,6 +183,12 @@ const vueapp = new Vue({
 				})
 			)
 		},
+		getSearchTermFromHash() {
+			var u = new URLSearchParams(document.location.hash.substr(1));
+			if (u.has("search")) {
+				this.searchTerm = u.get("search");
+			}
+		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
 			if (u.has("in")) {
@@ -234,9 +238,13 @@ const vueapp = new Vue({
 				value => value.toLowerCase()
 			)
 			if (searches.length === 1) {
-				// match if either from or to matches the searchterm
-				return searches.includes(row.from_user.toLowerCase()) ||
-					searches.includes(row.to_user.toLowerCase())
+				if (searches[0] === "") {
+					return true
+				} else {
+					// match if either from or to matches the searchterm
+					return searches.includes(row.from_user.toLowerCase()) ||
+						searches.includes(row.to_user.toLowerCase())
+				}
 			} else {
 				// match if searches are in from && to
 				return searches.includes(row.from_user.toLowerCase()) &&
@@ -244,19 +252,24 @@ const vueapp = new Vue({
 			}
 		},
 		init() {
+			this.getSearchTermFromHash();
 			this.getCommunityFromHash();
 			if (typeof(this.community) == "undefined" || this.community == "") {
 				document.location = '/config/'
 			} else {
 				this.getOpenPayments();
 			}
+		},
+		updateLocation() {
+			document.location.hash = "in=" + this.community;
+			if (typeof(this.searchTerm) != "undefined" && this.searchTerm != "") {
+				document.location.hash += "&search=" + this.searchTerm;
+			}
 		}
 	},
 	mounted() {
 		this.init();
-		if (typeof(this.community) != "undefined" && this.community != "") {
-			document.location.hash = "in=" + this.community;
-		}
+		this.updateLocation();
 		window.addEventListener('hashchange', this.init);
 	},
 	el: '#root'

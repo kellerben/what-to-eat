@@ -14,16 +14,23 @@
 						Pay
 					</h1>
 					<div>
+						<div class="vgt-global-search vgt-clearfix">
+							<div class="vgt-global-search__input">
+								<span class="input__icon">
+									<div class="magnifying-glass"></div>
+								</span>
+								<input type="text" placeholder="Search for users (case-insensitive)" class="vgt-input" v-model="searchTerm" >
+								<div class="vgt-global-search__actions vgt-pull-right"></div>
+							</div>
+						</div>
 						<vue-good-table
 							:rows="payments"
 							:columns="header"
 							:sort-options="sortOpts"
 							:search-options="{
-								enabled: true,
-								placeholder: 'Search for users (case-insensitive)',
+								externalQuery: searchTerm,
 								searchFn: filterUsernameTable
 							}"
-							@on-search="setSearchTerm"
 							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
 							>
 							<template slot="table-row" slot-scope="payment">
@@ -96,6 +103,7 @@
 						</tr>
 					</tbody>
 				</table>
+				(Hint: Positive values mean, the person has to pay. Negative values mean, the person gets money.)
 			</div>
 			<div class='col'></div>
 		</div>
