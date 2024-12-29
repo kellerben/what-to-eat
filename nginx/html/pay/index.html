@@ -115,6 +115,7 @@
 							id="pay_all_button"
 							class="btn btn-primary btn-sm"
 							title="Set everything to paid!"
+							:disabled="!(this.searchTerm.length > 0 && this.getFilteredPayments(this.searchTerm, this.payments).length > 0)"
 							>Pay everything</button>
 				</div>
 				<table class="table table-bordered table-striped table-hover table-condensed">
