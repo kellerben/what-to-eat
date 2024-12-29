@@ -10,6 +10,9 @@
 				<!--#set var="active" value="pay"-->
 				<!--#include virtual="/nav.shtml"-->
 				<div>
+					<b-alert v-model="showAlertTime" :variant="alertClass" fade dismissible>
+						<strong>{{alertType}}!</strong> {{alertMsg}}
+					</b-alert>
 					<h1>
 						Pay
 					</h1>
@@ -90,6 +93,30 @@
 				</div>
 
 				<h1>Balance</h1>
+				<div class="mt-1 mb-1">
+					<b-tooltip
+							:target="pay_all_button"
+							triggers="focus">
+						This will resolve all current displayed transactions!
+						<ol>
+							<li v-for="payment in this.getFilteredPayments(this.searchTerm, this.payments)">{{payment.price}} ct: {{payment.from_user}} → {{payment.to_user}}</li>
+						</ol>
+						<b-button
+								v-on:click="setOrderPaidEverything"
+								class="btn btn-primary btn-sm"
+								variant="success">Yes, please go on!</b-button>
+						<b-button
+								variant="danger"
+								class="btn btn-primary btn-sm"
+								v-on:click="vueapp.$root.$emit('bv::hide::tooltip','pay_all_button')"
+								>Cancel</b-button>
+					</b-tooltip>
+					<button
+							id="pay_all_button"
+							class="btn btn-primary btn-sm"
+							title="Set everything to paid!"
+							>Pay everything</button>
+				</div>
 				<table class="table table-bordered table-striped table-hover table-condensed">
 					<thead>
 						<tr>

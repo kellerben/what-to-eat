@@ -37,6 +37,10 @@ const vueapp = new Vue({
 	data: {
 		community: localStorage.community,
 		userId: localStorage.userId,
+		alertMsg: '',
+		alertClass: '',
+		alertType: '',
+		showAlertTime: 0,
 		payments: [],
 		searchTerm: localStorage.userId.toLowerCase(),
 		paymentPool: {},
@@ -99,23 +103,41 @@ const vueapp = new Vue({
 		}
 	},
 	methods: {
-		updatePaymentPool: function () {
+		warning(string) {
+			this.showAlert(string, 'warning');
+		},
+		error(string) {
+			this.showAlert(string, 'error');
+		},
+		showAlert(string, type) {
+			this.alertClass = type == 'error' ? 'danger' : type;
+			this.alertType = type[0].toUpperCase() + type.slice(1);
+			this.alertMsg = string;
+			this.showAlertTime = 10;
+		},
+		getFilteredPayments(filter, allpayments) {
+			let filteredpayments = [];
+			allpayments.forEach(p => {
+				if (
+					this.filterUsernameTable(p,{},"",this.searchTerm)
+				) {
+					filteredpayments.push(p);
+				}
+			});
+			return filteredpayments;
+		},
+		updatePaymentPool() {
 			this.paymentPool = {}
-			this.payments.forEach(p => {
+			this.getFilteredPayments(this.searchTerm, this.payments).forEach(p => {
 				if (p.price) {
-					if (
-						this.searchTerm === "" ||
-						this.filterUsernameTable(p,{},"",this.searchTerm)
-					) {
-						if (!this.paymentPool[p.from_user]) {
-							this.paymentPool[p.from_user] = 0
-						}
-						if (!this.paymentPool[p.to_user]) {
-							this.paymentPool[p.to_user] = 0
-						}
-						this.paymentPool[p.from_user] += p.price
-						this.paymentPool[p.to_user] -= p.price
+					if (!this.paymentPool[p.from_user]) {
+						this.paymentPool[p.from_user] = 0
 					}
+					if (!this.paymentPool[p.to_user]) {
+						this.paymentPool[p.to_user] = 0
+					}
+					this.paymentPool[p.from_user] += p.price
+					this.paymentPool[p.to_user] -= p.price
 				}
 			})
 		},
@@ -183,6 +205,27 @@ const vueapp = new Vue({
 				})
 			)
 		},
+		setOrderPaidEverything() {
+			const filteredPayments = this.getFilteredPayments(this.searchTerm, this.payments);
+			filteredPayments.forEach(payment => {
+				lunch.then(
+					client => client.apis.Order.updateOrder({}, {
+						requestBody: {
+							community: this.community,
+							shopId: payment.shop,
+							userId: payment.from_user,
+							meal: payment.meal,
+							date: payment.day,
+							state: 'PAID'
+						}
+					})
+				).then(
+					() => {}, // Success
+					error => this.error(`Failed to update payment: ${payment.from_user} → ${payment.to_user} on ${payment.day}`)
+				);
+			});
+			this.$root.$emit('bv::hide::tooltip', 'pay_all_button');
+		},
 		getSearchTermFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
 			if (u.has("search")) {
@@ -233,31 +276,48 @@ const vueapp = new Vue({
 				);
 			}
 		},
-		filterUsernameTable(row, col, cellValue, searchTerm){
+
+		/**
+		 * Filters a table row based on the search term.
+		 *
+		 * @param {Object} row - The row object containing the payments.
+		 * @param {number} col - Not used in this function.
+		 * @param {string} cellValue - Not used in this function.
+		 * @param {string} searchTerm - The search term which includes usernames.
+		 * @returns {boolean} - Returns true if the row matches the search criteria, otherwise false.
+		 */
+		filterUsernameTable(row, col, cellValue, searchTerm) {
+			// Split the search term into individual words and convert them to lowercase
 			let searches = searchTerm.split(" ").map(
 				value => value.toLowerCase()
 			)
+
 			if (searches.length === 1) {
 				if (searches[0] === "") {
+					// If the search term is empty, return true (no filtering)
 					return true
 				} else {
-					// match if either from or to matches the searchterm
+					// Match if either 'from_user' or 'to_user' matches the search term
 					return searches.includes(row.from_user.toLowerCase()) ||
 						searches.includes(row.to_user.toLowerCase())
 				}
 			} else {
-				// match if searches are in from && to
+				// Match if both 'from_user' and 'to_user' include the search terms
 				return searches.includes(row.from_user.toLowerCase()) &&
 					searches.includes(row.to_user.toLowerCase())
 			}
 		},
-		init() {
+		updateValuesFromHash() {
 			this.getSearchTermFromHash();
+			let oldcommunity = localStorage.community;
 			this.getCommunityFromHash();
 			if (typeof(this.community) == "undefined" || this.community == "") {
 				document.location = '/config/'
 			} else {
-				this.getOpenPayments();
+				// check if we need to update the payment table
+				if (oldcommunity != localStorage.community){
+					this.getOpenPayments();
+				}
 			}
 		},
 		updateLocation() {
@@ -268,9 +328,10 @@ const vueapp = new Vue({
 		}
 	},
 	mounted() {
-		this.init();
+		this.updateValuesFromHash();
+		this.getOpenPayments();
 		this.updateLocation();
-		window.addEventListener('hashchange', this.init);
+		window.addEventListener('hashchange', this.updateValuesFromHash);
 	},
 	el: '#root'
 });
