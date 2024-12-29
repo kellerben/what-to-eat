@@ -14,7 +14,7 @@ const deleteMeal = ({
 	shopId,
 	meal
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		try {
 			let stmt =
 				"DELETE FROM meals WHERE community = ? AND shop = ? AND meal = ?";
@@ -54,7 +54,7 @@ const getMenu = ({
 	community,
 	shopId
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		shopId = shopId.trim();
 
 		let stmt =
@@ -90,7 +90,7 @@ const getPrice = ({
 	shopId,
 	meal
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		try {
 			shopId = shopId.trim();
 			meal = meal.trim();
@@ -125,7 +125,7 @@ const getShopData = ({
 	community,
 	shopId
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		let stmt =
 			"SELECT * FROM shops WHERE community = ? AND shop = ?";
 		shopId = shopId.trim();
@@ -160,7 +160,7 @@ const getShopData = ({
 const getShops = ({
 	community
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		let stmt =
 			"SELECT DISTINCT shop FROM meals WHERE community = ?" +
 				" UNION SELECT DISTINCT shop FROM walks WHERE community = ? AND day = ?;";
@@ -199,7 +199,7 @@ const getSpecialRequests = ({
 	community,
 	shopId
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		let stmt =
 			"SELECT specialRequest FROM specialRequests" +
 			" WHERE community = ? AND shop = ?";
@@ -241,7 +241,7 @@ const setPrice = ({
 	shopId,
 	price
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		try {
 			shopId = shopId.trim();
 			meal = meal.trim();
@@ -311,7 +311,7 @@ const setPrice = ({
  *
  * community String The community string.
  * shopId String The Metadata of the shop you want to set
- * shopMetaData ShopMetaData 
+ * shopMetaData ShopMetaData
  * no response value expected for this operation
  * */
 const setShopData = ({
@@ -319,7 +319,7 @@ const setShopData = ({
 	shopId,
 	shopMetaData
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		try {
 			shopId = shopId.trim();
 			["lat","lng","distance","phone","comment"].forEach(elem => {

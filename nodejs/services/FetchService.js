@@ -1,17 +1,16 @@
-/* eslint-disable no-unused-vars */
 const Service = require('./Service');
 const ws = require('../ws');
 
 /**
  * I will walk to the shop
  *
- * shopAnnouncement ShopAnnouncement 
+ * shopAnnouncement ShopAnnouncement
  * no response value expected for this operation
  * */
 const announceShop = ({
 	shopAnnouncement
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		let date;
 		if (typeof(shopAnnouncement.date) === 'undefined') {
 			date = new Date();
@@ -53,13 +52,13 @@ const announceShop = ({
 /**
  * I will not walk to the shop
  *
- * shopAnnouncement ShopAnnouncement 
+ * shopAnnouncement ShopAnnouncement
  * no response value expected for this operation
  * */
 const deleteShopAnnouncement = ({
 	shopAnnouncement
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		try {
 			let date;
 			if (typeof(shopAnnouncement.date) === 'undefined') {
@@ -113,7 +112,7 @@ const getShopAnnouncements = ({
 	community,
 	date
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		try {
 			if (typeof(date) === 'undefined') {
 				date = new Date();

@@ -12,7 +12,7 @@ const getOrdersOfDay = ({
 	community,
 	date
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		let date;
 		if (typeof(date) === 'undefined') {
 			date = new Date();
@@ -57,7 +57,7 @@ const getShopOrders = ({
 	shopId,
 	date
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		if (typeof(date) === 'undefined') {
 			date = new Date();
 		} else {
@@ -92,13 +92,13 @@ const getShopOrders = ({
 /**
  * Order lunch
  *
- * mealOrder MealOrder 
+ * mealOrder MealOrder
  * no response value expected for this operation
  * */
 const orderLunch = ({
 	mealOrder
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		try {
 			let date;
 			if (typeof(mealOrder.date) === 'undefined') {
@@ -173,13 +173,13 @@ const orderLunch = ({
 /**
  * Change price, special request or state of an order
  *
- * mealOrder MealOrder 
+ * mealOrder MealOrder
  * no response value expected for this operation
  * */
 const updateOrder = ({
 	mealOrder
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		try {
 			let date;
 			if (typeof(mealOrder.date) === 'undefined') {

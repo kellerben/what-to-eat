@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const Service = require('./Service');
 
 /**
@@ -16,7 +15,7 @@ const getPayments = ({
 	to,
 	states
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		let statement =
 			"SELECT " +
 			" orders.user AS from_user," +

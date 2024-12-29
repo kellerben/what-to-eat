@@ -172,7 +172,7 @@ const vueapp = new Vue({
 			currentCombo.forEach((c) => {
 				const paymentPool = this.getPaymentPool(c);
 				const isZero = Object.values(paymentPool).every(
-					(balance) => balance === 0,
+					(balance) => balance === 0
 				) // Check if all balances are zero
 				if (isZero) result.push(c) // Add valid combination to result
 			});

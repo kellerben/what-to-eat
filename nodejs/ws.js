@@ -12,7 +12,7 @@ class WebsocketServer {
 			//handle receiving a message{{{
 			ws.on("message", function incoming(message) {
 				let m = JSON.parse(message);
-				if (typeof m.community != undefined && m.community != '') {
+				if (typeof m.community != 'undefined' && m.community != '') {
 					if (typeof WebsocketServer.clients[m.community] == 'undefined'){
 						WebsocketServer.clients[m.community] = [];
 					}

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const Service = require('./Service');
 const ws = require('../ws');
 
@@ -13,7 +12,7 @@ const getPaymentInstructions = ({
 	community,
 	userId
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		let stmt =
 			"SELECT paymentInstructions FROM users WHERE community = ? AND user = ?";
 		let vars = [community, userId];
@@ -41,7 +40,7 @@ const getPaymentInstructions = ({
  *
  * community String The community string.
  * userId String The user
- * email Email 
+ * email Email
  * no response value expected for this operation
  * */
 const setEmail = ({
@@ -49,7 +48,7 @@ const setEmail = ({
 	userId,
 	email
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		try {
 			let inserts = [email.email, community, userId];
 			let stmt =
@@ -97,7 +96,7 @@ const setEmail = ({
  *
  * community String The community string.
  * userId String The user
- * paymentInstructions PaymentInstructions 
+ * paymentInstructions PaymentInstructions
  * no response value expected for this operation
  * */
 const setPaymentInstructions = ({
@@ -105,7 +104,7 @@ const setPaymentInstructions = ({
 	userId,
 	paymentInstructions
 }) => new Promise(
-	async (resolve, reject) => {
+	(resolve, reject) => {
 		try {
 			let inserts = [
 				paymentInstructions.paymentInstructions,
