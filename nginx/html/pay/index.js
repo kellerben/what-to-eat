@@ -86,9 +86,7 @@ const vueapp = new Vue({
 		],
 		sortOpts: {
 			initialSortBy: [
-				{field: 'to_user'},
-				{field: 'from_user'},
-				{field: 'meal'}
+				{field: 'day'}
 			]
 		},
 		prices: []
