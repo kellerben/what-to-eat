@@ -13,27 +13,27 @@ new Vue({
 		paymentInstructionsSample: '',
 		anchorAttrs: {
 			target: '_blank',
-			rel: 'noopener noreferrer nofollow'
-		}
+			rel: 'noopener noreferrer nofollow',
+		},
 	},
 	watch: {
-		userId: function() {
-			this.getPaymentInstructions()
+		userId: function () {
+			this.getPaymentInstructions();
 		},
-		paymentInstructions: function() {
+		paymentInstructions: function () {
 			var val = this.paymentInstructions;
 			[
-				["price","5.50"],
-				["from","Peter"],
-				["day","1970-01-01"],
-				["shop","Eva's Pizza"],
-				["meal","Pizza Quattro Formaggi"]
-			].forEach(([k,v]) => {
-				val = val.replaceAll("{"+k+"}",v);
-				val = val.replaceAll("{"+k+":uri}",encodeURI(v));
+				['price', '5.50'],
+				['from', 'Peter'],
+				['day', '1970-01-01'],
+				['shop', "Eva's Pizza"],
+				['meal', 'Pizza Quattro Formaggi'],
+			].forEach(([k, v]) => {
+				val = val.replaceAll('{' + k + '}', v);
+				val = val.replaceAll('{' + k + ':uri}', encodeURI(v));
 			});
 			this.paymentInstructionsSample = val;
-		}
+		},
 	},
 	methods: {
 		warning(string) {
@@ -53,78 +53,92 @@ new Vue({
 		},
 		changeCommunity(event) {
 			localStorage.community = this.community;
-			document.location.hash = "in=" + this.community;
+			document.location.hash = 'in=' + this.community;
 		},
 		setUserEmail(event) {
-			lunch.then(
-				client => client.apis.User.setEmail({
-					community: this.community, userId: this.userId
-				}, {
-					requestBody: { email: this.email }
-				}).then(
-					result => {},
-					reason => this.error(
-						'Could not set email (' + reason.response.body.message + ')'
-					)
+			lunch.then((client) =>
+				client.apis.User.setEmail(
+					{
+						community: this.community,
+						userId: this.userId,
+					},
+					{
+						requestBody: { email: this.email },
+					}
+				).then(
+					(result) => {},
+					(reason) =>
+						this.error(
+							'Could not set email (' + reason.response.body.message + ')'
+						)
 				)
 			);
 		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
-			if (u.has("in") && u.get("in") != "") {
-				this.community = u.get("in");
+			if (u.has('in') && u.get('in') != '') {
+				this.community = u.get('in');
 				this.changeCommunity();
 			}
 		},
 		parseGetPaymentInstructionsResult(instructions) {
 			this.paymentInstructions = instructions.paymentInstructions;
 		},
-		getPaymentInstructions(){
+		getPaymentInstructions() {
 			if (this.userId) {
-				lunch.then(
-					client => client.apis.User.getPaymentInstructions({
-						community: this.community, userId: this.userId
-					})
-				).then(
-					result => this.parseGetPaymentInstructionsResult(
-						JSON.parse(result.text)
-					),
-					reason => this.error(
-						'Could not get payment instructions (' +
-						reason.response.body.message +
-						')'
+				lunch
+					.then((client) =>
+						client.apis.User.getPaymentInstructions({
+							community: this.community,
+							userId: this.userId,
+						})
 					)
-				);
+					.then(
+						(result) =>
+							this.parseGetPaymentInstructionsResult(JSON.parse(result.text)),
+						(reason) =>
+							this.error(
+								'Could not get payment instructions (' +
+									reason.response.body.message +
+									')'
+							)
+					);
 			}
 		},
-		setPaymentInstructions(){
-			lunch.then(
-				client => client.apis.User.setPaymentInstructions({
-					community: this.community, userId: this.userId
-				}, {
-					requestBody: { paymentInstructions: this.paymentInstructions }
-				}).then(
-					result => {},
-					reason => this.error(
-						'Could not set payment instructions (' +
-						reason.response.body.message +
-						')')
+		setPaymentInstructions() {
+			lunch.then((client) =>
+				client.apis.User.setPaymentInstructions(
+					{
+						community: this.community,
+						userId: this.userId,
+					},
+					{
+						requestBody: { paymentInstructions: this.paymentInstructions },
+					}
+				).then(
+					(result) => {},
+					(reason) =>
+						this.error(
+							'Could not set payment instructions (' +
+								reason.response.body.message +
+								')'
+						)
 				)
 			);
-		}
+		},
 	},
 	computed: {
 		communityState() {
-			return (typeof(this.community) != "undefined" && this.community != "")
-		}
+			return typeof this.community != 'undefined' && this.community != '';
+		},
 	},
 	mounted() {
 		this.getCommunityFromHash();
 		this.getPaymentInstructions();
 		window.addEventListener('hashchange', this.getCommunityFromHash);
-		if (typeof(this.community) != "undefined" && this.community != "") {
-			document.location.hash = "in=" + this.community;
+		if (typeof this.community != 'undefined' && this.community != '') {
+			document.location.hash = 'in=' + this.community;
 		}
 	},
-	el: '#root'
+	el: '#root',
 });

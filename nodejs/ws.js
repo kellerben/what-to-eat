@@ -1,28 +1,28 @@
 const logger = require('./logger');
 
 // ------------------- open websocket -------------------
-const WebSocket = require("ws");
+const WebSocket = require('ws');
 
 class WebsocketServer {
 	launch() {
 		WebsocketServer.wss = new WebSocket.Server({ port: 8081 });
 		WebsocketServer.clients = {};
 
-		WebsocketServer.wss.on("connection", function connection(ws, req) {
+		WebsocketServer.wss.on('connection', function connection(ws, req) {
 			//handle receiving a message{{{
-			ws.on("message", function incoming(message) {
+			ws.on('message', function incoming(message) {
 				let m = JSON.parse(message);
 				if (typeof m.community != 'undefined' && m.community != '') {
-					if (typeof WebsocketServer.clients[m.community] == 'undefined'){
+					if (typeof WebsocketServer.clients[m.community] == 'undefined') {
 						WebsocketServer.clients[m.community] = [];
 					}
 					WebsocketServer.clients[m.community].push(ws);
 				}
-			});//}}}
+			}); //}}}
 			//handle errors{{{
-			ws.on("error", error => {
+			ws.on('error', (error) => {
 				logger.error(String(error));
-			});//}}}
+			}); //}}}
 		});
 	}
 

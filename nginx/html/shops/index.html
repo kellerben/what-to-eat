@@ -2,21 +2,23 @@
 <html lang="en">
 	<!--#include virtual="/head.shtml"-->
 	<body>
-		<div id='root' class='row'>
+		<div id="root" class="row">
+			<div class="col"></div>
 
-			<div class='col'></div>
-
-			<div class='col-lg-8'>
+			<div class="col-lg-8">
 				<!--#set var="active" value="shops"-->
 				<!--#include virtual="/nav.shtml"-->
 
 				<div>
-					<b-alert v-model="showAlertTime" :variant="alertClass" fade dismissible>
+					<b-alert
+						v-model="showAlertTime"
+						:variant="alertClass"
+						fade
+						dismissible
+					>
 						<strong>{{alertType}}!</strong> {{alertMsg}}
 					</b-alert>
-					<h1>
-						Available Shops
-					</h1>
+					<h1>Available Shops</h1>
 					<div id="suggestions">
 						<vue-good-table
 							:rows="shopAry"
@@ -25,15 +27,20 @@
 							:search-options="{ enabled: true }"
 							:pagination-options="paginationOptions"
 							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
-							>
+						>
 							<template slot="table-row" slot-scope="shop">
-								<span v-if="shop.column.field == 'shop'"
-											v-bind:data-shop="shop.row.shop" v-on:click="showShop">
+								<span
+									v-if="shop.column.field == 'shop'"
+									v-bind:data-shop="shop.row.shop"
+									v-on:click="showShop"
+								>
 									{{shop.row.shop}}
 								</span>
 								<span v-else-if="shop.column.field == 'distance'">
 									<span v-if="shop.row.shop != editShop.shop">
-										<span v-if="typeof shop.row.distance != 'undefined' && shop.row.distance != null">
+										<span
+											v-if="typeof shop.row.distance != 'undefined' && shop.row.distance != null"
+										>
 											{{shop.row.distance}} m
 										</span>
 									</span>
@@ -43,8 +50,8 @@
 											class="form-control"
 											v-model="shops[editShop.shop].distance"
 											placeholder="number in meter"
-											/><br/>
-Lat:&nbsp;{{shop.row.position.lat}}<br/>
+										/><br />
+										Lat:&nbsp;{{shop.row.position.lat}}<br />
 										Lon:&nbsp;{{shop.row.position.lng}}
 									</span>
 								</span>
@@ -52,21 +59,32 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 									<span v-if="shop.row.shop != editShop.shop">
 										<a
 											v-if="typeof shop.row.phone != 'undefined'"
-											v-bind:href="'tel:'+encodeURI(String(shop.row.phone).replace(/[() ]/g,'-'))">{{shop.row.phone}}</a>
+											v-bind:href="'tel:'+encodeURI(String(shop.row.phone).replace(/[() ]/g,'-'))"
+											>{{shop.row.phone}}</a
+										>
 									</span>
 									<span v-else>
-										<input type="text" class="form-control" v-model="shops[editShop.shop].phone" placeholder="Phone" />
+										<input
+											type="text"
+											class="form-control"
+											v-model="shops[editShop.shop].phone"
+											placeholder="Phone"
+										/>
 									</span>
 								</span>
 								<span v-else-if="shop.column.field == 'comment'">
 									<span v-if="shop.row.shop != editShop.shop">
-										<vue-markdown :anchor-attributes="anchorAttrs">{{shop.row.comment}}</vue-markdown>
+										<vue-markdown :anchor-attributes="anchorAttrs"
+											>{{shop.row.comment}}</vue-markdown
+										>
 									</span>
 									<span v-else>
 										<b-tooltip target="shopedit" triggers="hover">
 											<dl>
-												<dt>Basic Markdown</dt><dd><b>**Bold**</b> <i>*Italic*</i> etc…</dd>
-												<dt>Links</dt><dd>[linktitle](https://www.example.org/)</dd>
+												<dt>Basic Markdown</dt>
+												<dd><b>**Bold**</b> <i>*Italic*</i> etc…</dd>
+												<dt>Links</dt>
+												<dd>[linktitle](https://www.example.org/)</dd>
 											</dl>
 										</b-tooltip>
 										<textarea
@@ -74,13 +92,14 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 											class="form-control"
 											v-model="shops[editShop.shop].comment"
 											placeholder="Comment (with markdown support)"
-											rows='1'></textarea>
+											rows="1"
+										></textarea>
 										<b-card>
 											<vue-markdown
 												:anchor-attributes="anchorAttrs"
 												:show="true"
 												:source="shops[editShop.shop].comment"
-												></vue-markdown>
+											></vue-markdown>
 										</b-card>
 									</span>
 								</span>
@@ -90,7 +109,9 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 											class="btn btn-primary btn-sm"
 											v-on:click="editShopFunc"
 											v-bind:data-shop="shop.row.shop"
-										>✍</button>
+										>
+											✍
+										</button>
 										<!--button
 											class="btn btn-primary btn-sm"
 											v-on:click="proposeShop"
@@ -102,12 +123,16 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 											class="btn btn-primary btn-sm"
 											v-on:click="cancelEdit"
 											v-bind:data-shop="shop.row.shop"
-										>✗</button>
+										>
+											✗
+										</button>
 										<button
 											class="btn btn-primary btn-sm"
 											v-on:click="confirmEdit"
 											v-bind:data-shop="shop.row.shop"
-										>✓</button>
+										>
+											✓
+										</button>
 									</span>
 								</span>
 							</template>
@@ -119,7 +144,7 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 					v-model="mapSearchAddress"
 					debounce="500"
 					placeholder="OpenStreetMap search string…"
-					></b-input>
+				></b-input>
 				<l-map
 					id="shopMap"
 					:zoom="17"
@@ -127,22 +152,18 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 					v-if="shopMapCenter.lat && shopMapCenter.lng"
 					v-on:click="clickMap"
 					worldCopyJump="true"
-					>
+				>
 					<l-tile-layer
 						attribution="&copy; <a href='https://osm.org/copyright'>OpenStreetMap</a> contributors"
 						url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-						></l-tile-layer>
+					></l-tile-layer>
 					<l-marker
 						v-if="searchMarker.position.lat && searchMarker.position.lng"
 						:lat-lng.sync="searchMarker.position"
-						draggable='true'
-						>
-						<l-popup
-							v-if="searchMarker.actionText"
-							>
-							<b-button
-								@click="setLatLon"
-								>
+						draggable="true"
+					>
+						<l-popup v-if="searchMarker.actionText">
+							<b-button @click="setLatLon">
 								{{searchMarker.actionText}}
 							</b-button>
 						</l-popup>
@@ -152,10 +173,10 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 						v-if="communityLatLng.lat && communityLatLng.lng"
 						:lat-lng.sync="communityLatLng"
 						draggable="true"
-						>
+					>
 						<l-icon
 							icon-url="https://openclipart.org/download/30805/go-home.svg"
-							>
+						>
 						</l-icon>
 						<l-tooltip>{{community}}</l-tooltip>
 					</l-marker>
@@ -165,32 +186,29 @@ Lat:&nbsp;{{shop.row.position.lat}}<br/>
 						v-if="shop.position.lat && shop.position.lng"
 						:draggable="shop.draggable"
 						:lat-lng.sync="shop.position"
-						>
+					>
 						<l-popup>
 							<h1>{{shop.shop}}</h1>
 							<vue-markdown
 								:anchor-attributes="anchorAttrs"
 								:show="true"
 								:source="shop.comment"
-								></vue-markdown>
+							></vue-markdown>
 						</l-popup>
-						<l-popup
-							v-if="shop.draggable"
+						<l-popup v-if="shop.draggable">
+							<b-button v-bind:data-shop="shop.shop" @click="getFootDistance"
+								>Calculate distance by foot…</b-button
 							>
-							<b-button
-								v-bind:data-shop="shop.shop"
-								@click="getFootDistance"
-								>Calculate distance by foot…</b-button>
 						</l-popup>
 						<l-icon
 							icon-url="https://openclipart.org/download/278690/Pizza-by-Jessica-Sawyer.svg"
-							>
+						>
 						</l-icon>
 						<l-tooltip>{{shop.shop}}</l-tooltip>
 					</l-marker>
 				</l-map>
 			</div>
-			<div class='col'></div>
+			<div class="col"></div>
 		</div>
 
 		<!--#include virtual="/foot.shtml"-->

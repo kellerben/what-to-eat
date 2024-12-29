@@ -2,37 +2,38 @@ var lunch = new SwaggerClient('/openapi.json');
 
 // ws {{{
 var connection;
-function renewconnection(){
+function renewconnection() {
 	var prot;
-	if (window.location.protocol === "https:") {
-		prot = "wss://";
+	if (window.location.protocol === 'https:') {
+		prot = 'wss://';
 	} else {
-		prot = "ws://";
+		prot = 'ws://';
 	}
 	connection = new WebSocket(
-		prot+location.hostname+":"+location.port+"/ws/", "json"
+		prot + location.hostname + ':' + location.port + '/ws/',
+		'json'
 	);
-	connection.onopen = function() {
-		connection.send(JSON.stringify({'community':vueapp.community}));
-	}
+	connection.onopen = function () {
+		connection.send(JSON.stringify({ community: vueapp.community }));
+	};
 	connection.onmessage = incommingMessage;
 	connection.onclose = renewconnection;
 }
 function incommingMessage(e) {
-	switch(e.data) {
-		case "getShopSuggestions":
+	switch (e.data) {
+		case 'getShopSuggestions':
 			vueapp.fetchSuggestions();
 			vueapp.updateShopSuggestions();
 			vueapp.updateFoodSuggestions();
 			break;
-		case "getShopAnnouncements":
+		case 'getShopAnnouncements':
 			vueapp.fetchSuggestions();
 			vueapp.updateShopSuggestions();
 			vueapp.updateFoodSuggestions();
 			break;
-		case "refreshOrders":
+		case 'refreshOrders':
 			vueapp.fetchTodaysOrders();
-			if (vueapp.shopId != ''){
+			if (vueapp.shopId != '') {
 				vueapp.updateFoodSuggestions();
 			}
 			break;
@@ -63,16 +64,17 @@ const vueapp = new Vue({
 		orders: [],
 		anchorAttrs: {
 			target: '_blank',
-			rel: 'noopener noreferrer nofollow'
-		}
+			rel: 'noopener noreferrer nofollow',
+		},
 	},
 	computed: {
-		total(){
-			return this.orders.reduce((total, product) => product.price + total  ,0);
-		}
+		total() {
+			return this.orders.reduce((total, product) => product.price + total, 0);
+		},
 	},
 	methods: {
-		warning(string) {//{{{ alerts
+		warning(string) {
+			//{{{ alerts
 			this.showAlert(string, 'warning');
 		},
 		error(string) {
@@ -86,117 +88,151 @@ const vueapp = new Vue({
 			this.alertType = type[0].toUpperCase() + type.slice(1);
 			this.alertMsg = string;
 			this.showAlertTime = 10;
-		},//}}}
+		}, //}}}
 
-		setShopOptions(o){// {{{ auto-suggestions
+		setShopOptions(o) {
+			// {{{ auto-suggestions
 			this.shopOptions = o;
 		},
 		updateShopSuggestions() {
-			lunch.then(
-				client => client.apis.Shop.getShops({ community: this.community })
-			).then(
-				result => this.setShopOptions(JSON.parse(result.text)),
-				reason => this.warning('Could not fetch Shop suggestions. (' + reason + ')')
-			);
+			lunch
+				.then((client) =>
+					client.apis.Shop.getShops({ community: this.community })
+				)
+				.then(
+					(result) => this.setShopOptions(JSON.parse(result.text)),
+					(reason) =>
+						this.warning('Could not fetch Shop suggestions. (' + reason + ')')
+				);
 		},
-		setFoodSuggestions(meals){
+		setFoodSuggestions(meals) {
 			var f = [];
 			var mealobj = {};
-			meals.forEach(m => {
+			meals.forEach((m) => {
 				f.push(m.meal);
 				mealobj[m.meal] = m.price;
 			});
 			this.foodOptions = f;
 			this.meals = mealobj;
 		},
-		setSpecialRequestOptions(sr){
+		setSpecialRequestOptions(sr) {
 			this.specialRequestOptions = sr;
 		},
 		updateFoodSuggestions() {
-			if (this.shopId != "") {
-				lunch.then(
-					client => client.apis.Shop.getMenu({
-						community: this.community, shopId: this.shopId
-					})
-				).then(
-					result => this.setFoodSuggestions(JSON.parse(result.text)),
-					reason => this.warning(
-						'Could not fetch the shop\'s menu. (' + reason + ')'
+			if (this.shopId != '') {
+				lunch
+					.then((client) =>
+						client.apis.Shop.getMenu({
+							community: this.community,
+							shopId: this.shopId,
+						})
 					)
-				);
-				lunch.then(
-					client => client.apis.Shop.getSpecialRequests({
-						community: this.community, shopId: this.shopId
-					})
-				).then(
-					result => this.setSpecialRequestOptions(JSON.parse(result.text)),
-					reason => this.warning(
-						'Could not fetch special request suggestions. (' + reason + ')'
+					.then(
+						(result) => this.setFoodSuggestions(JSON.parse(result.text)),
+						(reason) =>
+							this.warning("Could not fetch the shop's menu. (" + reason + ')')
+					);
+				lunch
+					.then((client) =>
+						client.apis.Shop.getSpecialRequests({
+							community: this.community,
+							shopId: this.shopId,
+						})
 					)
-				);
+					.then(
+						(result) => this.setSpecialRequestOptions(JSON.parse(result.text)),
+						(reason) =>
+							this.warning(
+								'Could not fetch special request suggestions. (' + reason + ')'
+							)
+					);
 			}
-		},//}}}
+		}, //}}}
 
-		deleteSuggestion: function (event) {//{{{ server interaction methods
-			lunch.then(
-				client => client.apis.Fetch.deleteShopAnnouncement({}, {
-					requestBody: {
-						userId: event.target.dataset["user"],
-						community: this.community,
-						shopId: event.target.dataset["shop"]
-					}
-				})
-			).then(
-				result => null,
-				reason => this.error(
-					'Could not delete the suggestion. (' + reason.response.body.error + ')'
+		deleteSuggestion: function (event) {
+			//{{{ server interaction methods
+			lunch
+				.then((client) =>
+					client.apis.Fetch.deleteShopAnnouncement(
+						{},
+						{
+							requestBody: {
+								userId: event.target.dataset['user'],
+								community: this.community,
+								shopId: event.target.dataset['shop'],
+							},
+						}
+					)
 				)
-			);
+				.then(
+					(result) => null,
+					(reason) =>
+						this.error(
+							'Could not delete the suggestion. (' +
+								reason.response.body.error +
+								')'
+						)
+				);
 		},
 		deleteOrder: function (event) {
-			lunch.then(
-				client => client.apis.Order.updateOrder({ }, {
-					requestBody: {
-						community: this.community,
-						shopId: event.target.dataset["shop"],
-						userId: event.target.dataset["user"],
-						meal: event.target.dataset["meal"],
-						state: 'DISCARDED'
-					}
-				})
-			).then(
-				result => null,
-				reason => this.error(
-					'Could not delete the order. (' + reason.response.body.error + ')'
+			lunch
+				.then((client) =>
+					client.apis.Order.updateOrder(
+						{},
+						{
+							requestBody: {
+								community: this.community,
+								shopId: event.target.dataset['shop'],
+								userId: event.target.dataset['user'],
+								meal: event.target.dataset['meal'],
+								state: 'DISCARDED',
+							},
+						}
+					)
 				)
-			);
+				.then(
+					(result) => null,
+					(reason) =>
+						this.error(
+							'Could not delete the order. (' + reason.response.body.error + ')'
+						)
+				);
 		},
 		announceShop: function (event) {
-			if (this.userId === "" || this.shopId === "") {
+			if (this.userId === '' || this.shopId === '') {
 				return;
 			}
-			lunch.then(
-				client => client.apis.Fetch.announceShop({}, {
-					requestBody: {
-						community: this.community,
-						userId: this.userId,
-						shopId: this.shopId
-					}
-				})
-			).then(
-				result => null,
-				reason => this.error(
-					'Could not send the suggestion. (' + reason.response.body.error + ')'
+			lunch
+				.then((client) =>
+					client.apis.Fetch.announceShop(
+						{},
+						{
+							requestBody: {
+								community: this.community,
+								userId: this.userId,
+								shopId: this.shopId,
+							},
+						}
+					)
 				)
-			);
+				.then(
+					(result) => null,
+					(reason) =>
+						this.error(
+							'Could not send the suggestion. (' +
+								reason.response.body.error +
+								')'
+						)
+				);
 		},
-		clearOrderEntry: function() {
-			this.price = "";
-			this.meal = "";
-			this.specialRequest = "";
+		clearOrderEntry: function () {
+			this.price = '';
+			this.meal = '';
+			this.specialRequest = '';
 		},
-		orderLunch: function (event) { // {{{
-			if (this.userId === "" || this.shopId === '' || this.meal === null) {
+		orderLunch: function (event) {
+			// {{{
+			if (this.userId === '' || this.shopId === '' || this.meal === null) {
 				return;
 			}
 			var order = {
@@ -204,68 +240,90 @@ const vueapp = new Vue({
 				community: this.community,
 				shopId: this.shopId,
 				meal: this.meal,
-				specialRequest: this.specialRequest
+				specialRequest: this.specialRequest,
 			};
-			if (this.price !== "" && typeof this.price != "undefined") {
+			if (this.price !== '' && typeof this.price != 'undefined') {
 				order.price = this.price;
-				lunch.then(client => client.apis.Shop.setPrice(order));
+				lunch.then((client) => client.apis.Shop.setPrice(order));
 			}
 			// do updateLunch(state->new) if lunch was already ordered and discarded
 			var oldOrder;
-			this.orders.forEach(function(o){
+			this.orders.forEach(function (o) {
 				if (
-					o.user === order.userId && o.shop == order.shopId &&
-					o.meal === order.meal && o.state === 'DISCARDED'
+					o.user === order.userId &&
+					o.shop == order.shopId &&
+					o.meal === order.meal &&
+					o.state === 'DISCARDED'
 				) {
 					oldOrder = o;
 				}
 			});
 			if (typeof oldOrder == 'undefined') {
-				lunch.then(
-					client => client.apis.Order.orderLunch({}, {
-						requestBody: order
-					})
-				).then(
-					result => this.clearOrderEntry(),
-					reason => this.error(
-						'Could not place the order. (' + reason.response.body.error + ')'
+				lunch
+					.then((client) =>
+						client.apis.Order.orderLunch(
+							{},
+							{
+								requestBody: order,
+							}
+						)
 					)
-				);
+					.then(
+						(result) => this.clearOrderEntry(),
+						(reason) =>
+							this.error(
+								'Could not place the order. (' +
+									reason.response.body.error +
+									')'
+							)
+					);
 			} else {
 				order.state = 'NEW';
-				lunch.then(
-					client => client.apis.Order.updateOrder({}, {
-						requestBody: order
-					})
-				).then(
-					result => this.clearOrderEntry(),
-					reason => this.error(
-						'Could not place the order. (' + reason.response.body.error + ')'
+				lunch
+					.then((client) =>
+						client.apis.Order.updateOrder(
+							{},
+							{
+								requestBody: order,
+							}
+						)
 					)
-				);
+					.then(
+						(result) => this.clearOrderEntry(),
+						(reason) =>
+							this.error(
+								'Could not place the order. (' +
+									reason.response.body.error +
+									')'
+							)
+					);
 			}
 		}, // }}}
-		setOrder(meal) { // {{{
+		setOrder(meal) {
+			// {{{
 			this.meal = meal;
 			this.selectFood();
 		}, // }}}
-		deleteMeal(meal) { // {{{
+		deleteMeal(meal) {
+			// {{{
 			console.log(this.shopId);
-			lunch.then(
-				client => client.apis.Shop.deleteMeal({
-					community: this.community,
-					shopId: this.shopId,
-					meal: meal
-				})
-			).then(
-				result => this.setShopOptions(JSON.parse(result.text)),
-				reason => this.warning('Could not delete meal. (' + reason + ')')
-			);
+			lunch
+				.then((client) =>
+					client.apis.Shop.deleteMeal({
+						community: this.community,
+						shopId: this.shopId,
+						meal: meal,
+					})
+				)
+				.then(
+					(result) => this.setShopOptions(JSON.parse(result.text)),
+					(reason) => this.warning('Could not delete meal. (' + reason + ')')
+				);
 		}, // }}}
 		// current Suggestions {{{
 		updateSuggestionDetails(detail) {
 			var a = [];
-			this.suggestions.forEach(function(s){
+			this.suggestions.forEach(function (s) {
 				if (s.shop == detail.shop) {
 					a.push(Object.assign({}, s, detail));
 				} else {
@@ -274,16 +332,18 @@ const vueapp = new Vue({
 			});
 			this.suggestions = a;
 		},
-		updateSuggestions(suggestions){
-			suggestions.forEach(function(s){
-				lunch.then(
-					client => client.apis.Shop.getShopData({
-						community: vueapp.community,
-						shopId: s.shop
-					})
-				).then(
-					result => vueapp.updateSuggestionDetails(JSON.parse(result.text))
-				);
+		updateSuggestions(suggestions) {
+			suggestions.forEach(function (s) {
+				lunch
+					.then((client) =>
+						client.apis.Shop.getShopData({
+							community: vueapp.community,
+							shopId: s.shop,
+						})
+					)
+					.then((result) =>
+						vueapp.updateSuggestionDetails(JSON.parse(result.text))
+					);
 			});
 			this.suggestions = suggestions;
 			if (suggestions.length == 1 && this.shopId == '') {
@@ -292,31 +352,37 @@ const vueapp = new Vue({
 			}
 		},
 		fetchSuggestions() {
-
-			lunch.then(
-				client => client.apis.Fetch.getShopAnnouncements({
-					community: this.community
-				})
-			).then(
-				result => this.updateSuggestions(JSON.parse(result.text).rows),
-				reason => this.warning(
-					'Could not fetch today\'s suggestions. ('+reason+')'
+			lunch
+				.then((client) =>
+					client.apis.Fetch.getShopAnnouncements({
+						community: this.community,
+					})
 				)
-			);
+				.then(
+					(result) => this.updateSuggestions(JSON.parse(result.text).rows),
+					(reason) =>
+						this.warning(
+							"Could not fetch today's suggestions. (" + reason + ')'
+						)
+				);
 		},
 		//}}}
 
-		updateOrders(orders){
+		updateOrders(orders) {
 			this.orders = orders;
 		},
-		fetchTodaysOrders() {// current orders {{{
-			lunch.then(
-				client => client.apis.Order.getOrdersOfDay({ community: this.community })
-			).then(
-				result => this.updateOrders(JSON.parse(result.text).rows),
-				reason => this.warning('Could not fetch today\'s orders. ('+reason+')')
-			);
-		},// }}}
+		fetchTodaysOrders() {
+			// current orders {{{
+			lunch
+				.then((client) =>
+					client.apis.Order.getOrdersOfDay({ community: this.community })
+				)
+				.then(
+					(result) => this.updateOrders(JSON.parse(result.text).rows),
+					(reason) =>
+						this.warning("Could not fetch today's orders. (" + reason + ')')
+				);
+		}, // }}}
 		// }}}
 
 		selectFood() {
@@ -325,41 +391,45 @@ const vueapp = new Vue({
 
 		userId2LocalStorage() {
 			if (
-				(typeof localStorage.userId == "undefined" || localStorage.userId == "")
-				&& typeof this.userId != "undefined" && this.userId != ""
+				(typeof localStorage.userId == 'undefined' ||
+					localStorage.userId == '') &&
+				typeof this.userId != 'undefined' &&
+				this.userId != ''
 			) {
 				localStorage.userId = this.userId;
 				this.info(
-					'User id (' + this.userId + ') was stored for later usage.' +
-					' This can be changed in the config-tab…'
-				)
+					'User id (' +
+						this.userId +
+						') was stored for later usage.' +
+						' This can be changed in the config-tab…'
+				);
 			}
 		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
-			if (u.has("in")) {
-				this.community = u.get("in");
+			if (u.has('in')) {
+				this.community = u.get('in');
 				localStorage.community = this.community;
 			}
 		},
 		init() {
 			this.getCommunityFromHash();
-			if (typeof(this.community) == "undefined" || this.community == "") {
-				document.location = '/config/'
+			if (typeof this.community == 'undefined' || this.community == '') {
+				document.location = '/config/';
 			} else {
 				this.fetchSuggestions();
 				this.fetchTodaysOrders();
 				this.updateShopSuggestions();
 			}
-		}
+		},
 	},
 	mounted() {
 		this.init();
-		if (typeof(this.community) != "undefined" && this.community != "") {
-			document.location.hash = "in=" + this.community;
+		if (typeof this.community != 'undefined' && this.community != '') {
+			document.location.hash = 'in=' + this.community;
 		}
 		window.addEventListener('hashchange', this.init);
 	},
-	el: '#root'
+	el: '#root',
 });
 // }}}

@@ -2,18 +2,15 @@
 <html lang="en">
 	<!--#include virtual="/head.shtml"-->
 	<body>
-		<div id='root' class='row'>
+		<div id="root" class="row">
+			<div class="col"></div>
 
-			<div class='col'></div>
-
-			<div class='col-lg-8'>
+			<div class="col-lg-8">
 				<!--#set var="active" value="fetch"-->
 				<!--#include virtual="/nav.shtml"-->
 
 				<div>
-					<h1>
-						Orders of today
-					</h1>
+					<h1>Orders of today</h1>
 					<div id="orders">
 						<vue-good-table
 							:rows="orders"
@@ -21,20 +18,23 @@
 							:sort-options="sortOpts"
 							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
 							:group-options="{ enabled: true }"
-							>
+						>
 						</vue-good-table>
 					</div>
 				</div>
 
 				<div>
-					<h1>
-						Prices of Today’s Orders
-					</h1>
+					<h1>Prices of Today’s Orders</h1>
 				</div>
-				<table class="table table-bordered table-striped table-hover table-condensed">
+				<table
+					class="table table-bordered table-striped table-hover table-condensed"
+				>
 					<thead>
 						<tr>
-							<th>Shop</th><th>Meal</th><th>Price</th><th>Action</th>
+							<th>Shop</th>
+							<th>Meal</th>
+							<th>Price</th>
+							<th>Action</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -42,18 +42,26 @@
 							<td>{{p.shop}}</td>
 							<td>{{p.meal}}</td>
 							<td>
-								<input type="number" class="form-control" v-model="p.price" placeholder="Price in Cent" />
+								<input
+									type="number"
+									class="form-control"
+									v-model="p.price"
+									placeholder="Price in Cent"
+								/>
 							</td>
 							<td>
-								<button class="btn btn-primary btn-sm" v-on:click="updatePrice(p)">update</button>
+								<button
+									class="btn btn-primary btn-sm"
+									v-on:click="updatePrice(p)"
+								>
+									update
+								</button>
 							</td>
 						</tr>
 					</tbody>
 				</table>
-
-
 			</div>
-			<div class='col'></div>
+			<div class="col"></div>
 		</div>
 
 		<!--#include virtual="/foot.shtml"-->

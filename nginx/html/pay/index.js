@@ -2,28 +2,29 @@ var lunch = new SwaggerClient('/openapi.json');
 
 // ws {{{
 var connection;
-function renewconnection(){
+function renewconnection() {
 	var prot;
-	if (window.location.protocol === "https:") {
-		prot = "wss://";
+	if (window.location.protocol === 'https:') {
+		prot = 'wss://';
 	} else {
-		prot = "ws://";
+		prot = 'ws://';
 	}
 	connection = new WebSocket(
-		prot+location.hostname+":"+location.port+"/ws/", "json"
+		prot + location.hostname + ':' + location.port + '/ws/',
+		'json'
 	);
-	connection.onopen = function() {
-		connection.send(JSON.stringify({'community':vueapp.community}));
-	}
+	connection.onopen = function () {
+		connection.send(JSON.stringify({ community: vueapp.community }));
+	};
 	connection.onmessage = incommingMessage;
 	connection.onclose = renewconnection;
 }
 function incommingMessage(e) {
-	switch(e.data) {
-		case "refreshOrders":
+	switch (e.data) {
+		case 'refreshOrders':
 			vueapp.getOpenPayments();
 			break;
-		case "refreshPrices":
+		case 'refreshPrices':
 			vueapp.getOpenPayments();
 			break;
 	}
@@ -44,10 +45,10 @@ const vueapp = new Vue({
 		payments: [],
 		searchTerm: localStorage.userId.toLowerCase(),
 		paymentPool: {},
-		paymentInstructions: { },
+		paymentInstructions: {},
 		anchorAttrs: {
 			target: '_blank',
-			rel: 'noopener noreferrer nofollow'
+			rel: 'noopener noreferrer nofollow',
 		},
 		header: [
 			{
@@ -62,7 +63,7 @@ const vueapp = new Vue({
 				label: 'Price',
 				field: 'price',
 				type: 'number',
-				formatFn: (value) => value == null ? '' : value+" ct"
+				formatFn: (value) => (value == null ? '' : value + ' ct'),
 			},
 			{
 				label: 'Food Store',
@@ -81,24 +82,22 @@ const vueapp = new Vue({
 			},
 			{
 				label: 'Action',
-				field: 'button'
-			}
+				field: 'button',
+			},
 		],
 		sortOpts: {
-			initialSortBy: [
-				{field: 'day'}
-			]
+			initialSortBy: [{ field: 'day' }],
 		},
-		prices: []
+		prices: [],
 	},
 	watch: {
-		payments: function() {
-			this.updatePaymentPool()
+		payments: function () {
+			this.updatePaymentPool();
 		},
-		searchTerm: function() {
+		searchTerm: function () {
 			this.updatePaymentPool();
 			this.updateLocation();
-		}
+		},
 	},
 	methods: {
 		warning(string) {
@@ -114,14 +113,12 @@ const vueapp = new Vue({
 			this.showAlertTime = 10;
 		},
 		getFilteredPayments() {
-			return this.filterPayments(this.searchTerm, this.payments)
+			return this.filterPayments(this.searchTerm, this.payments);
 		},
 		filterPayments(filter, allpayments) {
 			let filteredpayments = [];
-			allpayments.forEach(p => {
-				if (
-					this.filterUsernameTable(p,{},"",this.searchTerm)
-				) {
+			allpayments.forEach((p) => {
+				if (this.filterUsernameTable(p, {}, '', this.searchTerm)) {
 					filteredpayments.push(p);
 				}
 			});
@@ -129,16 +126,16 @@ const vueapp = new Vue({
 		},
 		getPaymentPool(payments) {
 			let paymentPool = {};
-			payments.forEach(p => {
+			payments.forEach((p) => {
 				if (p.price) {
 					if (!paymentPool[p.from_user]) {
-						paymentPool[p.from_user] = 0
+						paymentPool[p.from_user] = 0;
 					}
 					if (!paymentPool[p.to_user]) {
-						paymentPool[p.to_user] = 0
+						paymentPool[p.to_user] = 0;
 					}
-					paymentPool[p.from_user] += p.price
-					paymentPool[p.to_user] -= p.price
+					paymentPool[p.from_user] += p.price;
+					paymentPool[p.to_user] -= p.price;
 				}
 			});
 			return paymentPool;
@@ -153,172 +150,197 @@ const vueapp = new Vue({
 			if (number === 1) {
 				a.forEach((e) => {
 					ret.push([e]);
-				})
+				});
 			} else {
 				let a_length = a.length;
 				for (let i = 0; i < a_length; i++) {
 					let elem = a.shift();
 					let remainder = this.getArrayCombinations(a, number - 1);
 					for (let n = 0; n < remainder.length; n++) {
-						ret.push([elem].concat(remainder[n]))
+						ret.push([elem].concat(remainder[n]));
 					}
 				}
 			}
 			return ret;
 		},
 		findNullPayments(searchLength) {
-			const result = []
-			const currentCombo = this.getArrayCombinations(this.getFilteredPayments(), searchLength);
+			const result = [];
+			const currentCombo = this.getArrayCombinations(
+				this.getFilteredPayments(),
+				searchLength
+			);
 			currentCombo.forEach((c) => {
 				const paymentPool = this.getPaymentPool(c);
 				const isZero = Object.values(paymentPool).every(
 					(balance) => balance === 0
-				) // Check if all balances are zero
-				if (isZero) result.push(c) // Add valid combination to result
+				); // Check if all balances are zero
+				if (isZero) result.push(c); // Add valid combination to result
 			});
-			let searchUser = new Set;
+			let searchUser = new Set();
 			if (result[0]) {
 				result[0].forEach((p) => {
 					searchUser.add(p.from_user);
 					searchUser.add(p.to_user);
-				})
-				console.log(searchUser)
+				});
+				console.log(searchUser);
 			}
-			return result
+			return result;
 		},
 		getOpenPayments: function (event) {
-			lunch.then(
-				client => client.apis.Payments.getPayments({
-					community: this.community,
-					states: ["NEW","FETCHED"]
-				})
-			).then(
-				result => function(){
-					var p = JSON.parse(result.text).rows;
-					var today = new Date().toISOString().substring(0,10);
-					var prices = [];
-					var seen = {};
-					var payment_receivers = new Set();
-					p.forEach(function(elem){
-						elem.day = elem.day.substring(0,10);
-						var n = {
-							day: elem.day,
-							shop: elem.shop,
-							meal: elem.meal,
-							price: elem.price
-						};
-						var key = elem.shop+elem.meal;
-						if (n.day === today && !seen[key]) {
-							seen[key] = true;
-							prices.push(n);
-						}
-						payment_receivers.add(elem.to_user);
-					});
-					vueapp.payments = p;
-					vueapp.prices = prices;
-					payment_receivers.forEach(function(user){
-						vueapp.getPaymentInstructions(user);
-					});
-				}()
-			)
+			lunch
+				.then((client) =>
+					client.apis.Payments.getPayments({
+						community: this.community,
+						states: ['NEW', 'FETCHED'],
+					})
+				)
+				.then((result) =>
+					(function () {
+						var p = JSON.parse(result.text).rows;
+						var today = new Date().toISOString().substring(0, 10);
+						var prices = [];
+						var seen = {};
+						var payment_receivers = new Set();
+						p.forEach(function (elem) {
+							elem.day = elem.day.substring(0, 10);
+							var n = {
+								day: elem.day,
+								shop: elem.shop,
+								meal: elem.meal,
+								price: elem.price,
+							};
+							var key = elem.shop + elem.meal;
+							if (n.day === today && !seen[key]) {
+								seen[key] = true;
+								prices.push(n);
+							}
+							payment_receivers.add(elem.to_user);
+						});
+						vueapp.payments = p;
+						vueapp.prices = prices;
+						payment_receivers.forEach(function (user) {
+							vueapp.getPaymentInstructions(user);
+						});
+					})()
+				);
 		},
 		setOrderFetched: function (event) {
-			lunch.then(
-				client => client.apis.Order.updateOrder({ }, {
-					requestBody: {
-						community: this.community,
-						shopId: event.target.dataset["shop"],
-						userId: event.target.dataset["user"],
-						meal: event.target.dataset["meal"],
-						date: event.target.dataset["day"],
-						state: 'FETCHED'
+			lunch.then((client) =>
+				client.apis.Order.updateOrder(
+					{},
+					{
+						requestBody: {
+							community: this.community,
+							shopId: event.target.dataset['shop'],
+							userId: event.target.dataset['user'],
+							meal: event.target.dataset['meal'],
+							date: event.target.dataset['day'],
+							state: 'FETCHED',
+						},
 					}
-				})
-			)
+				)
+			);
 		},
 		setOrderPaid: function (event) {
-			lunch.then(
-				client => client.apis.Order.updateOrder({ }, {
-					requestBody: {
-						community: this.community,
-						shopId: event.target.dataset["shop"],
-						userId: event.target.dataset["user"],
-						meal: event.target.dataset["meal"],
-						date: event.target.dataset["day"],
-						state: 'PAID'
+			lunch.then((client) =>
+				client.apis.Order.updateOrder(
+					{},
+					{
+						requestBody: {
+							community: this.community,
+							shopId: event.target.dataset['shop'],
+							userId: event.target.dataset['user'],
+							meal: event.target.dataset['meal'],
+							date: event.target.dataset['day'],
+							state: 'PAID',
+						},
 					}
-				})
-			)
+				)
+			);
 		},
 		setOrderPaidEverything() {
 			const filteredPayments = this.getFilteredPayments();
-			filteredPayments.forEach(payment => {
-				lunch.then(
-					client => client.apis.Order.updateOrder({}, {
-						requestBody: {
-							community: this.community,
-							shopId: payment.shop,
-							userId: payment.from_user,
-							meal: payment.meal,
-							date: payment.day,
-							state: 'PAID'
-						}
-					})
-				).then(
-					() => {}, // Success
-					error => this.error(`Failed to update payment: ${payment.from_user} → ${payment.to_user} on ${payment.day}`)
-				);
+			filteredPayments.forEach((payment) => {
+				lunch
+					.then((client) =>
+						client.apis.Order.updateOrder(
+							{},
+							{
+								requestBody: {
+									community: this.community,
+									shopId: payment.shop,
+									userId: payment.from_user,
+									meal: payment.meal,
+									date: payment.day,
+									state: 'PAID',
+								},
+							}
+						)
+					)
+					.then(
+						() => {}, // Success
+						(error) =>
+							this.error(
+								`Failed to update payment: ${payment.from_user} → ${payment.to_user} on ${payment.day}`
+							)
+					);
 			});
 			this.$root.$emit('bv::hide::tooltip', 'pay_all_button');
 		},
 		getSearchTermFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
-			if (u.has("search")) {
-				this.searchTerm = u.get("search");
+			if (u.has('search')) {
+				this.searchTerm = u.get('search');
 			}
 		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
-			if (u.has("in")) {
-				this.community = u.get("in");
+			if (u.has('in')) {
+				this.community = u.get('in');
 				localStorage.community = this.community;
 			}
 		},
-		transformPaymentInstruction(instruction,payment) {
+		transformPaymentInstruction(instruction, payment) {
 			var val = instruction;
 			[
-				["price",payment.price/100],
-				["from",payment.from_user],
-				["day",payment.day],
-				["shop",payment.shop],
-				["meal",payment.meal]
-			].forEach(function([k,v]){
-				val = val.replaceAll("{"+k+"}",v);
-				val = val.replaceAll("{"+k+":uri}",encodeURI(v));
+				['price', payment.price / 100],
+				['from', payment.from_user],
+				['day', payment.day],
+				['shop', payment.shop],
+				['meal', payment.meal],
+			].forEach(function ([k, v]) {
+				val = val.replaceAll('{' + k + '}', v);
+				val = val.replaceAll('{' + k + ':uri}', encodeURI(v));
 			});
 			return val;
 		},
 		parseGetPaymentInstructionsResult(userId, instructions) {
 			var n = {};
 			n[userId] = instructions.paymentInstructions;
-			this.paymentInstructions = Object.assign({}, this.paymentInstructions, n) ;
+			this.paymentInstructions = Object.assign({}, this.paymentInstructions, n);
 		},
-		getPaymentInstructions(userId){
+		getPaymentInstructions(userId) {
 			if (userId) {
-				lunch.then(
-					client => client.apis.User.getPaymentInstructions({
-						community: this.community, userId: userId
-					})
-				).then(
-					result => this.parseGetPaymentInstructionsResult(
-						userId,
-						JSON.parse(result.text)
-					),
-					reason => this.error(
-						'Could not get payment instructions (' +
-						reason.response.body.error + ')'
+				lunch
+					.then((client) =>
+						client.apis.User.getPaymentInstructions({
+							community: this.community,
+							userId: userId,
+						})
 					)
-				);
+					.then(
+						(result) =>
+							this.parseGetPaymentInstructionsResult(
+								userId,
+								JSON.parse(result.text)
+							),
+						(reason) =>
+							this.error(
+								'Could not get payment instructions (' +
+									reason.response.body.error +
+									')'
+							)
+					);
 			}
 		},
 
@@ -333,44 +355,46 @@ const vueapp = new Vue({
 		 */
 		filterUsernameTable(row, col, cellValue, searchTerm) {
 			// Split the search term into individual words and convert them to lowercase
-			let searches = searchTerm.split(" ").map(
-				value => value.toLowerCase()
-			)
+			let searches = searchTerm.split(' ').map((value) => value.toLowerCase());
 
 			if (searches.length === 1) {
-				if (searches[0] === "") {
+				if (searches[0] === '') {
 					// If the search term is empty, return true (no filtering)
-					return true
+					return true;
 				} else {
 					// Match if either 'from_user' or 'to_user' matches the search term
-					return searches.includes(row.from_user.toLowerCase()) ||
+					return (
+						searches.includes(row.from_user.toLowerCase()) ||
 						searches.includes(row.to_user.toLowerCase())
+					);
 				}
 			} else {
 				// Match if both 'from_user' and 'to_user' include the search terms
-				return searches.includes(row.from_user.toLowerCase()) &&
+				return (
+					searches.includes(row.from_user.toLowerCase()) &&
 					searches.includes(row.to_user.toLowerCase())
+				);
 			}
 		},
 		updateValuesFromHash() {
 			this.getSearchTermFromHash();
 			let oldcommunity = localStorage.community;
 			this.getCommunityFromHash();
-			if (typeof(this.community) == "undefined" || this.community == "") {
-				document.location = '/config/'
+			if (typeof this.community == 'undefined' || this.community == '') {
+				document.location = '/config/';
 			} else {
 				// check if we need to update the payment table
-				if (oldcommunity != localStorage.community){
+				if (oldcommunity != localStorage.community) {
 					this.getOpenPayments();
 				}
 			}
 		},
 		updateLocation() {
-			document.location.hash = "in=" + this.community;
-			if (typeof(this.searchTerm) != "undefined" && this.searchTerm != "") {
-				document.location.hash += "&search=" + this.searchTerm;
+			document.location.hash = 'in=' + this.community;
+			if (typeof this.searchTerm != 'undefined' && this.searchTerm != '') {
+				document.location.hash += '&search=' + this.searchTerm;
 			}
-		}
+		},
 	},
 	mounted() {
 		this.updateValuesFromHash();
@@ -378,6 +402,6 @@ const vueapp = new Vue({
 		this.updateLocation();
 		window.addEventListener('hashchange', this.updateValuesFromHash);
 	},
-	el: '#root'
+	el: '#root',
 });
 // }}}

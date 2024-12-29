@@ -2,27 +2,34 @@
 <html lang="en">
 	<!--#include virtual="/head.shtml"-->
 	<body>
-		<div id='root' class='row'>
+		<div id="root" class="row">
+			<div class="col"></div>
 
-			<div class='col'></div>
-
-			<div class='col-lg-8'>
+			<div class="col-lg-8">
 				<!--#set var="active" value="pay"-->
 				<!--#include virtual="/nav.shtml"-->
 				<div>
-					<b-alert v-model="showAlertTime" :variant="alertClass" fade dismissible>
+					<b-alert
+						v-model="showAlertTime"
+						:variant="alertClass"
+						fade
+						dismissible
+					>
 						<strong>{{alertType}}!</strong> {{alertMsg}}
 					</b-alert>
-					<h1>
-						Pay
-					</h1>
+					<h1>Pay</h1>
 					<div>
 						<div class="vgt-global-search vgt-clearfix">
 							<div class="vgt-global-search__input">
 								<span class="input__icon">
 									<div class="magnifying-glass"></div>
 								</span>
-								<input type="text" placeholder="Search for users (case-insensitive)" class="vgt-input" v-model="searchTerm" >
+								<input
+									type="text"
+									placeholder="Search for users (case-insensitive)"
+									class="vgt-input"
+									v-model="searchTerm"
+								/>
 								<div class="vgt-global-search__actions vgt-pull-right"></div>
 							</div>
 						</div>
@@ -35,7 +42,7 @@
 								searchFn: filterUsernameTable
 							}"
 							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
-							>
+						>
 							<template slot="table-row" slot-scope="payment">
 								<span v-if="payment.column.field == 'button'">
 									<!--button
@@ -49,8 +56,10 @@
 									>🍕</button-->
 									<b-tooltip
 										:target="'payAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal"
-										triggers="focus">
-											Did {{payment.row.from_user}} gave {{payment.row.price}} ct to {{payment.row.to_user}}?
+										triggers="focus"
+									>
+										Did {{payment.row.from_user}} gave {{payment.row.price}} ct
+										to {{payment.row.to_user}}?
 										<b-button
 											v-on:click="setOrderPaid"
 											class="btn btn-primary btn-sm"
@@ -58,33 +67,41 @@
 											v-bind:data-user="payment.row.from_user"
 											v-bind:data-shop="payment.row.shop"
 											v-bind:data-meal="payment.row.meal"
-											v-bind:data-day="payment.row.day">Yes</b-button>
+											v-bind:data-day="payment.row.day"
+											>Yes</b-button
+										>
 										<b-button
 											variant="danger"
 											class="btn btn-primary btn-sm"
 											v-on:click="vueapp.$root.$emit('bv::hide::tooltip','payAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal)"
-											>No</b-button>
+											>No</b-button
+										>
 									</b-tooltip>
 									<button
 										:id="'payAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal"
 										class="btn btn-primary btn-sm"
 										title="Set payment…"
-									>€</button>
+									>
+										€
+									</button>
 									<span v-if="paymentInstructions[payment.row.to_user]">
 										<b-tooltip
 											:target="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal"
-											triggers="focus">
-									<vue-markdown
-										:show="true"
-										:anchor-attributes="anchorAttrs"
-										:source="transformPaymentInstruction(paymentInstructions[payment.row.to_user],payment.row)"
-										></vue-markdown>
-									</b-tooltip>
-									<button
-										:id="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal"
-										class="btn btn-primary btn-sm"
-										title="Get Payment Instructions…"
-									>ℹ</button>
+											triggers="focus"
+										>
+											<vue-markdown
+												:show="true"
+												:anchor-attributes="anchorAttrs"
+												:source="transformPaymentInstruction(paymentInstructions[payment.row.to_user],payment.row)"
+											></vue-markdown>
+										</b-tooltip>
+										<button
+											:id="'userAction'+payment.row.to_user+payment.row.from_user+payment.row.shop+payment.row.day+payment.row.meal"
+											class="btn btn-primary btn-sm"
+											title="Get Payment Instructions…"
+										>
+											ℹ
+										</button>
 									</span>
 								</span>
 							</template>
@@ -94,34 +111,43 @@
 
 				<h1>Balance</h1>
 				<div class="mt-1 mb-1">
-					<b-tooltip
-							:target="pay_all_button"
-							triggers="focus">
+					<b-tooltip :target="pay_all_button" triggers="focus">
 						This will resolve all current displayed transactions!
 						<ol>
-							<li v-for="payment in this.getFilteredPayments()">{{payment.price}} ct: {{payment.from_user}} → {{payment.to_user}}</li>
+							<li v-for="payment in this.getFilteredPayments()">
+								{{payment.price}} ct: {{payment.from_user}} →
+								{{payment.to_user}}
+							</li>
 						</ol>
 						<b-button
-								v-on:click="setOrderPaidEverything"
-								class="btn btn-primary btn-sm"
-								variant="success">Yes, please go on!</b-button>
+							v-on:click="setOrderPaidEverything"
+							class="btn btn-primary btn-sm"
+							variant="success"
+							>Yes, please go on!</b-button
+						>
 						<b-button
-								variant="danger"
-								class="btn btn-primary btn-sm"
-								v-on:click="vueapp.$root.$emit('bv::hide::tooltip','pay_all_button')"
-								>Cancel</b-button>
+							variant="danger"
+							class="btn btn-primary btn-sm"
+							v-on:click="vueapp.$root.$emit('bv::hide::tooltip','pay_all_button')"
+							>Cancel</b-button
+						>
 					</b-tooltip>
 					<button
-							id="pay_all_button"
-							class="btn btn-primary btn-sm"
-							title="Set everything to paid!"
-							:disabled="!(this.searchTerm.length > 0 && this.getFilteredPayments().length > 0)"
-							>Pay everything</button>
+						id="pay_all_button"
+						class="btn btn-primary btn-sm"
+						title="Set everything to paid!"
+						:disabled="!(this.searchTerm.length > 0 && this.getFilteredPayments().length > 0)"
+					>
+						Pay everything
+					</button>
 				</div>
-				<table class="table table-bordered table-striped table-hover table-condensed">
+				<table
+					class="table table-bordered table-striped table-hover table-condensed"
+				>
 					<thead>
 						<tr>
-							<th>Person</th><th>Payment</th>
+							<th>Person</th>
+							<th>Payment</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -131,9 +157,10 @@
 						</tr>
 					</tbody>
 				</table>
-				(Hint: Positive values mean, the person has to pay. Negative values mean, the person gets money.)
+				(Hint: Positive values mean, the person has to pay. Negative values
+				mean, the person gets money.)
 			</div>
-			<div class='col'></div>
+			<div class="col"></div>
 		</div>
 
 		<!--#include virtual="/foot.shtml"-->

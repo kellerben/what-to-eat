@@ -2,58 +2,91 @@
 <html lang="en">
 	<!--#include virtual="/head.shtml"-->
 	<body>
-		<div id='root' class='row'>
+		<div id="root" class="row">
+			<div class="col"></div>
 
-			<div class='col'></div>
-
-			<div class='col-lg-8'>
+			<div class="col-lg-8">
 				<!--#set var="active" value="order"-->
 				<!--#include virtual="/nav.shtml"-->
 
 				<div>
-					<b-alert v-model="showAlertTime" :variant="alertClass" fade dismissible>
+					<b-alert
+						v-model="showAlertTime"
+						:variant="alertClass"
+						fade
+						dismissible
+					>
 						<strong>{{alertType}}:</strong> {{alertMsg}}
 					</b-alert>
-					<h1>
-						Who fetches from where?
-					</h1>
+					<h1>Who fetches from where?</h1>
 					<div id="suggestions">
-						<table class="table table-bordered table-striped table-hover table-condensed">
+						<table
+							class="table table-bordered table-striped table-hover table-condensed"
+						>
 							<thead>
 								<tr>
-									<th>User</th><th>Food Store</th><th>Comment</th><th>Action</th>
+									<th>User</th>
+									<th>Food Store</th>
+									<th>Comment</th>
+									<th>Action</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr v-for="item in suggestions">
-									<td>{{item.user}}</td><td>{{item.shop}}<td><vue-markdown :anchor-attributes="anchorAttrs" :source="item.comment"></vue-markdown></td>
+									<td>{{item.user}}</td>
+									<td>{{item.shop}}</td>
 									<td>
-										<button class="btn btn-primary btn-sm" v-on:click="deleteSuggestion" v-bind:data-shop="item.shop" v-bind:data-user="item.user">✘</button>
+										<vue-markdown
+											:anchor-attributes="anchorAttrs"
+											:source="item.comment"
+										></vue-markdown>
+									</td>
+									<td>
+										<button
+											class="btn btn-primary btn-sm"
+											v-on:click="deleteSuggestion"
+											v-bind:data-shop="item.shop"
+											v-bind:data-user="item.user"
+										>
+											✘
+										</button>
 									</td>
 								</tr>
 								<tr>
-									<th colspan="4">
-										Suggest something new
-									</th>
+									<th colspan="4">Suggest something new</th>
 								</tr>
 								<tr>
 									<td>
-										<input type="text" class="form-control" v-on:change="userId2LocalStorage" v-model="userId" placeholder="Who suggests something?" />
+										<input
+											type="text"
+											class="form-control"
+											v-on:change="userId2LocalStorage"
+											v-model="userId"
+											placeholder="Who suggests something?"
+										/>
 									</td>
 									<td>
-										<span class='shopInput'>
+										<span class="shopInput">
 											<b-form-input
-												list='shopOptions'
+												list="shopOptions"
 												placeholder="From where do you want to get Food?"
 												v-model="shopId"
 												v-on:change="updateFoodSuggestions"
-												></b-form-input>
-											<b-form-datalist id='shopOptions' :options="shopOptions"></b-form-datalist>
+											></b-form-input>
+											<b-form-datalist
+												id="shopOptions"
+												:options="shopOptions"
+											></b-form-datalist>
 										</span>
 									</td>
 									<td></td>
 									<td>
-										<button class="btn btn-primary btn-sm" v-on:click="announceShop">Suggest Shop</button>
+										<button
+											class="btn btn-primary btn-sm"
+											v-on:click="announceShop"
+										>
+											Suggest Shop
+										</button>
 									</td>
 								</tr>
 							</tbody>
@@ -62,19 +95,28 @@
 				</div>
 
 				<div>
-					<h1>
-						Orders of today
-					</h1>
+					<h1>Orders of today</h1>
 					<div id="orders">
-						<table class="table table-bordered table-striped table-hover table-condensed">
+						<table
+							class="table table-bordered table-striped table-hover table-condensed"
+						>
 							<thead>
 								<tr>
-									<th>User</th><th>Food Store</th><th>Meal</th><th>Special Request</th><th>Price</th><th>Action</th>
+									<th>User</th>
+									<th>Food Store</th>
+									<th>Meal</th>
+									<th>Special Request</th>
+									<th>Price</th>
+									<th>Action</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr v-for="order in orders" v-if="order.state != 'DISCARDED'">
-									<td>{{order.user}}</td><td>{{order.shop}}</td><td>{{order.meal}}</td><td>{{order.specialRequest}}<td>{{order.price}}<span v-if="order.price"> ct</span></td>
+									<td>{{order.user}}</td>
+									<td>{{order.shop}}</td>
+									<td>{{order.meal}}</td>
+									<td>{{order.specialRequest}}</td>
+									<td>{{order.price}}<span v-if="order.price"> ct</span></td>
 									<td>
 										<button
 											class="btn btn-primary btn-sm"
@@ -83,22 +125,28 @@
 											v-bind:data-shop="order.shop"
 											v-bind:data-meal="order.meal"
 											v-bind:data-price="order.price"
-											>✘</button>
+										>
+											✘
+										</button>
 									</td>
 								</tr>
 								<tr>
-									<th colspan="6">
-										Order something
-									</th>
+									<th colspan="6">Order something</th>
 								</tr>
 								<tr>
 									<td>
-										<input type="text" class="form-control" v-model="userId" v-on:change="userId2LocalStorage"  placeholder="Who is ordering?" />
+										<input
+											type="text"
+											class="form-control"
+											v-model="userId"
+											v-on:change="userId2LocalStorage"
+											placeholder="Who is ordering?"
+										/>
 									</td>
 									<td>
-										<span class='shopInput'>
+										<span class="shopInput">
 											<b-form-input
-												list='shopOptions'
+												list="shopOptions"
 												placeholder="From where do you want to get Food?"
 												v-on:change="updateFoodSuggestions"
 												v-model="shopId"
@@ -106,31 +154,47 @@
 										</span>
 									</td>
 									<td>
-										<span class='foodInput'>
+										<span class="foodInput">
 											<b-form-input
-												list='foodOptions'
+												list="foodOptions"
 												placeholder="What do you want to order?"
 												v-on:change="selectFood"
 												v-model="meal"
 											></b-form-input>
-												<b-form-datalist id='foodOptions' :options="foodOptions"></b-form-datalist>
+											<b-form-datalist
+												id="foodOptions"
+												:options="foodOptions"
+											></b-form-datalist>
 										</span>
 									</td>
 									<td>
-										<span class='specialRequestInput'>
+										<span class="specialRequestInput">
 											<b-form-input
-												list='specialRequestOptions'
+												list="specialRequestOptions"
 												placeholder="Any special requests (which does not influence the price)?"
 												v-model="specialRequest"
 											></b-form-input>
-												<b-form-datalist id='specialRequestOptions' :options="specialRequestOptions"></b-form-datalist>
+											<b-form-datalist
+												id="specialRequestOptions"
+												:options="specialRequestOptions"
+											></b-form-datalist>
 										</span>
 									</td>
 									<td>
-										<input type="number" class="form-control" v-model="price" placeholder="(optional) Price in Cent" />
+										<input
+											type="number"
+											class="form-control"
+											v-model="price"
+											placeholder="(optional) Price in Cent"
+										/>
 									</td>
 									<td>
-										<button class="btn btn-primary btn-sm" v-on:click="orderLunch">Order Lunch</button>
+										<button
+											class="btn btn-primary btn-sm"
+											v-on:click="orderLunch"
+										>
+											Order Lunch
+										</button>
 									</td>
 								</tr>
 							</tbody>
@@ -140,35 +204,42 @@
 				<div>
 					<h1>Meals - {{shopId}}</h1>
 					<div id="meals">
-						<table class="table table-bordered table-striped table-hover table-condensed">
+						<table
+							class="table table-bordered table-striped table-hover table-condensed"
+						>
 							<thead>
 								<tr>
-									<th>Meal</th><th>Price</th><th>Action</th>
+									<th>Meal</th>
+									<th>Price</th>
+									<th>Action</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr v-for="meal in foodOptions">
-									<td>{{meal}}</td><td>{{meals[meal]}}<span v-if="meals[meal]"> ct</span></td>
+									<td>{{meal}}</td>
+									<td>{{meals[meal]}}<span v-if="meals[meal]"> ct</span></td>
 									<td>
 										<button
 											class="btn btn-primary btn-sm"
 											title="Put this item to basked"
 											v-on:click="setOrder(meal)"
-										>🛒</button>
+										>
+											🛒
+										</button>
 										<button
 											class="btn btn-primary btn-sm"
 											v-on:click="deleteMeal(meal)"
-											>✘</button>
+										>
+											✘
+										</button>
 									</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
-
-
 			</div>
-			<div class='col'></div>
+			<div class="col"></div>
 		</div>
 
 		<!--#include virtual="/foot.shtml"-->

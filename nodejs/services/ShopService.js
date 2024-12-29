@@ -9,40 +9,37 @@ const ws = require('../ws');
  * meal String Which meal do you want to delete?
  * no response value expected for this operation
  * */
-const deleteMeal = ({
-	community,
-	shopId,
-	meal
-}) => new Promise(
-	(resolve, reject) => {
+const deleteMeal = ({ community, shopId, meal }) =>
+	new Promise((resolve, reject) => {
 		try {
 			let stmt =
-				"DELETE FROM meals WHERE community = ? AND shop = ? AND meal = ?";
+				'DELETE FROM meals WHERE community = ? AND shop = ? AND meal = ?';
 			let vars = [community, shopId, meal];
 			try {
-				Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
-					if (err) {
-						console.error(err);
-						reject(Service.rejectResponse('Error while deleting meal'));
-					} else {
-						ws.sendCommunity(community, "getShopSuggestions");
-						resolve(Service.successResponse());
+				Service.mysql_connection_pool.execute(
+					stmt,
+					vars,
+					(err, rows, fields) => {
+						if (err) {
+							console.error(err);
+							reject(Service.rejectResponse('Error while deleting meal'));
+						} else {
+							ws.sendCommunity(community, 'getShopSuggestions');
+							resolve(Service.successResponse());
+						}
 					}
-				});
+				);
 			} catch (e) {
-				reject(Service.rejectResponse(
-					e.message || 'Invalid input',
-					e.status || 405,
-				));
+				reject(
+					Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+				);
 			}
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Get the shop's menu
  *
@@ -50,15 +47,11 @@ const deleteMeal = ({
  * shopId String The menu of which shop do you want to have?
  * no response value expected for this operation
  * */
-const getMenu = ({
-	community,
-	shopId
-}) => new Promise(
-	(resolve, reject) => {
+const getMenu = ({ community, shopId }) =>
+	new Promise((resolve, reject) => {
 		shopId = shopId.trim();
 
-		let stmt =
-			"SELECT meal,price FROM meals WHERE community = ? AND shop = ?";
+		let stmt = 'SELECT meal,price FROM meals WHERE community = ? AND shop = ?';
 		let vars = [community, shopId];
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
@@ -70,13 +63,11 @@ const getMenu = ({
 				}
 			});
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Get price of a meal
  *
@@ -85,18 +76,15 @@ const getMenu = ({
  * meal String Which meal-price do you want to have?
  * no response value expected for this operation
  * */
-const getPrice = ({
-	community,
-	shopId,
-	meal
-}) => new Promise(
-	(resolve, reject) => {
+const getPrice = ({ community, shopId, meal }) =>
+	new Promise((resolve, reject) => {
 		try {
 			shopId = shopId.trim();
 			meal = meal.trim();
 
-			let stmt = "SELECT price FROM meals" +
-				" WHERE community = ? AND shop = ? AND meal = ?";
+			let stmt =
+				'SELECT price FROM meals' +
+				' WHERE community = ? AND shop = ? AND meal = ?';
 			let vars = [community, shopId, meal];
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
@@ -107,13 +95,11 @@ const getPrice = ({
 				}
 			});
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Get the shop's metadata
  *
@@ -121,13 +107,9 @@ const getPrice = ({
  * shopId String The Metadata of which shop do you want to have?
  * no response value expected for this operation
  * */
-const getShopData = ({
-	community,
-	shopId
-}) => new Promise(
-	(resolve, reject) => {
-		let stmt =
-			"SELECT * FROM shops WHERE community = ? AND shop = ?";
+const getShopData = ({ community, shopId }) =>
+	new Promise((resolve, reject) => {
+		let stmt = 'SELECT * FROM shops WHERE community = ? AND shop = ?';
 		shopId = shopId.trim();
 		let vars = [community, shopId];
 		try {
@@ -144,31 +126,23 @@ const getShopData = ({
 				}
 			});
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Get all known shops
  *
  * community String The community string
  * no response value expected for this operation
  * */
-const getShops = ({
-	community
-}) => new Promise(
-	(resolve, reject) => {
+const getShops = ({ community }) =>
+	new Promise((resolve, reject) => {
 		let stmt =
-			"SELECT DISTINCT shop FROM meals WHERE community = ?" +
-				" UNION SELECT DISTINCT shop FROM walks WHERE community = ? AND day = ?;";
-		let vars = [
-			community,
-			community,
-			new Date().toISOString().slice(0,10)
-		];
+			'SELECT DISTINCT shop FROM meals WHERE community = ?' +
+			' UNION SELECT DISTINCT shop FROM walks WHERE community = ? AND day = ?;';
+		let vars = [community, community, new Date().toISOString().slice(0, 10)];
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
@@ -176,18 +150,18 @@ const getShops = ({
 					reject(Service.rejectResponse('Error while fetching shops'));
 				} else {
 					let res = [];
-					rows.forEach(elem => { res.push(elem.shop) })
+					rows.forEach((elem) => {
+						res.push(elem.shop);
+					});
 					resolve(Service.successResponse(res));
 				}
 			});
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Get typical special requests of the shop
  *
@@ -195,37 +169,34 @@ const getShops = ({
  * shopId String The typical special requests of which shop do you want to have?
  * no response value expected for this operation
  * */
-const getSpecialRequests = ({
-	community,
-	shopId
-}) => new Promise(
-	(resolve, reject) => {
+const getSpecialRequests = ({ community, shopId }) =>
+	new Promise((resolve, reject) => {
 		let stmt =
-			"SELECT specialRequest FROM specialRequests" +
-			" WHERE community = ? AND shop = ?";
+			'SELECT specialRequest FROM specialRequests' +
+			' WHERE community = ? AND shop = ?';
 		shopId = shopId.trim();
 		let vars = [community, shopId];
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
-					reject(Service.rejectResponse(
-						'Error while fetching special requests'
-					));
+					reject(
+						Service.rejectResponse('Error while fetching special requests')
+					);
 				} else {
 					let res = [];
-					rows.forEach(elem => { res.push(elem.specialRequest) })
+					rows.forEach((elem) => {
+						res.push(elem.specialRequest);
+					});
 					resolve(Service.successResponse(res));
 				}
 			});
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Set price of a meal
  *
@@ -235,77 +206,77 @@ const getSpecialRequests = ({
  * price BigDecimal The price of the meal
  * no response value expected for this operation
  * */
-const setPrice = ({
-	community,
-	meal,
-	shopId,
-	price
-}) => new Promise(
-	(resolve, reject) => {
+const setPrice = ({ community, meal, shopId, price }) =>
+	new Promise((resolve, reject) => {
 		try {
 			shopId = shopId.trim();
 			meal = meal.trim();
 
 			let updatePriceInOrders = () => {
 				let stmt =
-					"UPDATE orders SET price = ?" +
-					" WHERE community = ? AND shop = ? AND meal = ? AND day = ?";
+					'UPDATE orders SET price = ?' +
+					' WHERE community = ? AND shop = ? AND meal = ? AND day = ?';
 				let vars = [
 					price,
 					community,
 					shopId,
 					meal,
-					new Date().toISOString().slice(0,10)
+					new Date().toISOString().slice(0, 10),
 				];
-				Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
-					if (err) {
-						console.error(err);
-						reject(Service.rejectResponse('Error while updating orders'));
-					} else {
-						ws.sendCommunity(community, "refreshOrders");
-						resolve(Service.successResponse('success'));
+				Service.mysql_connection_pool.execute(
+					stmt,
+					vars,
+					(err, rows, fields) => {
+						if (err) {
+							console.error(err);
+							reject(Service.rejectResponse('Error while updating orders'));
+						} else {
+							ws.sendCommunity(community, 'refreshOrders');
+							resolve(Service.successResponse('success'));
+						}
 					}
-				});
-			}
+				);
+			};
 
 			let stmt =
-				"UPDATE meals SET price = ?" +
-				" WHERE community = ? AND shop = ? AND meal = ?";
+				'UPDATE meals SET price = ?' +
+				' WHERE community = ? AND shop = ? AND meal = ?';
 			let vars = [price, community, shopId, meal];
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while updating orders'));
 				} else {
-					if (rows['affectedRows'] === 0){
+					if (rows['affectedRows'] === 0) {
 						let stmt =
-							"INSERT INTO meals" +
-							" SET community = ?, shop = ?, meal = ?, price = ?";
+							'INSERT INTO meals' +
+							' SET community = ?, shop = ?, meal = ?, price = ?';
 						let vars = [community, shopId, meal, price];
-						Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
-							if (err) {
-								console.error(err);
-								reject(Service.rejectResponse('error'));
-							} else {
-								ws.sendCommunity(community, "refreshPrices");
-								updatePriceInOrders();
+						Service.mysql_connection_pool.execute(
+							stmt,
+							vars,
+							(err, rows, fields) => {
+								if (err) {
+									console.error(err);
+									reject(Service.rejectResponse('error'));
+								} else {
+									ws.sendCommunity(community, 'refreshPrices');
+									updatePriceInOrders();
+								}
 							}
-						});
+						);
 					} else {
-						ws.sendCommunity(community, "refreshPrices");
+						ws.sendCommunity(community, 'refreshPrices');
 						updatePriceInOrders();
 					}
 				}
 			});
-
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Set the shop's metadata
  *
@@ -314,22 +285,19 @@ const setPrice = ({
  * shopMetaData ShopMetaData
  * no response value expected for this operation
  * */
-const setShopData = ({
-	community,
-	shopId,
-	shopMetaData
-}) => new Promise(
-	(resolve, reject) => {
+const setShopData = ({ community, shopId, shopMetaData }) =>
+	new Promise((resolve, reject) => {
 		try {
 			shopId = shopId.trim();
-			["lat","lng","distance","phone","comment"].forEach(elem => {
-				if (typeof(shopMetaData[elem]) === 'undefined') {
-					shopMetaData[elem] = null
+			['lat', 'lng', 'distance', 'phone', 'comment'].forEach((elem) => {
+				if (typeof shopMetaData[elem] === 'undefined') {
+					shopMetaData[elem] = null;
 				}
 			});
-			let stmt = "UPDATE shops" +
-				" SET lat = ?, lng = ?, distance = ?, phone = ?, comment = ?" +
-				" WHERE community = ? AND shop = ?";
+			let stmt =
+				'UPDATE shops' +
+				' SET lat = ?, lng = ?, distance = ?, phone = ?, comment = ?' +
+				' WHERE community = ? AND shop = ?';
 			let values = [
 				shopMetaData.lat,
 				shopMetaData.lng,
@@ -337,47 +305,53 @@ const setShopData = ({
 				shopMetaData.phone,
 				shopMetaData.comment,
 				community,
-				shopId
+				shopId,
 			];
-			Service.mysql_connection_pool.execute(stmt, values, (err, rows, fields) => {
-				if (err) {
-					console.error(err);
-					reject(Service.rejectResponse('Error while updating orders'));
-				} else {
-					if (rows['affectedRows'] === 0){
-						let stmt =
-							"INSERT INTO shops " +
-							" SET lat = ?," +
-							" lng = ?," +
-							" distance = ?," +
-							" phone = ?," +
-							" comment = ?," +
-							" community = ?," +
-							" shop = ?";
-
-						Service.mysql_connection_pool.execute(stmt, values, (err, rows, fields) => {
-							if (err) {
-								console.error(err);
-								reject(Service.rejectResponse('error'));
-							} else {
-								ws.sendCommunity(community, "getShopSuggestions");
-								resolve(Service.successResponse('success'));
-							}
-						});
+			Service.mysql_connection_pool.execute(
+				stmt,
+				values,
+				(err, rows, fields) => {
+					if (err) {
+						console.error(err);
+						reject(Service.rejectResponse('Error while updating orders'));
 					} else {
-						ws.sendCommunity(community, "getShopSuggestions");
-						resolve(Service.successResponse('success'));
+						if (rows['affectedRows'] === 0) {
+							let stmt =
+								'INSERT INTO shops ' +
+								' SET lat = ?,' +
+								' lng = ?,' +
+								' distance = ?,' +
+								' phone = ?,' +
+								' comment = ?,' +
+								' community = ?,' +
+								' shop = ?';
+
+							Service.mysql_connection_pool.execute(
+								stmt,
+								values,
+								(err, rows, fields) => {
+									if (err) {
+										console.error(err);
+										reject(Service.rejectResponse('error'));
+									} else {
+										ws.sendCommunity(community, 'getShopSuggestions');
+										resolve(Service.successResponse('success'));
+									}
+								}
+							);
+						} else {
+							ws.sendCommunity(community, 'getShopSuggestions');
+							resolve(Service.successResponse('success'));
+						}
 					}
 				}
-			});
+			);
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 
 module.exports = {
 	deleteMeal,

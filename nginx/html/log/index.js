@@ -2,28 +2,29 @@ var lunch = new SwaggerClient('/openapi.json');
 
 // ws {{{
 var connection;
-function renewconnection(){
+function renewconnection() {
 	var prot;
-	if (window.location.protocol === "https:") {
-		prot = "wss://";
+	if (window.location.protocol === 'https:') {
+		prot = 'wss://';
 	} else {
-		prot = "ws://";
+		prot = 'ws://';
 	}
 	connection = new WebSocket(
-		prot+location.hostname+":"+location.port+"/ws/", "json"
+		prot + location.hostname + ':' + location.port + '/ws/',
+		'json'
 	);
 	connection.onopen = () => {
-		connection.send(JSON.stringify({'community':vueapp.community}));
-	}
+		connection.send(JSON.stringify({ community: vueapp.community }));
+	};
 	connection.onmessage = incommingMessage;
 	connection.onclose = renewconnection;
 }
 function incommingMessage(e) {
-	switch(e.data) {
-		case "refreshOrders":
+	switch (e.data) {
+		case 'refreshOrders':
 			vueapp.getOpenPayments();
 			break;
-		case "refreshPrices":
+		case 'refreshPrices':
 			vueapp.getOpenPayments();
 			break;
 	}
@@ -42,11 +43,11 @@ const vueapp = new Vue({
 				label: 'State',
 				field: 'state',
 				hidden: true,
-				sortFn: (x,y) => {
+				sortFn: (x, y) => {
 					var sortary = ['NEW', 'FETCHED', 'PAID', 'DISCARDED'];
 					var a = sortary.indexOf(x);
 					var b = sortary.indexOf(y);
-					return (a < b ? -1 : (a > b ? 1 : 0));
+					return a < b ? -1 : a > b ? 1 : 0;
 				},
 			},
 			{
@@ -61,7 +62,7 @@ const vueapp = new Vue({
 				label: 'Price',
 				field: 'price',
 				type: 'number',
-				formatFn: (value) => value == null ? '' : value+" ct"
+				formatFn: (value) => (value == null ? '' : value + ' ct'),
 			},
 			{
 				label: 'Food Store',
@@ -77,122 +78,128 @@ const vueapp = new Vue({
 				type: 'date',
 				dateInputFormat: 'yyyy-MM-dd',
 				dateOutputFormat: 'do MMM yy',
-			}
+			},
 		],
 		sortOpts: {
-			initialSortBy: [
-				{field: 'day', type: 'desc'}
-			]
+			initialSortBy: [{ field: 'day', type: 'desc' }],
 		},
-		prices: []
+		prices: [],
 	},
 	methods: {
 		parsePaymentLog(log) {
 			var o = {
-				'NEW': {
+				NEW: {
 					label: 'New and unpaid orders',
 				},
-				'FETCHED': {
+				FETCHED: {
 					label: 'Fetched but unpaid orders',
 				},
-				'PAID': {
+				PAID: {
 					label: 'Paid orders',
 				},
-				'DISCARDED': {
+				DISCARDED: {
 					label: 'Discarded orders',
-				}
-			}
+				},
+			};
 			for (const key in o) {
 				o[key].children = [];
-				o[key].mode = 'span'
-				o[key].html= false
+				o[key].mode = 'span';
+				o[key].html = false;
 			}
-			log.forEach(elem => {
-				elem.day = elem.day.substring(0,10);
+			log.forEach((elem) => {
+				elem.day = elem.day.substring(0, 10);
 				o[elem.state].children.push(elem);
 			});
 			var p = [];
-			['NEW','FETCHED','PAID','DISCARDED'].forEach(key => {
+			['NEW', 'FETCHED', 'PAID', 'DISCARDED'].forEach((key) => {
 				if (o[key].children.length != 0) {
 					p.push(o[key]);
 				}
 			});
 			this.payments = p;
 		},
-		getOpenPayments: function(event) {
-			lunch.then(
-				client => client.apis.Payments.getPayments({
-					community: this.community, from: this.userId, to: this.userId
-				})
-			).then(
-				result => this.parsePaymentLog(JSON.parse(result.text).rows)
-			)
-		},
-		setOrderFetched: function(event) {
-			lunch.then(
-				client => client.apis.Order.updateOrder({ }, {
-					requestBody: {
+		getOpenPayments: function (event) {
+			lunch
+				.then((client) =>
+					client.apis.Payments.getPayments({
 						community: this.community,
-						shopId: event.target.dataset["shop"],
-						userId: event.target.dataset["user"],
-						meal: event.target.dataset["meal"],
-						date: event.target.dataset["day"],
-						state: 'FETCHED'
-					}
-				})
-			)
+						from: this.userId,
+						to: this.userId,
+					})
+				)
+				.then((result) => this.parsePaymentLog(JSON.parse(result.text).rows));
 		},
-		setOrderPaid: function(event) {
-			lunch.then(
-				client => client.apis.Order.updateOrder({ }, {
-					requestBody: {
-						community: this.community,
-						shopId: event.target.dataset["shop"],
-						userId: event.target.dataset["user"],
-						meal: event.target.dataset["meal"],
-						date: event.target.dataset["day"],
-						state: 'PAID'
+		setOrderFetched: function (event) {
+			lunch.then((client) =>
+				client.apis.Order.updateOrder(
+					{},
+					{
+						requestBody: {
+							community: this.community,
+							shopId: event.target.dataset['shop'],
+							userId: event.target.dataset['user'],
+							meal: event.target.dataset['meal'],
+							date: event.target.dataset['day'],
+							state: 'FETCHED',
+						},
 					}
-				})
-			)
+				)
+			);
 		},
-		updatePrice: function(event) {
-			var elem = this.prices[event.target.dataset["id"]];
-			if (elem.price === "") {
+		setOrderPaid: function (event) {
+			lunch.then((client) =>
+				client.apis.Order.updateOrder(
+					{},
+					{
+						requestBody: {
+							community: this.community,
+							shopId: event.target.dataset['shop'],
+							userId: event.target.dataset['user'],
+							meal: event.target.dataset['meal'],
+							date: event.target.dataset['day'],
+							state: 'PAID',
+						},
+					}
+				)
+			);
+		},
+		updatePrice: function (event) {
+			var elem = this.prices[event.target.dataset['id']];
+			if (elem.price === '') {
 				return;
 			}
-			lunch.then(
-				client => client.apis.Shop.setPrice({
+			lunch.then((client) =>
+				client.apis.Shop.setPrice({
 					community: this.community,
 					shopId: elem.shop,
 					meal: elem.meal,
-					price: elem.price
+					price: elem.price,
 				})
-			)
+			);
 		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
-			if (u.has("in")) {
-				this.community = u.get("in");
+			if (u.has('in')) {
+				this.community = u.get('in');
 				localStorage.community = this.community;
 			}
 		},
 		init() {
 			this.getCommunityFromHash();
-			if (typeof(this.community) == "undefined" || this.community == "") {
-				document.location = '/config/'
+			if (typeof this.community == 'undefined' || this.community == '') {
+				document.location = '/config/';
 			} else {
 				this.getOpenPayments();
 			}
-		}
+		},
 	},
 	mounted() {
 		this.init();
-		if (typeof(this.community) != "undefined" && this.community != "") {
-			document.location.hash = "in=" + this.community;
+		if (typeof this.community != 'undefined' && this.community != '') {
+			document.location.hash = 'in=' + this.community;
 		}
 		window.addEventListener('hashchange', this.init);
 	},
-	el: '#root'
+	el: '#root',
 });
 // }}}

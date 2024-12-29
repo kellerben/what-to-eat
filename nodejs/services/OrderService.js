@@ -8,22 +8,19 @@ const ws = require('../ws');
  * date date For which day do you want to get the orders? (optional)
  * no response value expected for this operation
  * */
-const getOrdersOfDay = ({
-	community,
-	date
-}) => new Promise(
-	(resolve, reject) => {
+const getOrdersOfDay = ({ community, date }) =>
+	new Promise((resolve, reject) => {
 		let date;
-		if (typeof(date) === 'undefined') {
+		if (typeof date === 'undefined') {
 			date = new Date();
 		} else {
 			date = new Date(date);
 		}
-		date = date.toISOString().slice(0,10);
+		date = date.toISOString().slice(0, 10);
 		let stmt =
-			"SELECT shop, user, meal, specialRequest, price, state" +
-			" FROM orders WHERE community = ? AND day = ?" +
-			" ORDER BY shop, meal, specialRequest";
+			'SELECT shop, user, meal, specialRequest, price, state' +
+			' FROM orders WHERE community = ? AND day = ?' +
+			' ORDER BY shop, meal, specialRequest';
 		let vars = [community, date];
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
@@ -31,19 +28,19 @@ const getOrdersOfDay = ({
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
-					resolve(Service.successResponse({
-						rows
-					}));
+					resolve(
+						Service.successResponse({
+							rows,
+						})
+					);
 				}
 			});
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Get all orders of one shop
  *
@@ -52,23 +49,19 @@ const getOrdersOfDay = ({
  * date date For which day do you want to get the orders? (optional)
  * no response value expected for this operation
  * */
-const getShopOrders = ({
-	community,
-	shopId,
-	date
-}) => new Promise(
-	(resolve, reject) => {
-		if (typeof(date) === 'undefined') {
+const getShopOrders = ({ community, shopId, date }) =>
+	new Promise((resolve, reject) => {
+		if (typeof date === 'undefined') {
 			date = new Date();
 		} else {
 			date = new Date(date);
 		}
-		date = date.toISOString().slice(0,10);
+		date = date.toISOString().slice(0, 10);
 		shopId = shopId.trim();
 
 		let stmt =
-			"SELECT user,meal,price FROM orders" +
-			" WHERE community = ? AND shop = ? AND day = ?";
+			'SELECT user,meal,price FROM orders' +
+			' WHERE community = ? AND shop = ? AND day = ?';
 		let vars = [community, shopId, date];
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
@@ -76,65 +69,70 @@ const getShopOrders = ({
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
-					resolve(Service.successResponse({
-						rows
-					}));
+					resolve(
+						Service.successResponse({
+							rows,
+						})
+					);
 				}
 			});
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Order lunch
  *
  * mealOrder MealOrder
  * no response value expected for this operation
  * */
-const orderLunch = ({
-	mealOrder
-}) => new Promise(
-	(resolve, reject) => {
+const orderLunch = ({ mealOrder }) =>
+	new Promise((resolve, reject) => {
 		try {
 			let date;
-			if (typeof(mealOrder.date) === 'undefined') {
+			if (typeof mealOrder.date === 'undefined') {
 				date = new Date();
 			} else {
 				date = new Date(mealOrder.date);
 			}
-			date = date.toISOString().slice(0,10);
+			date = date.toISOString().slice(0, 10);
 
 			Service.trimStrings(mealOrder);
 
 			let stmt, vars;
-			if (mealOrder.specialRequest != "") {
+			if (mealOrder.specialRequest != '') {
 				stmt =
-					"INSERT INTO specialRequests" +
-					" SET community = ?, shop = ?, specialRequest = ?";
+					'INSERT INTO specialRequests' +
+					' SET community = ?, shop = ?, specialRequest = ?';
 
 				vars = [
-					mealOrder.community, mealOrder.shopId, mealOrder.specialRequest
+					mealOrder.community,
+					mealOrder.shopId,
+					mealOrder.specialRequest,
 				];
-				Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
-					if (err && err.errno != 1062) { // 1062 := duplicate primary key, nothing to do
-						console.log('Error during insertion of order: ', err);
-						reject(Service.rejectResponse('Error during insertion of order'));
+				Service.mysql_connection_pool.execute(
+					stmt,
+					vars,
+					(err, rows, fields) => {
+						if (err && err.errno != 1062) {
+							// 1062 := duplicate primary key, nothing to do
+							console.log('Error during insertion of order: ', err);
+							reject(Service.rejectResponse('Error during insertion of order'));
+						}
 					}
-				});
+				);
 			}
 
 			stmt =
-				"INSERT INTO orders" +
-				" SET community = ?," +
-				" user = ?," +
-				" shop = ?," +
-				" meal = ?," +
-				" specialRequest = ?," +
-				" day = ?," +
+				'INSERT INTO orders' +
+				' SET community = ?,' +
+				' user = ?,' +
+				' shop = ?,' +
+				' meal = ?,' +
+				' specialRequest = ?,' +
+				' day = ?,' +
 				" state = 'NEW'";
 			let inserts = [
 				mealOrder.community,
@@ -142,79 +140,82 @@ const orderLunch = ({
 				mealOrder.shopId,
 				mealOrder.meal,
 				mealOrder.specialRequest,
-				date
+				date,
 			];
-			if (typeof(mealOrder.price) !== 'undefined') {
-				stmt += ", price = ?";
+			if (typeof mealOrder.price !== 'undefined') {
+				stmt += ', price = ?';
 				inserts.push(mealOrder.price);
 			}
 
-			Service.mysql_connection_pool.execute(stmt, inserts, (err, rows, fields) => {
-				if (err) {
-					if (err.errno == 1062) { // duplicate primary key
-						resolve(Service.rejectResponse('This order was already placed.', 400));
+			Service.mysql_connection_pool.execute(
+				stmt,
+				inserts,
+				(err, rows, fields) => {
+					if (err) {
+						if (err.errno == 1062) {
+							// duplicate primary key
+							resolve(
+								Service.rejectResponse('This order was already placed.', 400)
+							);
+						} else {
+							console.log('Error during insertion of order: ', err);
+							reject(Service.rejectResponse('Error during insertion of order'));
+						}
 					} else {
-						console.log('Error during insertion of order: ', err);
-						reject(Service.rejectResponse('Error during insertion of order'));
+						ws.sendCommunity(mealOrder.community, 'refreshOrders');
+						resolve(Service.successResponse('success'));
 					}
-				} else {
-					ws.sendCommunity(mealOrder.community, "refreshOrders");
-					resolve(Service.successResponse('success'));
 				}
-			});
+			);
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Change price, special request or state of an order
  *
  * mealOrder MealOrder
  * no response value expected for this operation
  * */
-const updateOrder = ({
-	mealOrder
-}) => new Promise(
-	(resolve, reject) => {
+const updateOrder = ({ mealOrder }) =>
+	new Promise((resolve, reject) => {
 		try {
 			let date;
-			if (typeof(mealOrder.date) === 'undefined') {
+			if (typeof mealOrder.date === 'undefined') {
 				date = new Date();
 			} else {
 				date = new Date(mealOrder.date);
 			}
-			date = date.toISOString().slice(0,10);
+			date = date.toISOString().slice(0, 10);
 
 			Service.trimStrings(mealOrder);
 
-			let stmt = "UPDATE orders SET day = ?";
+			let stmt = 'UPDATE orders SET day = ?';
 			let vars = [date];
-			if (typeof(mealOrder.price) !== 'undefined') {
-				stmt += ",price = ?";
+			if (typeof mealOrder.price !== 'undefined') {
+				stmt += ',price = ?';
 				vars.push(mealOrder.price);
 			}
-			if (typeof(mealOrder.specialRequest) !== 'undefined') {
-				stmt += ",specialRequest = ?";
+			if (typeof mealOrder.specialRequest !== 'undefined') {
+				stmt += ',specialRequest = ?';
 				vars.push(mealOrder.specialRequest);
 			}
-			if (typeof(mealOrder.state) !== 'undefined') {
-
-				if (mealOrder.state === "PAID") {
+			if (typeof mealOrder.state !== 'undefined') {
+				if (mealOrder.state === 'PAID') {
 					// notify users via e-mail
-					let s = "SELECT users.user,users.email,orders.price" +
-						" FROM users,orders" +
-						" WHERE users.community = ?" +
-						" AND orders.community = ?" +
-						" AND orders.shop = ?" +
-						" AND orders.day = ?" +
-						" AND orders.meal = ?" +
-						" AND orders.user = ?" +
-						" AND users.user = (SELECT user FROM walks " +
-						" WHERE community = ? AND shop = ? AND day = ?)"
+					let s =
+						'SELECT users.user,users.email,orders.price' +
+						' FROM users,orders' +
+						' WHERE users.community = ?' +
+						' AND orders.community = ?' +
+						' AND orders.shop = ?' +
+						' AND orders.day = ?' +
+						' AND orders.meal = ?' +
+						' AND orders.user = ?' +
+						' AND users.user = (SELECT user FROM walks ' +
+						' WHERE community = ? AND shop = ? AND day = ?)';
 					let v = [
 						mealOrder.community,
 						mealOrder.community,
@@ -224,37 +225,37 @@ const updateOrder = ({
 						mealOrder.userId,
 						mealOrder.community,
 						mealOrder.shopId,
-						mealOrder.date
-					]
+						mealOrder.date,
+					];
 
 					Service.mysql_connection_pool.execute(s, v, (err, rows, fields) => {
 						if (err) {
 							console.log(
-								'Error during SQL-query for sendmail of payment: ', err
+								'Error during SQL-query for sendmail of payment: ',
+								err
 							);
 						} else {
 							if (rows[0]) {
 								let receiver = {
 									user: rows[0].user,
-									email: rows[0].email
-								}
+									email: rows[0].email,
+								};
 								let sender = {
 									user: mealOrder.userId,
-									email: ""
-								}
+									email: '',
+								};
 								let price = rows[0].price;
 
 								// get receiver mail
-								let s = "SELECT email FROM users" +
-									" WHERE community = ?" +
-									" AND user = ?";
-								let v = [
-									mealOrder.community,
-									mealOrder.userId,
-								]
+								let s =
+									'SELECT email FROM users' +
+									' WHERE community = ?' +
+									' AND user = ?';
+								let v = [mealOrder.community, mealOrder.userId];
 
-								let subject = `Transaction Notification: ` +
-								 `${sender.user} paid ${price} ct to ${receiver.user}`;
+								let subject =
+									`Transaction Notification: ` +
+									`${sender.user} paid ${price} ct to ${receiver.user}`;
 								let body =
 									`My esteemed guests ${receiver.user} and ${sender.user},\n\n` +
 									`I trust this message finds you in the very best of spirits. ` +
@@ -268,54 +269,67 @@ const updateOrder = ({
 									`I remain, as always, your humble and obedient servant,\n` +
 									`Wilfred, your loyal butler.`;
 
-								Service.mysql_connection_pool.execute(s, v, (err, rows, fields) => {
-									if (err) {
-										console.log(
-											'Error during SQL-query for sendmail of payment: ', err
-										);
-									} else {
-										if (rows[0]) {
-											sender["email"] = rows[0].email;
-											// notify the user who did the payment
-											if (sender.email) {
-												Service.sendMail(sender.email, subject, body,
-													function (err, info){
-														if (err) {
-															console.log(
-																'Error while sending mail: ', err, info
-															);
+								Service.mysql_connection_pool.execute(
+									s,
+									v,
+									(err, rows, fields) => {
+										if (err) {
+											console.log(
+												'Error during SQL-query for sendmail of payment: ',
+												err
+											);
+										} else {
+											if (rows[0]) {
+												sender['email'] = rows[0].email;
+												// notify the user who did the payment
+												if (sender.email) {
+													Service.sendMail(
+														sender.email,
+														subject,
+														body,
+														function (err, info) {
+															if (err) {
+																console.log(
+																	'Error while sending mail: ',
+																	err,
+																	info
+																);
+															}
 														}
-													});
+													);
+												}
 											}
 										}
 									}
-								});
+								);
 
 								// notify the user who should have received the payment
 								if (receiver.email) {
-									Service.sendMail(receiver.email, subject, body,
-										function (err, info){
+									Service.sendMail(
+										receiver.email,
+										subject,
+										body,
+										function (err, info) {
 											if (err) {
-												console.log(
-													'Error while sending mail: ', err, info
-												);
+												console.log('Error while sending mail: ', err, info);
 											}
-										});
+										}
+									);
 								}
 							}
 						}
 					});
-
 				}
 
-				stmt += ",state = ? ";
+				stmt += ',state = ? ';
 				vars.push(mealOrder.state);
 			}
-			stmt += "WHERE community = ?" +
-				" AND shop = ? " +
-				" AND user = ? " +
-				" AND day = ? " +
-				" AND meal = ?";
+			stmt +=
+				'WHERE community = ?' +
+				' AND shop = ? ' +
+				' AND user = ? ' +
+				' AND day = ? ' +
+				' AND meal = ?';
 			vars.push(
 				mealOrder.community,
 				mealOrder.shopId,
@@ -329,22 +343,20 @@ const updateOrder = ({
 					console.log('Error during insertion of order: ', err);
 					reject(Service.rejectResponse('Error during insertion of order'));
 				} else {
-					if (rows['affectedRows'] === 0){
+					if (rows['affectedRows'] === 0) {
 						reject(Service.rejectResponse("User didn't ordered anything yet"));
 					} else {
-						ws.sendCommunity(mealOrder.community, "refreshOrders");
+						ws.sendCommunity(mealOrder.community, 'refreshOrders');
 						resolve(Service.successResponse('success'));
 					}
 				}
 			});
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 
 module.exports = {
 	getOrdersOfDay,

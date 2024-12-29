@@ -2,17 +2,14 @@
 <html lang="en">
 	<!--#include virtual="/head.shtml"-->
 	<body>
-		<div id='root' class='row'>
+		<div id="root" class="row">
+			<div class="col"></div>
 
-			<div class='col'></div>
-
-			<div class='col-lg-8'>
+			<div class="col-lg-8">
 				<!--#set var="active" value="log"-->
 				<!--#include virtual="/nav.shtml"-->
 				<div>
-					<h1>
-						Log <span v-if="userId"> of {{userId}}</span>
-					</h1>
+					<h1>Log <span v-if="userId"> of {{userId}}</span></h1>
 					<div>
 						<vue-good-table
 							:rows="payments"
@@ -21,7 +18,7 @@
 							:search-options="{ enabled: true }"
 							:group-options="{ enabled: true }"
 							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
-							>
+						>
 							<!--template slot="table-row" slot-scope="payment">
 								<span v-if="payment.column.field == 'button'">
 									<button
@@ -39,7 +36,7 @@
 					</div>
 				</div>
 			</div>
-			<div class='col'></div>
+			<div class="col"></div>
 		</div>
 
 		<!--#include virtual="/foot.shtml"-->

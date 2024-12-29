@@ -7,100 +7,102 @@ const ws = require('../ws');
  * shopAnnouncement ShopAnnouncement
  * no response value expected for this operation
  * */
-const announceShop = ({
-	shopAnnouncement
-}) => new Promise(
-	(resolve, reject) => {
+const announceShop = ({ shopAnnouncement }) =>
+	new Promise((resolve, reject) => {
 		let date;
-		if (typeof(shopAnnouncement.date) === 'undefined') {
+		if (typeof shopAnnouncement.date === 'undefined') {
 			date = new Date();
 		} else {
 			date = new Date(shopAnnouncement.date);
 		}
-		date = date.toISOString().slice(0,10);
+		date = date.toISOString().slice(0, 10);
 		Service.trimStrings(shopAnnouncement);
 
 		let inserts = [
 			shopAnnouncement.community,
 			shopAnnouncement.userId,
 			shopAnnouncement.shopId,
-			date
+			date,
 		];
 		let stmt =
-			"INSERT INTO walks " +
-			" SET community = ?, user = ?, shop = ?, day = ?";
+			'INSERT INTO walks ' + ' SET community = ?, user = ?, shop = ?, day = ?';
 
-		Service.mysql_connection_pool.execute(stmt, inserts, (err, rows, fields) => {
-			if (err) {
-				if (err.errno == 1062) { // duplicate primary key
-					resolve(Service.rejectResponse(
-						'This announcement was already made.', 400
-					));
+		Service.mysql_connection_pool.execute(
+			stmt,
+			inserts,
+			(err, rows, fields) => {
+				if (err) {
+					if (err.errno == 1062) {
+						// duplicate primary key
+						resolve(
+							Service.rejectResponse('This announcement was already made.', 400)
+						);
+					} else {
+						console.log('Error during insertion of the announcement: ', err);
+						reject(
+							Service.rejectResponse(
+								'Error during insertion of the announcement'
+							)
+						);
+					}
 				} else {
-					console.log('Error during insertion of the announcement: ', err);
-					reject(Service.rejectResponse(
-						'Error during insertion of the announcement'
-					));
+					ws.sendCommunity(shopAnnouncement.community, 'getShopAnnouncements');
+					resolve(Service.successResponse('success'));
 				}
-			} else {
-				ws.sendCommunity(shopAnnouncement.community, "getShopAnnouncements");
-				resolve(Service.successResponse('success'));
 			}
-		});
-	},
-);
+		);
+	});
 /**
  * I will not walk to the shop
  *
  * shopAnnouncement ShopAnnouncement
  * no response value expected for this operation
  * */
-const deleteShopAnnouncement = ({
-	shopAnnouncement
-}) => new Promise(
-	(resolve, reject) => {
+const deleteShopAnnouncement = ({ shopAnnouncement }) =>
+	new Promise((resolve, reject) => {
 		try {
 			let date;
-			if (typeof(shopAnnouncement.date) === 'undefined') {
+			if (typeof shopAnnouncement.date === 'undefined') {
 				date = new Date();
 			} else {
 				date = new Date(shopAnnouncement.date);
 			}
-			date = date.toISOString().slice(0,10);
+			date = date.toISOString().slice(0, 10);
 			Service.trimStrings(shopAnnouncement);
 
-			let stmt = "DELETE FROM walks" +
-				" WHERE community = ? AND user = ? AND shop = ? AND day = ?";
-			let vars = [shopAnnouncement.community,
+			let stmt =
+				'DELETE FROM walks' +
+				' WHERE community = ? AND user = ? AND shop = ? AND day = ?';
+			let vars = [
+				shopAnnouncement.community,
 				shopAnnouncement.userId,
 				shopAnnouncement.shopId,
-				date
+				date,
 			];
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('error'));
 				} else {
-					if (rows['affectedRows'] === 0){
-						reject(Service.rejectResponse(
-							"User didn't announced this shop yet", 404
-						));
+					if (rows['affectedRows'] === 0) {
+						reject(
+							Service.rejectResponse("User didn't announced this shop yet", 404)
+						);
 					} else {
 						ws.sendCommunity(
-							shopAnnouncement.community, "getShopAnnouncements"
+							shopAnnouncement.community,
+							'getShopAnnouncements'
 						);
 						resolve(Service.successResponse('success'));
 					}
 				}
 			});
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 /**
  * Get all shop announcements
  *
@@ -108,39 +110,35 @@ const deleteShopAnnouncement = ({
  * date date For which day do you want to get the shop announcements? (optional)
  * no response value expected for this operation
  * */
-const getShopAnnouncements = ({
-	community,
-	date
-}) => new Promise(
-	(resolve, reject) => {
+const getShopAnnouncements = ({ community, date }) =>
+	new Promise((resolve, reject) => {
 		try {
-			if (typeof(date) === 'undefined') {
+			if (typeof date === 'undefined') {
 				date = new Date();
 			} else {
 				date = new Date(date);
 			}
-			date = date.toISOString().slice(0,10);
-			let stmt =
-				"SELECT user,shop FROM walks WHERE community = ? AND day = ?";
+			date = date.toISOString().slice(0, 10);
+			let stmt = 'SELECT user,shop FROM walks WHERE community = ? AND day = ?';
 			let vars = [community, date];
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
 					console.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
-					resolve(Service.successResponse({
-						rows
-					}));
+					resolve(
+						Service.successResponse({
+							rows,
+						})
+					);
 				}
 			});
 		} catch (e) {
-			reject(Service.rejectResponse(
-				e.message || 'Invalid input',
-				e.status || 405,
-			));
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
 		}
-	},
-);
+	});
 
 module.exports = {
 	announceShop,

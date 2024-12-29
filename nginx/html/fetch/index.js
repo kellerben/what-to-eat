@@ -2,28 +2,29 @@ var lunch = new SwaggerClient('/openapi.json');
 
 // ws {{{
 var connection;
-function renewconnection(){
+function renewconnection() {
 	var prot;
-	if (window.location.protocol === "https:") {
-		prot = "wss://";
+	if (window.location.protocol === 'https:') {
+		prot = 'wss://';
 	} else {
-		prot = "ws://";
+		prot = 'ws://';
 	}
 	connection = new WebSocket(
-		prot+location.hostname+":"+location.port+"/ws/", "json"
+		prot + location.hostname + ':' + location.port + '/ws/',
+		'json'
 	);
 	connection.onopen = () => {
-		connection.send(JSON.stringify({'community':vueapp.community}));
-	}
+		connection.send(JSON.stringify({ community: vueapp.community }));
+	};
 	connection.onmessage = incommingMessage;
 	connection.onclose = renewconnection;
 }
 function incommingMessage(e) {
-	switch(e.data) {
-		case "refreshOrders":
+	switch (e.data) {
+		case 'refreshOrders':
 			fetchTodaysOrders();
 			break;
-		case "refreshPrices":
+		case 'refreshPrices':
 			fetchTodaysOrders();
 			break;
 	}
@@ -56,114 +57,114 @@ const vueapp = new Vue({
 			},
 			{
 				label: 'Special Request',
-				field: 'specialRequest'
+				field: 'specialRequest',
 			},
 			{
 				label: 'Price',
 				field: 'price',
 				type: 'number',
-				formatFn: (value) => value == null ? '' : value+" ct"
-			}
+				formatFn: (value) => (value == null ? '' : value + ' ct'),
+			},
 		],
 		sortOpts: {
-			initialSortBy: [
-				{field: 'shop'},
-				{field: 'meal'}
-			]
-		}
+			initialSortBy: [{ field: 'shop' }, { field: 'meal' }],
+		},
 	},
 	computed: {
-		total(){
-			return this.orders.reduce((total, product) => product.price + total  ,0);
-		}
+		total() {
+			return this.orders.reduce((total, product) => product.price + total, 0);
+		},
 	},
 	watch: {
-		orders: function() {
-			this.orders.forEach(o => {
-				lunch.then(
-					client => client.apis.Shop.getShopData({
-						community: vueapp.community, shopId: o.shop
-					})
-				).then(
-					result => vueapp.updateShopLabel(JSON.parse(result.text))
-				);
+		orders: function () {
+			this.orders.forEach((o) => {
+				lunch
+					.then((client) =>
+						client.apis.Shop.getShopData({
+							community: vueapp.community,
+							shopId: o.shop,
+						})
+					)
+					.then((result) => vueapp.updateShopLabel(JSON.parse(result.text)));
 			});
 		},
 	},
 	methods: {
-		updateShopLabel(shopDetails){
-			this.orders.forEach(o => {
+		updateShopLabel(shopDetails) {
+			this.orders.forEach((o) => {
 				if (o.shop == shopDetails.shop) {
-					o.label = o.shop
+					o.label = o.shop;
 					if (shopDetails.phone) {
-						var number = shopDetails.phone.replace(/[^+0-9 ()-]/g,"");
-						var URInumber = number.replace(/[() ]/g,"-");
-						o.label += ` (<a href='tel:${encodeURI(URInumber)}'>${number}</a>)`
-						o.html = true
+						var number = shopDetails.phone.replace(/[^+0-9 ()-]/g, '');
+						var URInumber = number.replace(/[() ]/g, '-');
+						o.label += ` (<a href='tel:${encodeURI(URInumber)}'>${number}</a>)`;
+						o.html = true;
 					}
-					o.label += `, total: ${o.totalPrice} ct`
+					o.label += `, total: ${o.totalPrice} ct`;
 				}
 			});
 		},
 		getCommunityFromHash() {
 			var u = new URLSearchParams(document.location.hash.substr(1));
-			if (u.has("in")) {
-				this.community = u.get("in");
+			if (u.has('in')) {
+				this.community = u.get('in');
 				localStorage.community = this.community;
 			}
 		},
 		updatePrice(elem) {
-			if (elem.price === "") {
+			if (elem.price === '') {
 				return;
 			}
-			lunch.then(
-				client => client.apis.Shop.setPrice({
+			lunch.then((client) =>
+				client.apis.Shop.setPrice({
 					community: this.community,
 					shopId: elem.shop,
 					meal: elem.meal,
-					price: elem.price
+					price: elem.price,
 				})
-			)
+			);
 		},
 		init() {
 			this.getCommunityFromHash();
-			if (typeof(this.community) == "undefined" || this.community == "") {
-				document.location = '/config/'
+			if (typeof this.community == 'undefined' || this.community == '') {
+				document.location = '/config/';
 			} else {
 				fetchTodaysOrders();
 			}
-		}
+		},
 	},
 	mounted() {
 		this.init();
-		if (typeof(this.community) != "undefined" && this.community != "") {
-			document.location.hash = "in=" + this.community;
+		if (typeof this.community != 'undefined' && this.community != '') {
+			document.location.hash = 'in=' + this.community;
 		}
 		window.addEventListener('hashchange', this.init);
 	},
-	el: '#root'
+	el: '#root',
 });
 // }}}
 
 // current orders {{{
 function fetchTodaysOrders() {
-	function updateOrders(orders){
+	function updateOrders(orders) {
 		var o = {};
 		vueapp.prices = {};
-		orders.forEach(elem => {
+		orders.forEach((elem) => {
 			if (elem.state != 'DISCARDED') {
 				vueapp.prices[`${elem.shop}-${elem.meal}`] = {
-					shop: elem.shop, meal: elem.meal, price: elem.price
+					shop: elem.shop,
+					meal: elem.meal,
+					price: elem.price,
 				};
-				if (typeof(o[elem.shop]) == 'undefined') {
+				if (typeof o[elem.shop] == 'undefined') {
 					o[elem.shop] = {
 						totalPrice: elem.price,
 						mode: 'span',
 						label: elem.shop,
 						shop: elem.shop,
 						html: false,
-						children: [ elem ]
-					}
+						children: [elem],
+					};
 				} else {
 					o[elem.shop].children.push(elem);
 					o[elem.shop].totalPrice += elem.price;
@@ -175,10 +176,10 @@ function fetchTodaysOrders() {
 			vueapp.orders.push(o[key]);
 		}
 	}
-	lunch.then(
-		client => client.apis.Order.getOrdersOfDay({ community: vueapp.community })
-	).then(
-		result => updateOrders(JSON.parse(result.text).rows)
-	);
+	lunch
+		.then((client) =>
+			client.apis.Order.getOrdersOfDay({ community: vueapp.community })
+		)
+		.then((result) => updateOrders(JSON.parse(result.text).rows));
 }
 // }}}
