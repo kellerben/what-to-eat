@@ -99,7 +99,7 @@
 							triggers="focus">
 						This will resolve all current displayed transactions!
 						<ol>
-							<li v-for="payment in this.getFilteredPayments(this.searchTerm, this.payments)">{{payment.price}} ct: {{payment.from_user}} → {{payment.to_user}}</li>
+							<li v-for="payment in this.getFilteredPayments()">{{payment.price}} ct: {{payment.from_user}} → {{payment.to_user}}</li>
 						</ol>
 						<b-button
 								v-on:click="setOrderPaidEverything"
@@ -115,7 +115,7 @@
 							id="pay_all_button"
 							class="btn btn-primary btn-sm"
 							title="Set everything to paid!"
-							:disabled="!(this.searchTerm.length > 0 && this.getFilteredPayments(this.searchTerm, this.payments).length > 0)"
+							:disabled="!(this.searchTerm.length > 0 && this.getFilteredPayments().length > 0)"
 							>Pay everything</button>
 				</div>
 				<table class="table table-bordered table-striped table-hover table-condensed">

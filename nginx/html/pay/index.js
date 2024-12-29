@@ -115,7 +115,10 @@ const vueapp = new Vue({
 			this.alertMsg = string;
 			this.showAlertTime = 10;
 		},
-		getFilteredPayments(filter, allpayments) {
+		getFilteredPayments() {
+			return this.filterPayments(this.searchTerm, this.payments)
+		},
+		filterPayments(filter, allpayments) {
 			let filteredpayments = [];
 			allpayments.forEach(p => {
 				if (
@@ -126,20 +129,64 @@ const vueapp = new Vue({
 			});
 			return filteredpayments;
 		},
-		updatePaymentPool() {
-			this.paymentPool = {}
-			this.getFilteredPayments(this.searchTerm, this.payments).forEach(p => {
+		getPaymentPool(payments) {
+			let paymentPool = {};
+			payments.forEach(p => {
 				if (p.price) {
-					if (!this.paymentPool[p.from_user]) {
-						this.paymentPool[p.from_user] = 0
+					if (!paymentPool[p.from_user]) {
+						paymentPool[p.from_user] = 0
 					}
-					if (!this.paymentPool[p.to_user]) {
-						this.paymentPool[p.to_user] = 0
+					if (!paymentPool[p.to_user]) {
+						paymentPool[p.to_user] = 0
 					}
-					this.paymentPool[p.from_user] += p.price
-					this.paymentPool[p.to_user] -= p.price
+					paymentPool[p.from_user] += p.price
+					paymentPool[p.to_user] -= p.price
 				}
-			})
+			});
+			return paymentPool;
+		},
+		updatePaymentPool() {
+			this.paymentPool = this.getPaymentPool(this.getFilteredPayments());
+		},
+		// function to get <number> of elements combined in <array>
+		getArrayCombinations(array, number) {
+			let a = structuredClone(array);
+			let ret = [];
+			if (number === 1) {
+				a.forEach((e) => {
+					ret.push([e]);
+				})
+			} else {
+				let a_length = a.length;
+				for (let i = 0; i < a_length; i++) {
+					let elem = a.shift();
+					let remainder = this.getArrayCombinations(a, number - 1);
+					for (let n = 0; n < remainder.length; n++) {
+						ret.push([elem].concat(remainder[n]))
+					}
+				}
+			}
+			return ret;
+		},
+		findNullPayments(searchLength) {
+			const result = []
+			const currentCombo = this.getArrayCombinations(this.getFilteredPayments(), searchLength);
+			currentCombo.forEach((c) => {
+				const paymentPool = this.getPaymentPool(c);
+				const isZero = Object.values(paymentPool).every(
+					(balance) => balance === 0,
+				) // Check if all balances are zero
+				if (isZero) result.push(c) // Add valid combination to result
+			});
+			let searchUser = new Set;
+			if (result[0]) {
+				result[0].forEach((p) => {
+					searchUser.add(p.from_user);
+					searchUser.add(p.to_user);
+				})
+				console.log(searchUser)
+			}
+			return result
 		},
 		getOpenPayments: function (event) {
 			lunch.then(
@@ -206,7 +253,7 @@ const vueapp = new Vue({
 			)
 		},
 		setOrderPaidEverything() {
-			const filteredPayments = this.getFilteredPayments(this.searchTerm, this.payments);
+			const filteredPayments = this.getFilteredPayments();
 			filteredPayments.forEach(payment => {
 				lunch.then(
 					client => client.apis.Order.updateOrder({}, {
