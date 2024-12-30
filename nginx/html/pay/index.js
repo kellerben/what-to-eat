@@ -35,60 +35,62 @@ renewconnection();
 // vue {{{
 Vue.use(VueMarkdown);
 const vueapp = new Vue({
-	data: {
-		community: localStorage.community,
-		userId: localStorage.userId,
-		alertMsg: '',
-		alertClass: '',
-		alertType: '',
-		showAlertTime: 0,
-		payments: [],
-		searchTerm: localStorage.userId.toLowerCase(),
-		paymentPool: {},
-		paymentInstructions: {},
-		anchorAttrs: {
-			target: '_blank',
-			rel: 'noopener noreferrer nofollow',
-		},
-		header: [
-			{
-				label: 'From',
-				field: 'from_user',
+	data: function () {
+		return {
+			community: localStorage.community,
+			userId: localStorage.userId,
+			alertMsg: '',
+			alertClass: '',
+			alertType: '',
+			showAlertTime: 0,
+			payments: [],
+			searchTerm: localStorage.userId.toLowerCase(),
+			paymentPool: {},
+			paymentInstructions: {},
+			anchorAttrs: {
+				target: '_blank',
+				rel: 'noopener noreferrer nofollow',
 			},
-			{
-				label: 'To',
-				field: 'to_user',
+			header: [
+				{
+					label: 'From',
+					field: 'from_user',
+				},
+				{
+					label: 'To',
+					field: 'to_user',
+				},
+				{
+					label: 'Price',
+					field: 'price',
+					type: 'number',
+					formatFn: (value) => (value == null ? '' : value + ' ct'),
+				},
+				{
+					label: 'Food Store',
+					field: 'shop',
+				},
+				{
+					label: 'Meal',
+					field: 'meal',
+				},
+				{
+					label: 'Day',
+					field: 'day',
+					type: 'date',
+					dateInputFormat: 'yyyy-MM-dd',
+					dateOutputFormat: 'do MMM yy',
+				},
+				{
+					label: 'Action',
+					field: 'button',
+				},
+			],
+			sortOpts: {
+				initialSortBy: [{ field: 'day' }],
 			},
-			{
-				label: 'Price',
-				field: 'price',
-				type: 'number',
-				formatFn: (value) => (value == null ? '' : value + ' ct'),
-			},
-			{
-				label: 'Food Store',
-				field: 'shop',
-			},
-			{
-				label: 'Meal',
-				field: 'meal',
-			},
-			{
-				label: 'Day',
-				field: 'day',
-				type: 'date',
-				dateInputFormat: 'yyyy-MM-dd',
-				dateOutputFormat: 'do MMM yy',
-			},
-			{
-				label: 'Action',
-				field: 'button',
-			},
-		],
-		sortOpts: {
-			initialSortBy: [{ field: 'day' }],
-		},
-		prices: [],
+			prices: [],
+		};
 	},
 	watch: {
 		payments: function () {

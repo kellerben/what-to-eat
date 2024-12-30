@@ -45,7 +45,7 @@ Vue.component('l-tooltip', window.Vue2Leaflet.LTooltip);
 Vue.component('l-popup', window.Vue2Leaflet.LPopup);
 Vue.component('l-icon', window.Vue2Leaflet.LIcon);
 const vueapp = new Vue({
-	data: function() {
+	data: function () {
 		return {
 			community: localStorage.community,
 			communityLatLng: {},

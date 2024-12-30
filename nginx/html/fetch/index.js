@@ -35,40 +35,42 @@ renewconnection();
 // vue {{{
 Vue.use(window['vue-good-table'].default);
 const vueapp = new Vue({
-	data: {
-		meal: null,
-		specialRequest: '',
-		community: localStorage.community,
-		orders: [],
-		prices: {},
-		header: [
-			{
-				label: 'Name',
-				field: 'user',
+	data: function () {
+		return {
+			meal: null,
+			specialRequest: '',
+			community: localStorage.community,
+			orders: [],
+			prices: {},
+			header: [
+				{
+					label: 'Name',
+					field: 'user',
+				},
+				{
+					label: 'Shop',
+					field: 'shop',
+					hidden: true,
+				},
+				{
+					label: 'Meal',
+					field: 'meal',
+				},
+				{
+					label: 'Special Request',
+					field: 'specialRequest',
+				},
+				{
+					label: 'Price',
+					field: 'price',
+					type: 'number',
+					formatFn: (value) => (value == null ? '' : value + ' ct'),
+				},
+			],
+			sortOpts: {
+				initialSortBy: [{ field: 'shop' }, { field: 'meal' }],
 			},
-			{
-				label: 'Shop',
-				field: 'shop',
-				hidden: true,
-			},
-			{
-				label: 'Meal',
-				field: 'meal',
-			},
-			{
-				label: 'Special Request',
-				field: 'specialRequest',
-			},
-			{
-				label: 'Price',
-				field: 'price',
-				type: 'number',
-				formatFn: (value) => (value == null ? '' : value + ' ct'),
-			},
-		],
-		sortOpts: {
-			initialSortBy: [{ field: 'shop' }, { field: 'meal' }],
-		},
+		};
 	},
 	computed: {
 		total() {

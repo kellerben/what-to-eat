@@ -28,7 +28,7 @@
 							:pagination-options="paginationOptions"
 							style-class="vgt-table table table-bordered table-striped table-hover table-condensed"
 						>
-							<template slot="table-row" slot-scope="shop">
+							<template v-slot:table-row="shop">
 								<span
 									v-if="shop.column.field == 'shop'"
 									v-bind:data-shop="shop.row.shop"

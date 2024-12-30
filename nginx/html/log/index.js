@@ -34,56 +34,58 @@ renewconnection();
 
 // vue {{{
 const vueapp = new Vue({
-	data: {
-		community: localStorage.community,
-		userId: localStorage.userId,
-		payments: [],
-		header: [
-			{
-				label: 'State',
-				field: 'state',
-				hidden: true,
-				sortFn: (x, y) => {
-					var sortary = ['NEW', 'FETCHED', 'PAID', 'DISCARDED'];
-					var a = sortary.indexOf(x);
-					var b = sortary.indexOf(y);
-					return a < b ? -1 : a > b ? 1 : 0;
+	data: function () {
+		return {
+			community: localStorage.community,
+			userId: localStorage.userId,
+			payments: [],
+			header: [
+				{
+					label: 'State',
+					field: 'state',
+					hidden: true,
+					sortFn: (x, y) => {
+						var sortary = ['NEW', 'FETCHED', 'PAID', 'DISCARDED'];
+						var a = sortary.indexOf(x);
+						var b = sortary.indexOf(y);
+						return a < b ? -1 : a > b ? 1 : 0;
+					},
 				},
+				{
+					label: 'From',
+					field: 'from_user',
+				},
+				{
+					label: 'To',
+					field: 'to_user',
+				},
+				{
+					label: 'Price',
+					field: 'price',
+					type: 'number',
+					formatFn: (value) => (value == null ? '' : value + ' ct'),
+				},
+				{
+					label: 'Food Store',
+					field: 'shop',
+				},
+				{
+					label: 'Meal',
+					field: 'meal',
+				},
+				{
+					label: 'Day',
+					field: 'day',
+					type: 'date',
+					dateInputFormat: 'yyyy-MM-dd',
+					dateOutputFormat: 'do MMM yy',
+				},
+			],
+			sortOpts: {
+				initialSortBy: [{ field: 'day', type: 'desc' }],
 			},
-			{
-				label: 'From',
-				field: 'from_user',
-			},
-			{
-				label: 'To',
-				field: 'to_user',
-			},
-			{
-				label: 'Price',
-				field: 'price',
-				type: 'number',
-				formatFn: (value) => (value == null ? '' : value + ' ct'),
-			},
-			{
-				label: 'Food Store',
-				field: 'shop',
-			},
-			{
-				label: 'Meal',
-				field: 'meal',
-			},
-			{
-				label: 'Day',
-				field: 'day',
-				type: 'date',
-				dateInputFormat: 'yyyy-MM-dd',
-				dateOutputFormat: 'do MMM yy',
-			},
-		],
-		sortOpts: {
-			initialSortBy: [{ field: 'day', type: 'desc' }],
-		},
-		prices: [],
+			prices: [],
+		};
 	},
 	methods: {
 		parsePaymentLog(log) {

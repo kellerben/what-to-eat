@@ -1,20 +1,22 @@
 var lunch = new SwaggerClient('/openapi.json');
 Vue.use(VueMarkdown);
 new Vue({
-	data: {
-		community: localStorage.community,
-		alertMsg: '',
-		alertClass: '',
-		alertType: '',
-		showAlertTime: 0,
-		userId: localStorage.userId,
-		email: '',
-		paymentInstructions: '',
-		paymentInstructionsSample: '',
-		anchorAttrs: {
-			target: '_blank',
-			rel: 'noopener noreferrer nofollow',
-		},
+	data: function () {
+		return {
+			community: localStorage.community,
+			alertMsg: '',
+			alertClass: '',
+			alertType: '',
+			showAlertTime: 0,
+			userId: localStorage.userId,
+			email: '',
+			paymentInstructions: '',
+			paymentInstructionsSample: '',
+			anchorAttrs: {
+				target: '_blank',
+				rel: 'noopener noreferrer nofollow',
+			},
+		};
 	},
 	watch: {
 		userId: function () {
