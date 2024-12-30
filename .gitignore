@@ -6,7 +6,6 @@ nodejs/node_modules/
 nodejs/config.js
 nodejs/api
 nodejs/.openapi-generator/
-nodejs/expressServer.js
 nodejs/controllers/
 nodejs/services/index.js
 nodejs/utils/

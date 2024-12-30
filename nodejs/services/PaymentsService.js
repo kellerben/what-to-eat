@@ -1,4 +1,5 @@
 const Service = require('./Service');
+const logger = require('../logger');
 
 /**
  * Get open or closed payments
@@ -55,7 +56,7 @@ const getPayments = ({ community, from, to, states }) =>
 				vars,
 				(err, rows, fields) => {
 					if (err) {
-						console.error(err);
+						logger.error(err);
 						reject(Service.rejectResponse('Error while fetching orders'));
 					} else {
 						resolve(

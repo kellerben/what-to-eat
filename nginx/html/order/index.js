@@ -45,27 +45,29 @@ renewconnection();
 // vue {{{
 Vue.use(VueMarkdown);
 const vueapp = new Vue({
-	data: {
-		alertMsg: '',
-		alertClass: '',
-		alertType: '',
-		showAlertTime: 0,
-		community: localStorage.community,
-		userId: localStorage.userId,
-		suggestions: [],
-		meal: null,
-		specialRequest: '',
-		specialRequestOptions: [],
-		shopId: '',
-		shopOptions: [],
-		foodOptions: [],
-		meals: {},
-		price: '',
-		orders: [],
-		anchorAttrs: {
-			target: '_blank',
-			rel: 'noopener noreferrer nofollow',
-		},
+	data: function () {
+		return {
+			alertMsg: '',
+			alertClass: '',
+			alertType: '',
+			showAlertTime: 0,
+			community: localStorage.community,
+			userId: localStorage.userId,
+			suggestions: [],
+			meal: null,
+			specialRequest: '',
+			specialRequestOptions: [],
+			shopId: '',
+			shopOptions: [],
+			foodOptions: [],
+			meals: {},
+			price: '',
+			orders: [],
+			anchorAttrs: {
+				target: '_blank',
+				rel: 'noopener noreferrer nofollow',
+			},
+		};
 	},
 	computed: {
 		total() {
@@ -243,7 +245,7 @@ const vueapp = new Vue({
 				specialRequest: this.specialRequest,
 			};
 			if (this.price !== '' && typeof this.price != 'undefined') {
-				order.price = this.price;
+				order.price = Number(this.price);
 				lunch.then((client) => client.apis.Shop.setPrice(order));
 			}
 			// do updateLunch(state->new) if lunch was already ordered and discarded

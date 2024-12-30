@@ -1,4 +1,5 @@
 const Service = require('./Service');
+const logger = require('../logger');
 
 /**
  * Get the community information
@@ -15,7 +16,7 @@ const getCommunityInformation = ({ community }) =>
 				[community],
 				(err, rows, fields) => {
 					if (err) {
-						console.error(err);
+						logger.error(err);
 						reject(
 							Service.rejectResponse(
 								'Error while fetching community properties'
@@ -45,9 +46,10 @@ const getCommunityInformation = ({ community }) =>
  * communityInformation CommunityInformation
  * no response value expected for this operation
  * */
-const setCommunityInformation = ({ community, communityInformation }) =>
+const setCommunityInformation = ({ community, body }) =>
 	new Promise((resolve, reject) => {
 		try {
+			let communityInformation = body;
 			Service.trimStrings(communityInformation);
 			let stmt = 'UPDATE communities SET lat = ?, lng = ? WHERE community = ?';
 			let values = [
@@ -60,7 +62,7 @@ const setCommunityInformation = ({ community, communityInformation }) =>
 				values,
 				(err, rows, fields) => {
 					if (err) {
-						console.error(err);
+						logger.error(err);
 						reject(
 							Service.rejectResponse('Error while setting communityInformation')
 						);
@@ -74,7 +76,7 @@ const setCommunityInformation = ({ community, communityInformation }) =>
 								values,
 								(err, rows, fields) => {
 									if (err) {
-										console.error(err);
+										logger.error(err);
 										reject(
 											Service.rejectResponse(
 												'Error while inserting community information'

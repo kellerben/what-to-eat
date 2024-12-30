@@ -1,5 +1,6 @@
 const Service = require('./Service');
 const ws = require('../ws');
+const logger = require('../logger');
 
 /**
  * Get the payment information of a user
@@ -16,7 +17,7 @@ const getPaymentInstructions = ({ community, userId }) =>
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(
 						Service.rejectResponse('Error while fetching paymentInstructions')
 					);
@@ -38,9 +39,10 @@ const getPaymentInstructions = ({ community, userId }) =>
  * email Email
  * no response value expected for this operation
  * */
-const setEmail = ({ community, userId, email }) =>
+const setEmail = ({ community, userId, body }) =>
 	new Promise((resolve, reject) => {
 		try {
+			let email = body;
 			let inserts = [email.email, community, userId];
 			let stmt =
 				'INSERT INTO users' + ' (email, community, user)' + ' VALUES (?, ?, ?)';
@@ -61,7 +63,7 @@ const setEmail = ({ community, userId, email }) =>
 								inserts,
 								(err, rows, fields) => {
 									if (err) {
-										console.log('Error during update of email: ', err);
+										logger.error('Error during update of email: ', err);
 										reject(
 											Service.rejectResponse(
 												'Error during the insertion of the email'
@@ -73,7 +75,7 @@ const setEmail = ({ community, userId, email }) =>
 								}
 							);
 						} else {
-							console.log('Error during insertion of email: ', err);
+							logger.error('Error during insertion of email: ', err);
 							reject(
 								Service.rejectResponse(
 									'Error during the insertion of the email'
@@ -99,9 +101,10 @@ const setEmail = ({ community, userId, email }) =>
  * paymentInstructions PaymentInstructions
  * no response value expected for this operation
  * */
-const setPaymentInstructions = ({ community, userId, paymentInstructions }) =>
+const setPaymentInstructions = ({ community, userId, body }) =>
 	new Promise((resolve, reject) => {
 		try {
+			let paymentInstructions = body;
 			let inserts = [
 				paymentInstructions.paymentInstructions,
 				community,
@@ -127,7 +130,7 @@ const setPaymentInstructions = ({ community, userId, paymentInstructions }) =>
 								inserts,
 								(err, rows, fields) => {
 									if (err) {
-										console.log('Error during update of paymentinfo: ', err);
+										logger.error('Error during update of paymentinfo: ', err);
 										reject(
 											Service.rejectResponse(
 												'Error during the insertion of the payment instructions'
@@ -140,7 +143,7 @@ const setPaymentInstructions = ({ community, userId, paymentInstructions }) =>
 								}
 							);
 						} else {
-							console.log('Error during insertion of paymentinfo: ', err);
+							logger.error('Error during insertion of paymentinfo: ', err);
 							reject(
 								Service.rejectResponse(
 									'Error during the insertion of the payment instructions'

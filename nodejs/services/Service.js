@@ -3,6 +3,7 @@ const fs = require('fs');
 const nodemailer = require('nodemailer');
 const nodemailerCramMd5 = require('nodemailer-cram-md5');
 const jsYaml = require('js-yaml');
+const logger = require('../logger');
 
 const DB_PASSWD = '/run/secrets/db_user_pw';
 const db_user_passwd = fs.readFileSync(DB_PASSWD, 'UTF-8').trim();
@@ -51,7 +52,7 @@ class Service {
 			},
 			function (err, info) {
 				if (err) {
-					console.log('Error while sending mail: ', err, info);
+					logger.error('Error while sending mail: ', err, info);
 				}
 			}
 		);

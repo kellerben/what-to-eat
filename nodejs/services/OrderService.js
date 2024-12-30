@@ -1,5 +1,6 @@
 const Service = require('./Service');
 const ws = require('../ws');
+const logger = require('../logger');
 
 /**
  * Get all orders of one day
@@ -25,7 +26,7 @@ const getOrdersOfDay = ({ community, date }) =>
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(
@@ -66,7 +67,7 @@ const getShopOrders = ({ community, shopId, date }) =>
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(
@@ -88,10 +89,12 @@ const getShopOrders = ({ community, shopId, date }) =>
  * mealOrder MealOrder
  * no response value expected for this operation
  * */
-const orderLunch = ({ mealOrder }) =>
+const orderLunch = (req) =>
 	new Promise((resolve, reject) => {
 		try {
 			let date;
+			let mealOrder = req.body;
+
 			if (typeof mealOrder.date === 'undefined') {
 				date = new Date();
 			} else {
@@ -118,7 +121,7 @@ const orderLunch = ({ mealOrder }) =>
 					(err, rows, fields) => {
 						if (err && err.errno != 1062) {
 							// 1062 := duplicate primary key, nothing to do
-							console.log('Error during insertion of order: ', err);
+							logger.error('Error during insertion of order: ', err);
 							reject(Service.rejectResponse('Error during insertion of order'));
 						}
 					}
@@ -158,7 +161,7 @@ const orderLunch = ({ mealOrder }) =>
 								Service.rejectResponse('This order was already placed.', 400)
 							);
 						} else {
-							console.log('Error during insertion of order: ', err);
+							logger.error('Error during insertion of order: ', err);
 							reject(Service.rejectResponse('Error during insertion of order'));
 						}
 					} else {
@@ -179,10 +182,11 @@ const orderLunch = ({ mealOrder }) =>
  * mealOrder MealOrder
  * no response value expected for this operation
  * */
-const updateOrder = ({ mealOrder }) =>
+const updateOrder = (req) =>
 	new Promise((resolve, reject) => {
 		try {
 			let date;
+			let mealOrder = req.body;
 			if (typeof mealOrder.date === 'undefined') {
 				date = new Date();
 			} else {
@@ -230,7 +234,7 @@ const updateOrder = ({ mealOrder }) =>
 
 					Service.mysql_connection_pool.execute(s, v, (err, rows, fields) => {
 						if (err) {
-							console.log(
+							logger.error(
 								'Error during SQL-query for sendmail of payment: ',
 								err
 							);
@@ -274,7 +278,7 @@ const updateOrder = ({ mealOrder }) =>
 									v,
 									(err, rows, fields) => {
 										if (err) {
-											console.log(
+											logger.error(
 												'Error during SQL-query for sendmail of payment: ',
 												err
 											);
@@ -289,7 +293,7 @@ const updateOrder = ({ mealOrder }) =>
 														body,
 														function (err, info) {
 															if (err) {
-																console.log(
+																logger.error(
 																	'Error while sending mail: ',
 																	err,
 																	info
@@ -311,7 +315,7 @@ const updateOrder = ({ mealOrder }) =>
 										body,
 										function (err, info) {
 											if (err) {
-												console.log('Error while sending mail: ', err, info);
+												logger.error('Error while sending mail: ', err, info);
 											}
 										}
 									);
@@ -340,7 +344,7 @@ const updateOrder = ({ mealOrder }) =>
 
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.log('Error during insertion of order: ', err);
+					logger.error('Error during insertion of order: ', err);
 					reject(Service.rejectResponse('Error during insertion of order'));
 				} else {
 					if (rows['affectedRows'] === 0) {

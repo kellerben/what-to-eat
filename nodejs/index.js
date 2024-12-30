@@ -7,7 +7,7 @@ const launchServer = async () => {
 	try {
 		this.ws = new WS();
 		this.ws.launch();
-		logger.info('websocket server running');
+		logger.info('Websocket Server running');
 
 		this.expressServer = new ExpressServer(
 			config.URL_PORT,
@@ -15,9 +15,9 @@ const launchServer = async () => {
 		);
 		this.expressServer.app.disable('x-powered-by');
 		this.expressServer.launch();
-		logger.info('Express server running');
 	} catch (error) {
-		logger.error('Express Server failure', error.message);
+		logger.error(`Express Server failure: ${error.message}`);
+		logger.debug(error.stack);
 		await this.close();
 	}
 };

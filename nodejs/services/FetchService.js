@@ -1,5 +1,6 @@
 const Service = require('./Service');
 const ws = require('../ws');
+const logger = require('../logger');
 
 /**
  * I will walk to the shop
@@ -7,9 +8,10 @@ const ws = require('../ws');
  * shopAnnouncement ShopAnnouncement
  * no response value expected for this operation
  * */
-const announceShop = ({ shopAnnouncement }) =>
+const announceShop = (req) =>
 	new Promise((resolve, reject) => {
 		let date;
+		let shopAnnouncement = req.body;
 		if (typeof shopAnnouncement.date === 'undefined') {
 			date = new Date();
 		} else {
@@ -38,7 +40,7 @@ const announceShop = ({ shopAnnouncement }) =>
 							Service.rejectResponse('This announcement was already made.', 400)
 						);
 					} else {
-						console.log('Error during insertion of the announcement: ', err);
+						logger.error('Error during insertion of the announcement: ', err);
 						reject(
 							Service.rejectResponse(
 								'Error during insertion of the announcement'
@@ -58,10 +60,11 @@ const announceShop = ({ shopAnnouncement }) =>
  * shopAnnouncement ShopAnnouncement
  * no response value expected for this operation
  * */
-const deleteShopAnnouncement = ({ shopAnnouncement }) =>
+const deleteShopAnnouncement = (req) =>
 	new Promise((resolve, reject) => {
 		try {
 			let date;
+			let shopAnnouncement = req.body;
 			if (typeof shopAnnouncement.date === 'undefined') {
 				date = new Date();
 			} else {
@@ -81,7 +84,7 @@ const deleteShopAnnouncement = ({ shopAnnouncement }) =>
 			];
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(Service.rejectResponse('error'));
 				} else {
 					if (rows['affectedRows'] === 0) {
@@ -123,7 +126,7 @@ const getShopAnnouncements = ({ community, date }) =>
 			let vars = [community, date];
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(

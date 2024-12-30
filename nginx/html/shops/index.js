@@ -45,54 +45,56 @@ Vue.component('l-tooltip', window.Vue2Leaflet.LTooltip);
 Vue.component('l-popup', window.Vue2Leaflet.LPopup);
 Vue.component('l-icon', window.Vue2Leaflet.LIcon);
 const vueapp = new Vue({
-	data: {
-		community: localStorage.community,
-		communityLatLng: {},
-		alertMsg: '',
-		alertClass: '',
-		alertType: '',
-		showAlertTime: 0,
-		editShop: {},
-		shops: {},
-		shopsBackup: {},
-		shopAry: [],
-		shopHeader: [
-			{
-				label: 'Food Store',
-				field: 'shop',
+	data: function() {
+		return {
+			community: localStorage.community,
+			communityLatLng: {},
+			alertMsg: '',
+			alertClass: '',
+			alertType: '',
+			showAlertTime: 0,
+			editShop: {},
+			shops: {},
+			shopsBackup: {},
+			shopAry: [],
+			shopHeader: [
+				{
+					label: 'Food Store',
+					field: 'shop',
+				},
+				{
+					label: 'Distance',
+					field: 'distance',
+					type: 'number',
+				},
+				{
+					label: 'Phone',
+					field: 'phone',
+				},
+				{
+					label: 'Comment',
+					field: 'comment',
+				},
+				{
+					label: 'Action',
+					field: 'action',
+				},
+			],
+			anchorAttrs: {
+				target: '_blank',
+				rel: 'noopener noreferrer nofollow',
 			},
-			{
-				label: 'Distance',
-				field: 'distance',
-				type: 'number',
+			shopMapCenter: {},
+			searchMarker: { position: {} },
+			mapSearchAddress: '',
+			paginationOptions: {
+				setCurrentPage: 2,
+				enabled: true,
+				perPage: 5,
+				perPageDropdown: [5, 10, 15, 20, 25],
+				position: 'top',
 			},
-			{
-				label: 'Phone',
-				field: 'phone',
-			},
-			{
-				label: 'Comment',
-				field: 'comment',
-			},
-			{
-				label: 'Action',
-				field: 'action',
-			},
-		],
-		anchorAttrs: {
-			target: '_blank',
-			rel: 'noopener noreferrer nofollow',
-		},
-		shopMapCenter: {},
-		searchMarker: { position: {} },
-		mapSearchAddress: '',
-		paginationOptions: {
-			setCurrentPage: 2,
-			enabled: true,
-			perPage: 5,
-			perPageDropdown: [5, 10, 15, 20, 25],
-			position: 'top',
-		},
+		};
 	},
 	watch: {
 		shops: function () {
@@ -190,7 +192,7 @@ const vueapp = new Vue({
 		confirmEdit(e) {
 			var postBody = {};
 			if (this.editShop.distance != '') {
-				postBody.distance = this.editShop.distance;
+				postBody.distance = Number(this.editShop.distance);
 			}
 			if (this.editShop.phone != '') {
 				postBody.phone = this.editShop.phone;

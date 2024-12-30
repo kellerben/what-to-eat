@@ -1,5 +1,6 @@
 const Service = require('./Service');
 const ws = require('../ws');
+const logger = require('../logger');
 
 /**
  * Delete a meal
@@ -21,7 +22,7 @@ const deleteMeal = ({ community, shopId, meal }) =>
 					vars,
 					(err, rows, fields) => {
 						if (err) {
-							console.error(err);
+							logger.error(err);
 							reject(Service.rejectResponse('Error while deleting meal'));
 						} else {
 							ws.sendCommunity(community, 'getShopSuggestions');
@@ -56,7 +57,7 @@ const getMenu = ({ community, shopId }) =>
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(Service.rejectResponse('Error while fetching meals'));
 				} else {
 					resolve(Service.successResponse(rows));
@@ -88,7 +89,7 @@ const getPrice = ({ community, shopId, meal }) =>
 			let vars = [community, shopId, meal];
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(Service.rejectResponse('Error while fetching orders'));
 				} else {
 					resolve(Service.successResponse(rows[0]));
@@ -115,7 +116,7 @@ const getShopData = ({ community, shopId }) =>
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(Service.rejectResponse('Error while fetching shop details'));
 				} else {
 					if (rows.length == 0) {
@@ -146,7 +147,7 @@ const getShops = ({ community }) =>
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(Service.rejectResponse('Error while fetching shops'));
 				} else {
 					let res = [];
@@ -179,7 +180,7 @@ const getSpecialRequests = ({ community, shopId }) =>
 		try {
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(
 						Service.rejectResponse('Error while fetching special requests')
 					);
@@ -228,7 +229,7 @@ const setPrice = ({ community, meal, shopId, price }) =>
 					vars,
 					(err, rows, fields) => {
 						if (err) {
-							console.error(err);
+							logger.error(err);
 							reject(Service.rejectResponse('Error while updating orders'));
 						} else {
 							ws.sendCommunity(community, 'refreshOrders');
@@ -244,7 +245,7 @@ const setPrice = ({ community, meal, shopId, price }) =>
 			let vars = [price, community, shopId, meal];
 			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
 				if (err) {
-					console.error(err);
+					logger.error(err);
 					reject(Service.rejectResponse('Error while updating orders'));
 				} else {
 					if (rows['affectedRows'] === 0) {
@@ -257,7 +258,7 @@ const setPrice = ({ community, meal, shopId, price }) =>
 							vars,
 							(err, rows, fields) => {
 								if (err) {
-									console.error(err);
+									logger.error(err);
 									reject(Service.rejectResponse('error'));
 								} else {
 									ws.sendCommunity(community, 'refreshPrices');
@@ -285,9 +286,10 @@ const setPrice = ({ community, meal, shopId, price }) =>
  * shopMetaData ShopMetaData
  * no response value expected for this operation
  * */
-const setShopData = ({ community, shopId, shopMetaData }) =>
+const setShopData = ({ community, shopId, body }) =>
 	new Promise((resolve, reject) => {
 		try {
+			let shopMetaData = body;
 			shopId = shopId.trim();
 			['lat', 'lng', 'distance', 'phone', 'comment'].forEach((elem) => {
 				if (typeof shopMetaData[elem] === 'undefined') {
@@ -312,7 +314,7 @@ const setShopData = ({ community, shopId, shopMetaData }) =>
 				values,
 				(err, rows, fields) => {
 					if (err) {
-						console.error(err);
+						logger.error(err);
 						reject(Service.rejectResponse('Error while updating orders'));
 					} else {
 						if (rows['affectedRows'] === 0) {
@@ -331,7 +333,7 @@ const setShopData = ({ community, shopId, shopMetaData }) =>
 								values,
 								(err, rows, fields) => {
 									if (err) {
-										console.error(err);
+										logger.error(err);
 										reject(Service.rejectResponse('error'));
 									} else {
 										ws.sendCommunity(community, 'getShopSuggestions');
