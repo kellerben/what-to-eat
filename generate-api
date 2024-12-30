@@ -3,9 +3,7 @@
 if [ "$1" = "dev" ];then
 	rm -rf test
 	bin/openapi-generator-cli generate -i api/api.yaml -g nodejs-express-server -o test || exit 1
-	find test -name '*.js' | while read -r file; do
-		js-beautify -t -r -f "$file"
-	done
+	prettier --write test
 fi
 bin/openapi-generator-cli generate -i api/api.yaml -g openapi -o nginx/ || exit 1
 mv nginx/openapi.json nginx/html/
