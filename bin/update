@@ -6,10 +6,10 @@ if [ "$1" = "dev" ];then
 	./generate-api "$@"
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml build
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml push
-	ADDOPTS="-c docker-compose.dev.yml"
-fi
-docker stack deploy -c docker-compose.yml $ADDOPTS --prune what-to-eat --detach
 
-if [ "$1" = "dev" ];then
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --detach
+
 	docker system prune -f
+else
+	docker compose -f docker-compose.yml up --detach
 fi

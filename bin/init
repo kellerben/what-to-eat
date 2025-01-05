@@ -37,9 +37,3 @@ for PWFILE in db_user_pw db_root_pw; do
 		chmod go-rwx "$PWDIR/$PWFILE"
 	fi
 done
-
-docker swarm init --advertise-addr lo
-
-docker service create --name registry --publish published=5000,target=5000 registry:2
-
-docker network create what-to-eat --attachable --driver=overlay --scope=swarm

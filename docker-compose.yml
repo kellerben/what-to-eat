@@ -2,6 +2,7 @@
 services:
     mariadb:
         image: mariadb:10.8.2
+        container_name: what-to-eat_mariadb
         command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
         networks:
             - what-to-eat
@@ -29,12 +30,6 @@ services:
             interval: 30s
             timeout: 3s
             retries: 10
-        deploy:
-            restart_policy:
-                condition: any #so it restarts also after reboot...
-                delay: 5s
-                max_attempts: 5
-                window: 10s
         logging:
             driver: "syslog"
             options:
@@ -43,6 +38,7 @@ services:
 
     nodejs:
         image: kellerben/what-to-eat-api
+        container_name: what-to-eat_nodejs
         build:
             context: nodejs
         networks:
@@ -58,11 +54,6 @@ services:
                 parallelism: 1
                 delay: 10s
                 order: stop-first
-            restart_policy:
-                condition: any
-                delay: 5s
-                max_attempts: 10
-                window: 10s
         logging:
             driver: "syslog"
             options:
@@ -71,24 +62,19 @@ services:
 
     nginx:
         image: kellerben/what-to-eat-static
+        container_name: what-to-eat_nginx
         build:
             context: nginx
         networks:
             - what-to-eat
         ports:
-            - 80:80
-            - 443:443
+            - 127.0.0.1:40080:80
         deploy:
             replicas: 1
             update_config:
                 parallelism: 1
                 delay: 10s
                 order: stop-first
-            restart_policy:
-                condition: any
-                delay: 5s
-                max_attempts: 10
-                window: 10s
         logging:
             driver: "syslog"
             options:
@@ -97,10 +83,11 @@ services:
 
 volumes:
     dbdata:
+        name: what-to-eat_dbdata
 
 networks:
     what-to-eat:
-        external: true
+        name: what-to-eat
 
 secrets:
     db_user_pw:
