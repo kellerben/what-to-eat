@@ -1,99 +1,99 @@
 ---
 services:
-    mariadb:
-        image: mariadb:10.8.2
-        container_name: what-to-eat_mariadb
-        command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-        networks:
-            - what-to-eat
-        volumes:
-            - type: volume
-              source: dbdata
-              target: /var/lib/mysql
-            - type: bind
-              source: ./db/init/
-              target: /docker-entrypoint-initdb.d
-            - type: bind
-              source: ./db/etc/
-              target: /etc/mysql/conf.d
-        environment:
-            MYSQL_USER: lunch
-            MYSQL_DATABASE: lunch
-            MYSQL_PASSWORD_FILE: /run/secrets/db_user_pw
-            MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_pw
-            LANG: C.UTF-8
-        secrets:
-            - db_user_pw
-            - db_root_pw
-        healthcheck:
-            test: ["CMD-SHELL", "mysqladmin -u$${MYSQL_USER} --password=$$(cat $${MYSQL_PASSWORD_FILE}) ping --silent"]
-            interval: 30s
-            timeout: 3s
-            retries: 10
-        logging:
-            driver: "syslog"
-            options:
-                syslog-facility: local0
-                tag: "wte-db"
+  mariadb:
+    image: mariadb:10.8.2
+    container_name: what-to-eat_mariadb
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - what-to-eat
+    volumes:
+      - type: volume
+        source: dbdata
+        target: /var/lib/mysql
+      - type: bind
+        source: ./db/init/
+        target: /docker-entrypoint-initdb.d
+      - type: bind
+        source: ./db/etc/
+        target: /etc/mysql/conf.d
+    environment:
+      MYSQL_USER: lunch
+      MYSQL_DATABASE: lunch
+      MYSQL_PASSWORD_FILE: /run/secrets/db_user_pw
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_pw
+      LANG: C.UTF-8
+    secrets:
+      - db_user_pw
+      - db_root_pw
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin -u$${MYSQL_USER} --password=$$(cat $${MYSQL_PASSWORD_FILE}) ping --silent"]
+      interval: 30s
+      timeout: 3s
+      retries: 10
+    logging:
+      driver: "syslog"
+      options:
+        syslog-facility: local0
+        tag: "wte-db"
 
-    nodejs:
-        image: kellerben/what-to-eat-api
-        container_name: what-to-eat_nodejs
-        build:
-            context: nodejs
-        networks:
-            - what-to-eat
-        secrets:
-            - db_user_pw
-            - smtprc.yaml
-        depends_on:
-            - mariadb
-        deploy:
-            replicas: 1
-            update_config:
-                parallelism: 1
-                delay: 10s
-                order: stop-first
-        logging:
-            driver: "syslog"
-            options:
-                syslog-facility: local0
-                tag: "wte-api"
+  nodejs:
+    image: kellerben/what-to-eat-api
+    container_name: what-to-eat_nodejs
+    build:
+      context: nodejs
+    networks:
+      - what-to-eat
+    secrets:
+      - db_user_pw
+      - smtprc.yaml
+    depends_on:
+      - mariadb
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+    logging:
+      driver: "syslog"
+      options:
+        syslog-facility: local0
+        tag: "wte-api"
 
-    nginx:
-        image: kellerben/what-to-eat-static
-        container_name: what-to-eat_nginx
-        build:
-            context: nginx
-        networks:
-            - what-to-eat
-        ports:
-            - 127.0.0.1:40080:80
-        deploy:
-            replicas: 1
-            update_config:
-                parallelism: 1
-                delay: 10s
-                order: stop-first
-        logging:
-            driver: "syslog"
-            options:
-                syslog-facility: local0
-                tag: "wte-static"
+  nginx:
+    image: kellerben/what-to-eat-static
+    container_name: what-to-eat_nginx
+    build:
+      context: nginx
+    networks:
+      - what-to-eat
+    ports:
+      - 127.0.0.1:40080:80
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+    logging:
+      driver: "syslog"
+      options:
+        syslog-facility: local0
+        tag: "wte-static"
 
 volumes:
-    dbdata:
-        name: what-to-eat_dbdata
+  dbdata:
+    name: what-to-eat_dbdata
 
 networks:
-    what-to-eat:
-        name: what-to-eat
+  what-to-eat:
+    name: what-to-eat
 
 secrets:
-    db_user_pw:
-        file: /etc/what-to-eat/db_user_pw
-    db_root_pw:
-        file: /etc/what-to-eat/db_root_pw
-    smtprc.yaml:
-        file: /etc/what-to-eat/smtprc.yaml
-        name: smtp
+  db_user_pw:
+    file: /etc/what-to-eat/db_user_pw
+  db_root_pw:
+    file: /etc/what-to-eat/db_root_pw
+  smtprc.yaml:
+    file: /etc/what-to-eat/smtprc.yaml
+    name: smtp
