@@ -102,7 +102,9 @@ const vueapp = new Vue({
 						o.label += ` (<a href='tel:${encodeURI(URInumber)}'>${number}</a>)`;
 						o.html = true;
 					}
-					o.label += `, total: ${o.totalPrice} ct`;
+					if (o.children?.length) {
+						o.label += `(${o.children.length}), total: ${o.totalPrice} ct`;
+					}
 				}
 			});
 		},
