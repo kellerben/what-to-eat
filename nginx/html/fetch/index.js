@@ -99,11 +99,11 @@ const vueapp = new Vue({
 					if (shopDetails.phone) {
 						var number = shopDetails.phone.replace(/[^+0-9 ()-]/g, '');
 						var URInumber = number.replace(/[() ]/g, '-');
-						o.label += ` (<a href='tel:${encodeURI(URInumber)}'>${number}</a>)`;
+						o.label += `, <a href='tel:${encodeURI(URInumber)}'>${number}</a>`;
 						o.html = true;
 					}
 					if (o.children?.length) {
-						o.label += `(${o.children.length}), total: ${o.totalPrice} ct`;
+						o.label += `, meals: ${o.children.length}, total: ${o.totalPrice} ct`;
 					}
 				}
 			});
