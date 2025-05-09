@@ -38,13 +38,13 @@ const vueapp = new Vue({
 	data: function () {
 		return {
 			community: localStorage.community,
-			userId: localStorage.userId,
+			userId: localStorage.userId || '',
 			alertMsg: '',
 			alertClass: '',
 			alertType: '',
 			showAlertTime: 0,
 			payments: [],
-			searchTerm: localStorage.userId.toLowerCase(),
+			searchTerm: localStorage.userId ? localStorage.userId.toLowerCase() : '',
 			paymentPool: {},
 			paymentInstructions: {},
 			anchorAttrs: {
