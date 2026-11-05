@@ -65,6 +65,16 @@ class Service {
 			}
 		}
 	}
+
+	// Hook for run-state changes (e.g. WebEx bot notification).
+	// Currently only logs; extend this single place to notify external services.
+	static notifyStateChange(community, shopId, userId, state, date) {
+		logger.info(
+			`Run state changed: community=${community} shop=${shopId}` +
+				` state=${state} day=${date}` +
+				(typeof userId !== 'undefined' && userId !== '' ? ` by=${userId}` : '')
+		);
+	}
 }
 
 Service.init();

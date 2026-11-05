@@ -10,6 +10,59 @@
 				<!--#include virtual="/nav.shtml"-->
 
 				<div>
+					<h1>Run state of today’s shops</h1>
+					<table
+						class="table table-bordered table-striped table-hover table-condensed"
+					>
+						<thead>
+							<tr>
+								<th>Food Store</th>
+								<th>State</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="runState in runStates">
+								<td>{{runState.shop}}</td>
+								<td>
+									<button
+										:class="stateButtonClass(runState.state, 'NEW')"
+										title="Reset the run state to NEW (e.g. if it was set by accident)"
+										v-on:click="setRunState(runState.shop, 'NEW')"
+										:disabled="runState.state === null || runState.state === 'NEW'"
+									>
+										✨ New
+									</button>
+									<button
+										:class="stateButtonClass(runState.state, 'ORDERED')"
+										title="Call to the restaurant is placed"
+										v-on:click="setRunState(runState.shop, 'ORDERED')"
+										:disabled="runState.state === null || runState.state === 'ORDERED'"
+									>
+										📞 Ordered
+									</button>
+									<button
+										:class="stateButtonClass(runState.state, 'RECEIVED')"
+										title="Food received at the restaurant, fetcher is on the way back"
+										v-on:click="setRunState(runState.shop, 'RECEIVED')"
+										:disabled="runState.state === null || runState.state === 'RECEIVED'"
+									>
+										🛍️ Received
+									</button>
+									<button
+										:class="stateButtonClass(runState.state, 'FETCHED')"
+										title="Fetcher is back, food has arrived"
+										v-on:click="setRunState(runState.shop, 'FETCHED')"
+										:disabled="runState.state === null || runState.state === 'FETCHED'"
+									>
+										😋 Fetched
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div>
 					<h1>Orders of today</h1>
 					<div id="orders">
 						<vue-good-table

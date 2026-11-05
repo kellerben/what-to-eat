@@ -403,6 +403,40 @@ paths:
         405:
           description: Validation exception
           content: {}
+  /{community}/{shopId}/state:
+    put:
+      tags:
+        - Order
+      summary: Set the state of all orders of one shop of one day
+      operationId: setRunState
+      parameters:
+        - name: community
+          in: path
+          required: true
+          description: The community string.
+          schema:
+            type: string
+            maxLength: 64
+        - name: shopId
+          in: path
+          required: true
+          description: Of which shop do you want to set the state?
+          schema:
+            type: string
+            maxLength: 64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/runState'
+      responses:
+        404:
+          description: No orders of this shop found for this day
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
   /{community}/getPayments:
     get:
       parameters:
@@ -436,7 +470,7 @@ paths:
             items:
               type: string
               maxLength: 16
-              pattern: '^(NEW|FETCHED|PAID|DISCARDED)$'
+              pattern: '^(NEW|ORDERED|RECEIVED|FETCHED|PAID|DISCARDED)$'
       tags:
         - Payments
       summary: Get open or closed payments
@@ -611,9 +645,11 @@ components:
           description: Any specialties?
         state:
           type: string
-          pattern: '^(NEW|FETCHED|PAID|DISCARDED)$'
+          pattern: '^(NEW|ORDERED|RECEIVED|FETCHED|PAID|DISCARDED)$'
           maxLength: 16
-          description: In which state is the Order? (NEW, FETCHED, PAID, DISCARDED)
+          description: >-
+            In which state is the Order? (NEW, ORDERED, RECEIVED, FETCHED,
+            PAID, DISCARDED)
       required:
         - community
         - shopId
@@ -642,6 +678,26 @@ components:
         - community
         - userId
         - shopId
+    runState:
+      type: object
+      properties:
+        state:
+          type: string
+          pattern: '^(NEW|ORDERED|RECEIVED|FETCHED|PAID|DISCARDED)$'
+          maxLength: 16
+          description: >-
+            The new state of the shop's orders (NEW, ORDERED, RECEIVED,
+            FETCHED, PAID, DISCARDED)
+        userId:
+          type: string
+          maxLength: 64
+          description: Who changed the state? (optional, used for notifications)
+        date:
+          type: string
+          format: date
+          description: For which day? (defaults to today)
+      required:
+        - state
     shopMetaData:
       type: object
       properties:

@@ -2,6 +2,24 @@ const Service = require('./Service');
 const ws = require('../ws');
 const logger = require('../logger');
 
+// Order of the run states (used to derive a shop's current run state).
+const STATE_ORDER = ['NEW', 'ORDERED', 'RECEIVED', 'FETCHED', 'PAID'];
+
+// Allowed transitions: same state, DISCARDED from anywhere (cancel anytime),
+// PAID from any run state (payable regardless of fetch progress) but then
+// terminal, DISCARDED only revivable to NEW, otherwise free movement among
+// the run states (misclick recovery).
+const isTransitionAllowed = (current, next) => {
+	if (current === next) return true;
+	if (next === 'DISCARDED') return true;
+	if (current === 'PAID') return false;
+	if (current === 'DISCARDED') return next === 'NEW'; // revive a discarded order
+	if (next === 'PAID') return true;
+	return (
+		STATE_ORDER.indexOf(current) !== -1 && STATE_ORDER.indexOf(next) !== -1
+	);
+};
+
 /**
  * Get all orders of one day
  *
@@ -196,163 +214,300 @@ const updateOrder = (req) =>
 
 			Service.trimStrings(mealOrder);
 
-			let stmt = 'UPDATE orders SET day = ?';
-			let vars = [date];
-			if (typeof mealOrder.price !== 'undefined') {
-				stmt += ',price = ?';
-				vars.push(mealOrder.price);
-			}
-			if (typeof mealOrder.specialRequest !== 'undefined') {
-				stmt += ',specialRequest = ?';
-				vars.push(mealOrder.specialRequest);
-			}
-			if (typeof mealOrder.state !== 'undefined') {
-				if (mealOrder.state === 'PAID') {
-					// notify users via e-mail
-					let s =
-						'SELECT users.user,users.email,orders.price' +
-						' FROM users,orders' +
-						' WHERE users.community = ?' +
-						' AND orders.community = ?' +
-						' AND orders.shop = ?' +
-						' AND orders.day = ?' +
-						' AND orders.meal = ?' +
-						' AND orders.user = ?' +
-						' AND users.user = (SELECT user FROM walks ' +
-						' WHERE community = ? AND shop = ? AND day = ?)';
-					let v = [
-						mealOrder.community,
-						mealOrder.community,
-						mealOrder.shopId,
-						mealOrder.date,
-						mealOrder.meal,
-						mealOrder.userId,
-						mealOrder.community,
-						mealOrder.shopId,
-						mealOrder.date,
-					];
+			const doUpdate = () => {
+				let stmt = 'UPDATE orders SET day = ?';
+				let vars = [date];
+				if (typeof mealOrder.price !== 'undefined') {
+					stmt += ',price = ?';
+					vars.push(mealOrder.price);
+				}
+				if (typeof mealOrder.specialRequest !== 'undefined') {
+					stmt += ',specialRequest = ?';
+					vars.push(mealOrder.specialRequest);
+				}
+				if (typeof mealOrder.state !== 'undefined') {
+					if (mealOrder.state === 'PAID') {
+						// notify users via e-mail
+						let s =
+							'SELECT users.user,users.email,orders.price' +
+							' FROM users,orders' +
+							' WHERE users.community = ?' +
+							' AND orders.community = ?' +
+							' AND orders.shop = ?' +
+							' AND orders.day = ?' +
+							' AND orders.meal = ?' +
+							' AND orders.user = ?' +
+							' AND users.user = (SELECT user FROM walks ' +
+							' WHERE community = ? AND shop = ? AND day = ?)';
+						let v = [
+							mealOrder.community,
+							mealOrder.community,
+							mealOrder.shopId,
+							mealOrder.date,
+							mealOrder.meal,
+							mealOrder.userId,
+							mealOrder.community,
+							mealOrder.shopId,
+							mealOrder.date,
+						];
 
-					Service.mysql_connection_pool.execute(s, v, (err, rows, fields) => {
-						if (err) {
-							logger.error(
-								'Error during SQL-query for sendmail of payment: ',
-								err
-							);
-						} else {
-							if (rows[0]) {
-								let receiver = {
-									user: rows[0].user,
-									email: rows[0].email,
-								};
-								let sender = {
-									user: mealOrder.userId,
-									email: '',
-								};
-								let price = rows[0].price;
+						Service.mysql_connection_pool.execute(s, v, (err, rows, fields) => {
+							if (err) {
+								logger.error(
+									'Error during SQL-query for sendmail of payment: ',
+									err
+								);
+							} else {
+								if (rows[0]) {
+									let receiver = {
+										user: rows[0].user,
+										email: rows[0].email,
+									};
+									let sender = {
+										user: mealOrder.userId,
+										email: '',
+									};
+									let price = rows[0].price;
 
-								// get receiver mail
-								let s =
-									'SELECT email FROM users' +
-									' WHERE community = ?' +
-									' AND user = ?';
-								let v = [mealOrder.community, mealOrder.userId];
+									// get receiver mail
+									let s =
+										'SELECT email FROM users' +
+										' WHERE community = ?' +
+										' AND user = ?';
+									let v = [mealOrder.community, mealOrder.userId];
 
-								let subject =
-									`Transaction Notification: ` +
-									`${sender.user} paid ${price} ct to ${receiver.user}`;
-								let body =
-									`My esteemed guests ${receiver.user} and ${sender.user},\n\n` +
-									`I trust this message finds you in the very best of spirits. ` +
-									`It is my distinct pleasure to inform you that the meal ` +
-									`(${mealOrder.meal}), which ${receiver.user} graciously collected on ` +
-									`${mealOrder.date} from ${mealOrder.shopId}, has now been marked as paid.\n\n` +
-									`Accordingly, ${receiver.user} has received the amount of ` +
-									`${price} ct from ${sender.user}.\n\n` +
-									`Should you have any further inquiries, kindly direct them to the respective ` +
-									`staff of ${receiver.user} or ${sender.user}.\n\n` +
-									`I remain, as always, your humble and obedient servant,\n` +
-									`Wilfred, your loyal butler.`;
+									let subject =
+										`Transaction Notification: ` +
+										`${sender.user} paid ${price} ct to ${receiver.user}`;
+									let body =
+										`My esteemed guests ${receiver.user} and ${sender.user},\n\n` +
+										`I trust this message finds you in the very best of spirits. ` +
+										`It is my distinct pleasure to inform you that the meal ` +
+										`(${mealOrder.meal}), which ${receiver.user} graciously collected on ` +
+										`${mealOrder.date} from ${mealOrder.shopId}, has now been marked as paid.\n\n` +
+										`Accordingly, ${receiver.user} has received the amount of ` +
+										`${price} ct from ${sender.user}.\n\n` +
+										`Should you have any further inquiries, kindly direct them to the respective ` +
+										`staff of ${receiver.user} or ${sender.user}.\n\n` +
+										`I remain, as always, your humble and obedient servant,\n` +
+										`Wilfred, your loyal butler.`;
 
-								Service.mysql_connection_pool.execute(
-									s,
-									v,
-									(err, rows, fields) => {
-										if (err) {
-											logger.error(
-												'Error during SQL-query for sendmail of payment: ',
-												err
-											);
-										} else {
-											if (rows[0]) {
-												sender['email'] = rows[0].email;
-												// notify the user who did the payment
-												if (sender.email) {
-													Service.sendMail(
-														sender.email,
-														subject,
-														body,
-														function (err, info) {
-															if (err) {
-																logger.error(
-																	'Error while sending mail: ',
-																	err,
-																	info
-																);
+									Service.mysql_connection_pool.execute(
+										s,
+										v,
+										(err, rows, fields) => {
+											if (err) {
+												logger.error(
+													'Error during SQL-query for sendmail of payment: ',
+													err
+												);
+											} else {
+												if (rows[0]) {
+													sender['email'] = rows[0].email;
+													// notify the user who did the payment
+													if (sender.email) {
+														Service.sendMail(
+															sender.email,
+															subject,
+															body,
+															function (err, info) {
+																if (err) {
+																	logger.error(
+																		'Error while sending mail: ',
+																		err,
+																		info
+																	);
+																}
 															}
-														}
-													);
+														);
+													}
 												}
 											}
 										}
-									}
-								);
-
-								// notify the user who should have received the payment
-								if (receiver.email) {
-									Service.sendMail(
-										receiver.email,
-										subject,
-										body,
-										function (err, info) {
-											if (err) {
-												logger.error('Error while sending mail: ', err, info);
-											}
-										}
 									);
+
+									// notify the user who should have received the payment
+									if (receiver.email) {
+										Service.sendMail(
+											receiver.email,
+											subject,
+											body,
+											function (err, info) {
+												if (err) {
+													logger.error('Error while sending mail: ', err, info);
+												}
+											}
+										);
+									}
 								}
 							}
-						}
-					});
-				}
-
-				stmt += ',state = ? ';
-				vars.push(mealOrder.state);
-			}
-			stmt +=
-				'WHERE community = ?' +
-				' AND shop = ? ' +
-				' AND user = ? ' +
-				' AND day = ? ' +
-				' AND meal = ?';
-			vars.push(
-				mealOrder.community,
-				mealOrder.shopId,
-				mealOrder.userId,
-				date,
-				mealOrder.meal
-			);
-
-			Service.mysql_connection_pool.execute(stmt, vars, (err, rows, fields) => {
-				if (err) {
-					logger.error('Error during insertion of order: ', err);
-					reject(Service.rejectResponse('Error during insertion of order'));
-				} else {
-					if (rows['affectedRows'] === 0) {
-						reject(Service.rejectResponse("User didn't ordered anything yet"));
-					} else {
-						ws.sendCommunity(mealOrder.community, 'refreshOrders');
-						resolve(Service.successResponse('success'));
+						});
 					}
+
+					stmt += ',state = ? ';
+					vars.push(mealOrder.state);
+				}
+				stmt +=
+					'WHERE community = ?' +
+					' AND shop = ? ' +
+					' AND user = ? ' +
+					' AND day = ? ' +
+					' AND meal = ?';
+				vars.push(
+					mealOrder.community,
+					mealOrder.shopId,
+					mealOrder.userId,
+					date,
+					mealOrder.meal
+				);
+
+				Service.mysql_connection_pool.execute(
+					stmt,
+					vars,
+					(err, rows, fields) => {
+						if (err) {
+							logger.error('Error during insertion of order: ', err);
+							reject(Service.rejectResponse('Error during insertion of order'));
+						} else {
+							if (rows['affectedRows'] === 0) {
+								reject(
+									Service.rejectResponse("User didn't ordered anything yet")
+								);
+							} else {
+								ws.sendCommunity(mealOrder.community, 'refreshOrders');
+								resolve(Service.successResponse('success'));
+							}
+						}
+					}
+				);
+			};
+
+			if (typeof mealOrder.state !== 'undefined') {
+				// validate the transition against the order's current state
+				let sel =
+					'SELECT state FROM orders' +
+					' WHERE community = ? AND shop = ? AND user = ? AND day = ? AND meal = ?';
+				let selVars = [
+					mealOrder.community,
+					mealOrder.shopId,
+					mealOrder.userId,
+					date,
+					mealOrder.meal,
+				];
+				Service.mysql_connection_pool.execute(sel, selVars, (err, rows) => {
+					if (err) {
+						logger.error('Error during state lookup: ', err);
+						reject(Service.rejectResponse('Error during state lookup'));
+					} else if (!rows[0]) {
+						resolve(
+							Service.rejectResponse("User didn't ordered anything yet", 404)
+						);
+					} else if (!isTransitionAllowed(rows[0].state, mealOrder.state)) {
+						resolve(
+							Service.rejectResponse(
+								`Invalid state transition: ${rows[0].state} -> ${mealOrder.state}`,
+								405
+							)
+						);
+					} else {
+						doUpdate();
+					}
+				});
+			} else {
+				doUpdate();
+			}
+		} catch (e) {
+			reject(
+				Service.rejectResponse(e.message || 'Invalid input', e.status || 405)
+			);
+		}
+	});
+
+/**
+ * Set the state of all orders of one shop of one day
+ *
+ * community String The community string
+ * shopId String Of which shop do you want to set the state?
+ * runState RunState
+ * no response value expected for this operation
+ * */
+const setRunState = (req) =>
+	new Promise((resolve, reject) => {
+		try {
+			let runState = req.body;
+			let date;
+			if (typeof runState.date === 'undefined') {
+				date = new Date();
+			} else {
+				date = new Date(runState.date);
+			}
+			date = date.toISOString().slice(0, 10);
+
+			Service.trimStrings(runState);
+
+			const doUpdate = () => {
+				let stmt =
+					'UPDATE orders SET state = ?' +
+					' WHERE community = ? AND shop = ? AND day = ?' +
+					" AND state NOT IN ('DISCARDED', 'PAID')";
+				let vars = [runState.state, req.community, req.shopId, date];
+
+				Service.mysql_connection_pool.execute(stmt, vars, (err, rows) => {
+					if (err) {
+						logger.error('Error during update of the run state: ', err);
+						reject(
+							Service.rejectResponse('Error during update of the run state')
+						);
+					} else {
+						if (rows['affectedRows'] === 0) {
+							resolve(
+								Service.rejectResponse(
+									'No orders found for this shop and day',
+									404
+								)
+							);
+						} else {
+							ws.sendCommunity(req.community, 'refreshOrders');
+							Service.notifyStateChange(
+								req.community,
+								req.shopId,
+								runState.userId,
+								runState.state,
+								date
+							);
+							resolve(Service.successResponse('success'));
+						}
+					}
+				});
+			};
+
+			// validate the transition against the shop's current run state
+			let sel =
+				'SELECT state FROM orders' +
+				' WHERE community = ? AND shop = ? AND day = ?';
+			let selVars = [req.community, req.shopId, date];
+			Service.mysql_connection_pool.execute(sel, selVars, (err, rows) => {
+				if (err) {
+					logger.error('Error during state lookup: ', err);
+					reject(Service.rejectResponse('Error during state lookup'));
+					return;
+				}
+				let current = 'NEW';
+				rows.forEach((r) => {
+					if (r.state === 'DISCARDED' || r.state === 'PAID') return;
+					if (STATE_ORDER.indexOf(r.state) > STATE_ORDER.indexOf(current)) {
+						current = r.state;
+					}
+				});
+				if (!isTransitionAllowed(current, runState.state)) {
+					resolve(
+						Service.rejectResponse(
+							`Invalid state transition: ${current} -> ${runState.state}`,
+							405
+						)
+					);
+				} else {
+					doUpdate();
 				}
 			});
 		} catch (e) {
@@ -367,4 +522,5 @@ module.exports = {
 	getShopOrders,
 	orderLunch,
 	updateOrder,
+	setRunState,
 };

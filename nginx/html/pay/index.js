@@ -193,7 +193,7 @@ const vueapp = new Vue({
 				.then((client) =>
 					client.apis.Payments.getPayments({
 						community: this.community,
-						states: ['NEW', 'FETCHED'],
+						states: ['NEW', 'ORDERED', 'RECEIVED', 'FETCHED'],
 					})
 				)
 				.then((result) =>

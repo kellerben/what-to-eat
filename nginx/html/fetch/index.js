@@ -40,6 +40,7 @@ const vueapp = new Vue({
 			meal: null,
 			specialRequest: '',
 			community: localStorage.community,
+			userId: localStorage.userId,
 			orders: [],
 			prices: {},
 			header: [
@@ -76,6 +77,22 @@ const vueapp = new Vue({
 		total() {
 			return this.orders.reduce((total, product) => product.price + total, 0);
 		},
+		runStates() {
+			const stateOrder = ['NEW', 'ORDERED', 'RECEIVED', 'FETCHED', 'PAID'];
+			return this.orders.map((group) => {
+				let state = null; // no active button if all orders are terminal
+				group.children.forEach((childOrder) => {
+					if (
+						childOrder.state != 'DISCARDED' &&
+						childOrder.state != 'PAID' &&
+						stateOrder.indexOf(childOrder.state) > stateOrder.indexOf(state)
+					) {
+						state = childOrder.state;
+					}
+				});
+				return { shop: group.shop, state: state };
+			});
+		},
 	},
 	watch: {
 		orders: function () {
@@ -92,6 +109,19 @@ const vueapp = new Vue({
 		},
 	},
 	methods: {
+		stateButtonClass(current, state) {
+			return current === state
+				? 'btn btn-success btn-sm active'
+				: 'btn btn-secondary btn-sm';
+		},
+		setRunState(shop, state) {
+			lunch.then((client) =>
+				client.apis.Order.setRunState(
+					{ community: this.community, shopId: shop },
+					{ requestBody: { state: state, userId: this.userId } }
+				)
+			);
+		},
 		updateShopLabel(shopDetails) {
 			this.orders.forEach((o) => {
 				if (o.shop == shopDetails.shop) {

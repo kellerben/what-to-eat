@@ -18,6 +18,14 @@
 					>
 						<strong>{{alertType}}:</strong> {{alertMsg}}
 					</b-alert>
+					<b-alert
+						v-for="s in runStatus"
+						:key="s.shop"
+						:variant="s.variant"
+						show
+					>
+						<strong>{{s.shop}}:</strong> {{s.text}}
+					</b-alert>
 					<h1>Who fetches from where?</h1>
 					<div id="suggestions">
 						<table
@@ -107,6 +115,7 @@
 									<th>Meal</th>
 									<th>Special Request</th>
 									<th>Price</th>
+									<th>State</th>
 									<th>Action</th>
 								</tr>
 							</thead>
@@ -117,6 +126,7 @@
 									<td>{{order.meal}}</td>
 									<td>{{order.specialRequest}}</td>
 									<td>{{order.price}}<span v-if="order.price"> ct</span></td>
+									<td>{{order.state}}</td>
 									<td>
 										<button
 											class="btn btn-primary btn-sm"
@@ -131,7 +141,7 @@
 									</td>
 								</tr>
 								<tr>
-									<th colspan="6">Order something</th>
+									<th colspan="7">Order something</th>
 								</tr>
 								<tr>
 									<td>
@@ -188,7 +198,7 @@
 											placeholder="(optional) Price in Cent"
 										/>
 									</td>
-									<td>
+									<td colspan="2">
 										<button
 											class="btn btn-primary btn-sm"
 											v-on:click="orderLunch"

@@ -1,5 +1,14 @@
 var lunch = new SwaggerClient('/openapi.json');
 
+// human-readable text for the run states past NEW (used in confirm popups)
+const stateHints = {
+	ORDERED: 'already phoned in to the restaurant',
+	RECEIVED:
+		'already received at the restaurant, the fetcher is on the way back',
+	FETCHED: 'already arrived',
+	PAID: 'already paid',
+};
+
 // ws {{{
 var connection;
 function renewconnection() {
@@ -72,6 +81,53 @@ const vueapp = new Vue({
 	computed: {
 		total() {
 			return this.orders.reduce((total, product) => product.price + total, 0);
+		},
+		// furthest-progressed run state per shop (ignoring PAID/DISCARDED orders)
+		stateByShop() {
+			const stateOrder = ['NEW', 'ORDERED', 'RECEIVED', 'FETCHED', 'PAID'];
+			var byShop = {};
+			this.orders.forEach((order) => {
+				if (order.state == 'DISCARDED' || order.state == 'PAID') {
+					return;
+				}
+				if (
+					typeof byShop[order.shop] == 'undefined' ||
+					stateOrder.indexOf(order.state) >
+						stateOrder.indexOf(byShop[order.shop])
+				) {
+					byShop[order.shop] = order.state;
+				}
+			});
+			return byShop;
+		},
+		runStatus() {
+			const display = {
+				ORDERED: {
+					variant: 'info',
+					text: '📞 Order placed at the restaurant',
+				},
+				RECEIVED: {
+					variant: 'warning',
+					text: '🛍️ Food received, fetcher is on the way back',
+				},
+				FETCHED: {
+					variant: 'success',
+					text: '😋 Food has arrived — enjoy your meal!',
+				},
+			};
+			var result = [];
+			for (const shop in this.stateByShop) {
+				const state = this.stateByShop[shop];
+				if (typeof display[state] != 'undefined') {
+					result.push({
+						shop: shop,
+						state: state,
+						variant: display[state].variant,
+						text: display[state].text,
+					});
+				}
+			}
+			return result;
 		},
 	},
 	methods: {
@@ -177,6 +233,23 @@ const vueapp = new Vue({
 				);
 		},
 		deleteOrder: function (event) {
+			// warn when discarding an order whose run state is already past NEW
+			const discardedOrder = this.orders.find(
+				(order) =>
+					order.user === event.target.dataset['user'] &&
+					order.shop === event.target.dataset['shop'] &&
+					order.meal === event.target.dataset['meal']
+			);
+			const orderState = discardedOrder ? discardedOrder.state : null;
+			if (typeof stateHints[orderState] != 'undefined') {
+				if (
+					!window.confirm(
+						`This order is ${stateHints[orderState]} (state: ${orderState}). Discard anyway?`
+					)
+				) {
+					return;
+				}
+			}
 			lunch
 				.then((client) =>
 					client.apis.Order.updateOrder(
@@ -236,6 +309,17 @@ const vueapp = new Vue({
 			// {{{
 			if (this.userId === '' || this.shopId === '' || this.meal === null) {
 				return;
+			}
+			// discourage ordering once the shop's run is past NEW (but allow it)
+			const runState = this.stateByShop[this.shopId];
+			if (typeof stateHints[runState] != 'undefined') {
+				if (
+					!window.confirm(
+						`The order at ${this.shopId} is ${stateHints[runState]}. Order anyway?`
+					)
+				) {
+					return;
+				}
 			}
 			var order = {
 				userId: this.userId,

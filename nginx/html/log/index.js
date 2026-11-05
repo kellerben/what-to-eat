@@ -45,7 +45,14 @@ const vueapp = new Vue({
 					field: 'state',
 					hidden: true,
 					sortFn: (x, y) => {
-						var sortary = ['NEW', 'FETCHED', 'PAID', 'DISCARDED'];
+						var sortary = [
+							'NEW',
+							'ORDERED',
+							'RECEIVED',
+							'FETCHED',
+							'PAID',
+							'DISCARDED',
+						];
 						var a = sortary.indexOf(x);
 						var b = sortary.indexOf(y);
 						return a < b ? -1 : a > b ? 1 : 0;
@@ -93,6 +100,12 @@ const vueapp = new Vue({
 				NEW: {
 					label: 'New and unpaid orders',
 				},
+				ORDERED: {
+					label: 'Ordered at the shop',
+				},
+				RECEIVED: {
+					label: 'Received at the shop, on the way back',
+				},
 				FETCHED: {
 					label: 'Fetched but unpaid orders',
 				},
@@ -113,11 +126,13 @@ const vueapp = new Vue({
 				o[elem.state].children.push(elem);
 			});
 			var p = [];
-			['NEW', 'FETCHED', 'PAID', 'DISCARDED'].forEach((key) => {
-				if (o[key].children.length != 0) {
-					p.push(o[key]);
+			['NEW', 'ORDERED', 'RECEIVED', 'FETCHED', 'PAID', 'DISCARDED'].forEach(
+				(key) => {
+					if (o[key].children.length != 0) {
+						p.push(o[key]);
+					}
 				}
-			});
+			);
 			this.payments = p;
 		},
 		getOpenPayments: function (event) {
